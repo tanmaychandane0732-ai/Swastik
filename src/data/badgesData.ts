@@ -75,3 +75,4 @@ export const INITIAL_BADGES: Badge[] = [
     category: 'mastery',
   },
 ];
+

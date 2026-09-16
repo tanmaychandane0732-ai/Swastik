@@ -11,3 +11,4 @@ export interface LeaderboardEntry {
   createdAt: string;
   isCurrentPlayer?: boolean;
 }
+

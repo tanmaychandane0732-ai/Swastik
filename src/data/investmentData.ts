@@ -46,3 +46,4 @@ export const INVESTMENT_OPTIONS: InvestmentChoice[] = [
     educationalTakeaway: 'Universal Law of Finance: If someone could guarantee 30% monthly risk-free, ₹10,000 would turn into ₹23 Crore in 3 years. They would not need your money. It is a textbook Ponzi scheme.',
   },
 ];
+

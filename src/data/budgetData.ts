@@ -43,3 +43,4 @@ export const BUDGET_DID_YOU_KNOW = [
   "An Emergency Fund should cover 3 to 6 months of essential living expenses (Needs). It protects you from having to take predatory loans if an unexpected medical or career event happens.",
   "Every ₹5,000 per month saved and invested in an index fund averaging 12% per year grows to over ₹50,00,000 (₹50 Lakhs) in 20 years!",
 ];
+

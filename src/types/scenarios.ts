@@ -18,3 +18,4 @@ export interface DebtScenario {
   hiddenCatch: string;
   options: DebtScenarioOption[];
 }
+

@@ -55,3 +55,4 @@ export function useAnimatedCounter(
     isDecreasing: delta < 0,
   };
 }
+

@@ -153,6 +153,7 @@ export const Level1Budgeting: React.FC = () => {
           {/* Slider 1: Needs */}
           <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-2">
             <Slider
+              codeTag="S618"
               label="1. Essential Needs"
               value={needs}
               min={0}
@@ -176,6 +177,7 @@ export const Level1Budgeting: React.FC = () => {
           {/* Slider 2: Wants */}
           <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-2">
             <Slider
+              codeTag="S620"
               label="2. Lifestyle Wants"
               value={wants}
               min={0}
@@ -199,6 +201,7 @@ export const Level1Budgeting: React.FC = () => {
           {/* Slider 3: Savings */}
           <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-2">
             <Slider
+              codeTag="S621"
               label="3. Future Savings & Investments"
               value={savings}
               min={0}
@@ -291,3 +294,4 @@ export const Level1Budgeting: React.FC = () => {
     </div>
   );
 };
+

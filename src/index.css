@@ -15,6 +15,11 @@
     overflow-x: hidden;
   }
 
+  body.theme-clean {
+    background-color: #F1F5F9;
+    color: #0F172A;
+  }
+
   /* Accessible focus rings */
   :focus-visible {
     outline: 2px solid #6366F1;
@@ -36,6 +41,14 @@
     border: 1px solid rgba(148, 163, 184, 0.12);
   }
 
+  .theme-clean .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    color: #0F172A;
+  }
+
   .glass-card-hover {
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -46,11 +59,23 @@
     transform: translateY(-2px);
   }
 
+  .theme-clean .glass-card-hover:hover {
+    background: #FFFFFF;
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  }
+
   .glass-panel {
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .theme-clean .glass-panel {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
   }
 
   .glass-input {
@@ -61,6 +86,30 @@
   .glass-input:focus {
     border-color: #6366F1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+
+  /* Minimalist stepper slider from reference image 1 */
+  .slider-minimalist::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #0F172A;
+    border: 3px solid #CBD5E1;
+    box-shadow: 0 0 0 6px rgba(15, 23, 42, 0.12);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .slider-minimalist::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.25);
+    background: #6366F1;
+  }
+
+  .theme-dark .slider-minimalist::-webkit-slider-thumb {
+    background: #F8FAFC;
+    border: 3px solid #6366F1;
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.25);
   }
 }
 
@@ -87,5 +136,53 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Print Specific Media Styles for Printable Certificate */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  body {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-size: 12pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  header,
+  nav,
+  footer,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  .print-certificate-container {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #FFFFFF !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    z-index: 99999 !important;
+  }
+
+  .printable-certificate {
+    box-shadow: none !important;
+    border: 3px double #0F172A !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
   }
 }

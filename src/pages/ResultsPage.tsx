@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Trophy, RotateCcw, Share2, CheckCircle2, TrendingUp, Shield, Sparkles, ArrowRight } from 'lucide-react';
+import { Award, Trophy, RotateCcw, Share2, CheckCircle2, TrendingUp, Shield, Sparkles, ArrowRight, Printer } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useGame } from '../contexts/GameContext';
 import { generateFinancialPersona } from '../utils/personaGenerator';
@@ -9,10 +9,15 @@ import { formatCurrency, formatScore } from '../utils/formatters';
 import { INITIAL_BADGES } from '../data/badgesData';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
+import { CapabilityMatrixChart } from '../components/charts/CapabilityMatrixChart';
 
-export const ResultsPage: React.FC = () => {
+interface ResultsPageProps {
+  onOpenCertificate?: () => void;
+}
+
+export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) => {
   const { state, dispatch, restartQuest } = useGame();
-  const { player, netWorth, financialHealth, score, levelScores, badges, streak } = state;
+  const { player, netWorth, financialHealth, score, levelScores, badges } = state;
 
   const persona = generateFinancialPersona(state);
 
@@ -62,6 +67,21 @@ export const ResultsPage: React.FC = () => {
         <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto">
           You navigated budgeting hurdles, evaded compound debt traps, and intercepted financial scams. Here is your comprehensive career report.
         </p>
+
+        {/* Claim Certificate Banner Button */}
+        {onOpenCertificate && (
+          <div className="pt-2">
+            <Button
+              variant="emerald"
+              size="lg"
+              className="shadow-neon-emerald px-8 py-3.5 border-2 border-emerald-400/50 text-base"
+              icon={<Printer className="w-5 h-5 text-amber-300" />}
+              onClick={onOpenCertificate}
+            >
+              View & Print Official Certificate
+            </Button>
+          </div>
+        )}
       </motion.div>
 
       {/* Financial Persona Card */}
@@ -119,6 +139,36 @@ export const ResultsPage: React.FC = () => {
               ))}
             </ul>
           </div>
+        </div>
+      </GlassCard>
+
+      {/* Dotted Capability Matrix Section (Replicating Image 3 Aesthetic) */}
+      <GlassCard className="p-6 sm:p-8 rounded-3xl border border-slate-700/70 text-center space-y-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div className="text-left">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              Financial Capability Scatter Matrix
+            </h3>
+            <p className="text-xs text-slate-400">
+              Multivariate evaluation of your capital resilience and risk defenses
+            </p>
+          </div>
+          <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-slate-900 border border-slate-700/80 text-slate-300">
+            MATRIX: FQ-618
+          </span>
+        </div>
+
+        {/* The Dotted Grid Matrix */}
+        <div className="py-2 flex justify-center">
+          <CapabilityMatrixChart
+            savingsScore={state.budget.savings > 0 ? 88 : 60}
+            debtDefenseScore={state.debt.totalDebt === 0 ? 95 : 65}
+            investmentScore={82}
+            scamRadarScore={state.scam.detectedScams >= 2 ? 90 : 70}
+            overallPct={Math.round(financialHealth)}
+            statusLabel={financialHealth >= 80 ? 'Elite Capital Resilience' : 'Stable Financial Health'}
+          />
         </div>
       </GlassCard>
 
@@ -194,6 +244,18 @@ export const ResultsPage: React.FC = () => {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+        {onOpenCertificate && (
+          <Button
+            variant="emerald"
+            size="lg"
+            className="w-full sm:w-auto shadow-neon-emerald"
+            icon={<Printer className="w-5 h-5 text-white" />}
+            onClick={onOpenCertificate}
+          >
+            Print Certificate
+          </Button>
+        )}
+
         <Button
           variant="indigo"
           size="lg"
@@ -201,7 +263,7 @@ export const ResultsPage: React.FC = () => {
           icon={<Trophy className="w-5 h-5" />}
           onClick={() => dispatch({ type: 'SET_STAGE', payload: 'leaderboard' })}
         >
-          View Global Leaderboard
+          View Leaderboard
         </Button>
 
         <Button

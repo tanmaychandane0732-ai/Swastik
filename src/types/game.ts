@@ -167,3 +167,4 @@ export type GameAction =
   | { type: 'TOGGLE_REDUCED_MOTION' }
   | { type: 'RESTART_GAME' }
   | { type: 'LOAD_SAVED_GAME'; payload: GameState };
+

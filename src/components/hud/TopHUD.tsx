@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Award, Volume2, VolumeX, RotateCcw } from 'lucide-react';
+import { Flame, Award, Volume2, VolumeX, RotateCcw, Printer, Sun, Moon } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 import { AnimatedCounter } from '../ui/AnimatedCounter';
 import { HealthMeter } from '../ui/HealthMeter';
@@ -8,14 +8,27 @@ import { HealthMeter } from '../ui/HealthMeter';
 interface TopHUDProps {
   onOpenBadges?: () => void;
   onOpenLeaderboard?: () => void;
+  onOpenCertificate?: () => void;
 }
 
 export const TopHUD: React.FC<TopHUDProps> = ({
   onOpenBadges,
   onOpenLeaderboard,
+  onOpenCertificate,
 }) => {
   const { state, dispatch } = useGame();
-  const { netWorth, financialHealth, score, streak, streakMultiplier, settings } = state;
+  const { netWorth, financialHealth, score, streak, streakMultiplier, settings, completedLevels } = state;
+  const [isCleanTheme, setIsCleanTheme] = React.useState(false);
+
+  const handleToggleTheme = () => {
+    const next = !isCleanTheme;
+    setIsCleanTheme(next);
+    if (next) {
+      document.body.classList.add('theme-clean');
+    } else {
+      document.body.classList.remove('theme-clean');
+    }
+  };
 
   const handleToggleSound = () => {
     dispatch({ type: 'TOGGLE_SOUND' });
@@ -132,6 +145,30 @@ export const TopHUD: React.FC<TopHUDProps> = ({
             </button>
           )}
 
+          {onOpenCertificate && (
+            <button
+              onClick={onOpenCertificate}
+              className="px-2.5 py-1.5 rounded-xl glass-card-hover text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-950/40 border border-amber-500/40 shadow-sm flex items-center gap-1.5"
+              title="Official Competence Certificate"
+            >
+              <Printer className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Certificate</span>
+            </button>
+          )}
+
+          <button
+            onClick={handleToggleTheme}
+            className="p-2 rounded-xl glass-card-hover text-slate-300 hover:text-white bg-slate-800/60 border border-slate-700/50"
+            title={isCleanTheme ? 'Switch to Dark Slate Theme' : 'Switch to Clean Studio Minimalist Theme'}
+            aria-label="Toggle Theme"
+          >
+            {isCleanTheme ? (
+              <Moon className="w-4 h-4 text-indigo-400" />
+            ) : (
+              <Sun className="w-4 h-4 text-amber-400" />
+            )}
+          </button>
+
           <button
             onClick={handleToggleSound}
             className="p-2 rounded-xl glass-card-hover text-slate-300 hover:text-white bg-slate-800/60 border border-slate-700/50"
@@ -158,3 +195,4 @@ export const TopHUD: React.FC<TopHUDProps> = ({
     </header>
   );
 };
+

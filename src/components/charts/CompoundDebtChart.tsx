@@ -227,3 +227,4 @@ export const CompoundDebtChart: React.FC<CompoundDebtChartProps> = ({
     </div>
   );
 };
+

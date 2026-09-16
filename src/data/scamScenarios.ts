@@ -109,3 +109,4 @@ export const SCAM_TARGETS: ScamTarget[] = [
     tip: 'Always check the domain name. Never click shortened links in SMS. Always open your bank app directly.',
   },
 ];
+

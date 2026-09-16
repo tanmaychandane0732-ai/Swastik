@@ -121,3 +121,4 @@ export const BadgeModal: React.FC<BadgeModalProps> = ({ isOpen, onClose }) => {
     </AnimatePresence>
   );
 };
+

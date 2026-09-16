@@ -53,3 +53,4 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     </div>
   );
 };
+

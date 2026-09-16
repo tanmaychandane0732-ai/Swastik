@@ -4,6 +4,7 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { TopHUD } from './components/hud/TopHUD';
 import { FeedbackModal } from './components/feedback/FeedbackModal';
 import { BadgeModal } from './components/badges/BadgeModal';
+import { CertificateModal } from './components/certificate/CertificateModal';
 import { LandingPage } from './pages/LandingPage';
 import { OnboardingModal } from './pages/OnboardingModal';
 import { DashboardPage } from './pages/DashboardPage';
@@ -17,6 +18,7 @@ const GameShell: React.FC = () => {
   const { state, dispatch } = useGame();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isBadgesOpen, setIsBadgesOpen] = useState(false);
+  const [isCertificateOpen, setIsCertificateOpen] = useState(false);
 
   const renderCurrentStage = () => {
     switch (state.gameStage) {
@@ -46,7 +48,11 @@ const GameShell: React.FC = () => {
         return <Level3ScamRadar />;
 
       case 'results':
-        return <ResultsPage />;
+        return (
+          <ResultsPage
+            onOpenCertificate={() => setIsCertificateOpen(true)}
+          />
+        );
 
       case 'leaderboard':
         return <LeaderboardPage />;
@@ -62,6 +68,7 @@ const GameShell: React.FC = () => {
       <TopHUD
         onOpenBadges={() => setIsBadgesOpen(true)}
         onOpenLeaderboard={() => dispatch({ type: 'SET_STAGE', payload: 'leaderboard' })}
+        onOpenCertificate={() => setIsCertificateOpen(true)}
       />
 
       {/* Main Gameplay Canvas */}
@@ -78,6 +85,10 @@ const GameShell: React.FC = () => {
       <OnboardingModal
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
+      />
+      <CertificateModal
+        isOpen={isCertificateOpen}
+        onClose={() => setIsCertificateOpen(false)}
       />
     </div>
   );

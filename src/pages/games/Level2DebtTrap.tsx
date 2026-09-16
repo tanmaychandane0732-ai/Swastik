@@ -203,3 +203,4 @@ export const Level2DebtTrap: React.FC = () => {
     </div>
   );
 };
+

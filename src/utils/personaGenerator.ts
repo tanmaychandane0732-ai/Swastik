@@ -106,3 +106,4 @@ export function generateFinancialPersona(state: GameState): FinancialPersona {
     recommendedHabit: 'Track all subscriptions and recurring debit mandates at the start of every month.',
   };
 }
+
