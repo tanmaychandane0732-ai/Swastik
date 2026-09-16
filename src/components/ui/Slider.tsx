@@ -10,8 +10,8 @@ interface SliderProps {
   max: number;
   step?: number;
   percentage: number;
-  codeTag?: string; // e.g. "S618", "BNSF270668" from user reference image
-  color?: 'emerald' | 'indigo' | 'amber' | 'cyan' | 'orange';
+  codeTag?: string; // e.g. "S618" from user reference image
+  color?: 'orange' | 'emerald' | 'indigo' | 'amber' | 'cyan';
   benchmarkLabel?: string;
   benchmarkPct?: number;
   onChange: (value: number) => void;
@@ -26,7 +26,7 @@ export const Slider: React.FC<SliderProps> = ({
   step = 1000,
   percentage,
   codeTag,
-  color = 'indigo',
+  color = 'orange',
   benchmarkLabel,
   benchmarkPct,
   onChange,
@@ -47,11 +47,11 @@ export const Slider: React.FC<SliderProps> = ({
   };
 
   const colorClasses = {
+    orange: 'accent-[#FF5E1E] text-[#FF5E1E]',
     emerald: 'accent-emerald-500 text-emerald-400',
-    indigo: 'accent-indigo-500 text-indigo-400',
+    indigo: 'accent-[#FF5E1E] text-[#FF5E1E]',
     amber: 'accent-amber-500 text-amber-400',
     cyan: 'accent-cyan-500 text-cyan-400',
-    orange: 'accent-orange-500 text-orange-400',
   };
 
   return (
@@ -60,29 +60,29 @@ export const Slider: React.FC<SliderProps> = ({
       <div className="flex justify-between items-center text-sm">
         <div className="flex items-center gap-2">
           {codeTag && (
-            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 tracking-wider">
+            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#FF5E1E]/15 text-[#FF5E1E] border border-[#FF5E1E]/30 tracking-wider">
               {codeTag}
             </span>
           )}
-          <span className="font-semibold text-slate-200">{label}</span>
+          <span className="font-bold text-white">{label}</span>
           {benchmarkLabel && (
-            <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-slate-700/60 hidden sm:inline-block">
+            <span className="text-[11px] px-2 py-0.5 rounded-md bg-[#18181D] text-zinc-400 border border-[#27272A] hidden sm:inline-block">
               Target: {benchmarkLabel}
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-2 font-numeric">
-          <span className={`font-extrabold text-base ${colorClasses[color]}`}>
+          <span className={`font-black text-base ${colorClasses[color]}`}>
             {formatCurrency(value)}
           </span>
-          <span className="text-xs px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 font-bold border border-slate-700/50">
+          <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FF5E1E] text-white font-black shadow-sm">
             {percentage}%
           </span>
         </div>
       </div>
 
-      {/* Stepper Slider Control (Inspired directly by user reference Image 1) */}
+      {/* Stepper Slider Control (Matching Reference Image 1) */}
       <div className="flex items-center gap-3">
         {/* Minus Circular Button */}
         <button
@@ -90,7 +90,7 @@ export const Slider: React.FC<SliderProps> = ({
           onClick={handleDecrement}
           disabled={disabled || value <= min}
           aria-label="Decrease allocation"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-95 disabled:opacity-30 disabled:pointer-events-none border border-slate-700/80 flex items-center justify-center text-slate-200 transition-all shadow-sm shrink-0 cursor-pointer"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#18181D] hover:bg-[#222328] active:scale-95 disabled:opacity-30 disabled:pointer-events-none border border-[#27272A] hover:border-[#FF5E1E] flex items-center justify-center text-white transition-all shadow-sm shrink-0 cursor-pointer"
         >
           <Minus className="w-4 h-4 stroke-[2.5]" />
         </button>
@@ -105,13 +105,13 @@ export const Slider: React.FC<SliderProps> = ({
             value={value}
             disabled={disabled}
             onChange={(e) => onChange(Number(e.target.value))}
-            className={`w-full h-1.5 bg-slate-700/80 rounded-full appearance-none cursor-pointer slider-minimalist focus:outline-none focus:ring-2 focus:ring-indigo-500 ${colorClasses[color]}`}
+            className={`w-full h-1.5 bg-zinc-800 rounded-full appearance-none cursor-pointer slider-minimalist focus:outline-none focus:ring-2 focus:ring-[#FF5E1E] ${colorClasses[color]}`}
           />
 
           {/* Benchmark Notch Indicator */}
           {benchmarkPct !== undefined && (
             <div
-              className="absolute w-1 h-3.5 bg-slate-400/60 rounded-full pointer-events-none transform -translate-x-1/2"
+              className="absolute w-1 h-3.5 bg-zinc-400/70 rounded-full pointer-events-none transform -translate-x-1/2"
               style={{ left: `${benchmarkPct}%` }}
               title={`Target Benchmark: ${benchmarkPct}%`}
             />
@@ -124,14 +124,14 @@ export const Slider: React.FC<SliderProps> = ({
           onClick={handleIncrement}
           disabled={disabled || value >= max}
           aria-label="Increase allocation"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-95 disabled:opacity-30 disabled:pointer-events-none border border-slate-700/80 flex items-center justify-center text-slate-200 transition-all shadow-sm shrink-0 cursor-pointer"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#18181D] hover:bg-[#222328] active:scale-95 disabled:opacity-30 disabled:pointer-events-none border border-[#27272A] hover:border-[#FF5E1E] flex items-center justify-center text-white transition-all shadow-sm shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
         </button>
       </div>
 
       {/* Range Scale */}
-      <div className="flex justify-between text-[11px] text-slate-500 font-numeric px-1">
+      <div className="flex justify-between text-[11px] text-zinc-500 font-numeric px-1">
         <span>Min: {formatCurrency(min)}</span>
         <span>Max: {formatCurrency(max)}</span>
       </div>

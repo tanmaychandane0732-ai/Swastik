@@ -1,33 +1,32 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Award, Volume2, VolumeX, RotateCcw, Printer, Sun, Moon } from 'lucide-react';
+import { Flame, Award, Volume2, VolumeX, RotateCcw, Printer, Sun, Moon, Video, Sparkles } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 import { AnimatedCounter } from '../ui/AnimatedCounter';
 import { HealthMeter } from '../ui/HealthMeter';
+import { TeamLogo } from '../common/TeamLogo';
 
 interface TopHUDProps {
   onOpenBadges?: () => void;
   onOpenLeaderboard?: () => void;
   onOpenCertificate?: () => void;
+  onOpenVideoSettings?: () => void;
 }
 
 export const TopHUD: React.FC<TopHUDProps> = ({
   onOpenBadges,
   onOpenLeaderboard,
   onOpenCertificate,
+  onOpenVideoSettings,
 }) => {
   const { state, dispatch } = useGame();
-  const { netWorth, financialHealth, score, streak, streakMultiplier, settings, completedLevels } = state;
-  const [isCleanTheme, setIsCleanTheme] = React.useState(false);
+  const { player, netWorth, financialHealth, score, streak, streakMultiplier, settings } = state;
+  const isLight = settings.theme === 'light';
+  const isVideoEnabled = settings.videoBackground?.enabled;
 
   const handleToggleTheme = () => {
-    const next = !isCleanTheme;
-    setIsCleanTheme(next);
-    if (next) {
-      document.body.classList.add('theme-clean');
-    } else {
-      document.body.classList.remove('theme-clean');
-    }
+    const nextTheme = isLight ? 'dark' : 'light';
+    dispatch({ type: 'SET_THEME', payload: nextTheme });
   };
 
   const handleToggleSound = () => {
@@ -41,60 +40,78 @@ export const TopHUD: React.FC<TopHUDProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 shadow-glass">
+    <header className="sticky top-0 z-40 w-full glass-panel border-b border-[#27272A] shadow-lg">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-3">
-        {/* Logo & Stage Title */}
-        <div className="flex items-center gap-2.5">
+        {/* Logo & Online User Chip */}
+        <div className="flex items-center gap-3">
           <button
             onClick={() => dispatch({ type: 'SET_STAGE', payload: 'dashboard' })}
-            className="flex items-center gap-2 group text-left focus:outline-none"
+            className="flex items-center gap-2.5 group text-left focus:outline-none"
             title="Return to Quest Hub"
           >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-fin-indigo to-indigo-400 flex items-center justify-center shadow-neon-indigo font-bold text-white text-base">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#FF5E1E] flex items-center justify-center shadow-brand-orange font-black text-black text-sm sm:text-base">
               FQ
             </div>
             <div>
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white group-hover:text-indigo-400 transition-colors">
-                FINQUEST
+              <span className="font-black text-sm sm:text-base tracking-tight text-white group-hover:text-[#FF5E1E] transition-colors">
+                FIN<span className="text-[#FF5E1E]">QUEST</span>
               </span>
-              <span className="hidden md:inline-block ml-2 text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-indigo-900/50 text-indigo-300 border border-indigo-700/50">
+              <span className="hidden md:inline-block ml-2 text-[10px] uppercase font-black tracking-widest px-1.5 py-0.5 rounded bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/40">
                 GD-01
               </span>
             </div>
           </button>
+
+          {/* Official Team Swastik Logo */}
+          <div className="hidden sm:flex items-center pl-1 border-l border-[#27272A]" title="Team Swastik">
+            <TeamLogo size="sm" showText={false} />
+          </div>
+
+          {/* Online User Avatar Chip */}
+          {player.name && (
+            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[#18181D] border border-[#27272A]">
+              <div className="relative w-6 h-6 rounded-full bg-[#FF5E1E] text-white flex items-center justify-center text-xs font-black">
+                {player.name.charAt(0).toUpperCase()}
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#22C55E] border-2 border-[#121215]" />
+              </div>
+              <span className="text-xs font-bold text-zinc-200 truncate max-w-[100px]">
+                {player.name}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Global Financial Metrics Bar */}
-        <div className="flex items-center flex-wrap gap-2.5 sm:gap-6 text-xs sm:text-sm">
+        <div className="flex items-center flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
           {/* Net Worth Display */}
-          <div className="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800/90 shadow-sm">
+          <div className="flex items-center gap-2 bg-[#18181D] px-3 py-1.5 rounded-xl border border-[#27272A] shadow-sm">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+              <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold">
                 Net Worth
               </span>
               <AnimatedCounter
                 value={netWorth}
                 type="currency"
-                className="text-white text-xs sm:text-sm"
+                className="text-white text-xs sm:text-sm font-black"
               />
             </div>
           </div>
 
           {/* Health Meter */}
-          <div className="bg-slate-900/60 px-2.5 py-1.5 rounded-xl border border-slate-800/90 shadow-sm">
+          <div className="bg-[#18181D] px-2.5 py-1.5 rounded-xl border border-[#27272A] shadow-sm">
             <HealthMeter score={financialHealth} compact={true} />
           </div>
 
           {/* Score Display */}
-          <div className="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800/90 shadow-sm">
+          <div className="flex items-center gap-2 bg-[#18181D] px-3 py-1.5 rounded-xl border border-[#27272A] shadow-sm">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+              <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold">
                 Score
               </span>
               <AnimatedCounter
                 value={score}
                 type="score"
-                className="text-fin-emeraldGlow text-xs sm:text-sm"
+                className="text-[#FF5E1E] text-xs sm:text-sm font-black"
               />
             </div>
           </div>
@@ -103,32 +120,48 @@ export const TopHUD: React.FC<TopHUDProps> = ({
           <motion.div
             animate={streakMultiplier > 1 ? { scale: [1, 1.05, 1] } : {}}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-bold font-numeric ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-black font-numeric ${
               streakMultiplier > 1.2
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-amber-500/20 shadow-sm'
+                ? 'bg-[#FF5E1E]/20 text-[#FF5E1E] border-[#FF5E1E]/50 shadow-brand-orange'
                 : streakMultiplier > 1.0
-                ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
-                : 'bg-slate-800/60 text-slate-400 border-slate-700/50'
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-[#18181D] text-zinc-400 border-[#27272A]'
             }`}
             title={`Streak: ${streak} consecutive optimal choices`}
           >
-            <Flame className={`w-3.5 h-3.5 ${streakMultiplier > 1 ? 'text-amber-400 fill-amber-400' : 'text-slate-400'}`} />
+            <Flame className={`w-3.5 h-3.5 ${streakMultiplier > 1 ? 'text-[#FF5E1E] fill-[#FF5E1E]' : 'text-zinc-500'}`} />
             <span>{streakMultiplier.toFixed(1)}x</span>
           </motion.div>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Live Video Background Button */}
+          {onOpenVideoSettings && (
+            <button
+              onClick={onOpenVideoSettings}
+              className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                isVideoEnabled
+                  ? 'bg-[#FF5E1E]/20 text-[#FF5E1E] border-[#FF5E1E] shadow-brand-orange'
+                  : 'text-zinc-400 hover:text-white bg-[#18181D] border-[#27272A] hover:border-[#FF5E1E]'
+              }`}
+              title="Live Video Background Settings"
+              aria-label="Live Video Background"
+            >
+              <Video className="w-4 h-4" />
+            </button>
+          )}
+
           {onOpenBadges && (
             <button
               onClick={onOpenBadges}
-              className="p-2 rounded-xl glass-card-hover text-slate-300 hover:text-white bg-slate-800/60 border border-slate-700/50 relative"
+              className="p-2 rounded-xl text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#FF5E1E] relative transition-colors cursor-pointer"
               title="View Earned Badges"
               aria-label="View Badges"
             >
-              <Award className="w-4 h-4 text-indigo-400" />
+              <Award className="w-4 h-4 text-[#FF5E1E]" />
               {state.badges.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-indigo-600 text-white text-[9px] font-bold flex items-center justify-center font-numeric border border-slate-900">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF5E1E] text-white text-[9px] font-black flex items-center justify-center font-numeric">
                   {state.badges.length}
                 </span>
               )}
@@ -138,53 +171,62 @@ export const TopHUD: React.FC<TopHUDProps> = ({
           {onOpenLeaderboard && (
             <button
               onClick={onOpenLeaderboard}
-              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl glass-card-hover text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 border border-slate-700/50"
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#FF5E1E] transition-colors cursor-pointer"
               title="Leaderboard Standings"
             >
               <span>Rankings</span>
             </button>
           )}
 
+          <button
+            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'simulator' })}
+            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF5E1E]/20 hover:bg-[#FF5E1E] border border-[#FF5E1E]/50 transition-all cursor-pointer shadow-sm"
+            title="Play Dynamic Life Simulator Odyssey"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#FF5E1E]" />
+            <span>Life Simulator</span>
+          </button>
+
           {onOpenCertificate && (
             <button
               onClick={onOpenCertificate}
-              className="px-2.5 py-1.5 rounded-xl glass-card-hover text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-950/40 border border-amber-500/40 shadow-sm flex items-center gap-1.5"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF5E1E] hover:bg-[#E04E15] border border-[#FF5E1E] shadow-brand-orange flex items-center gap-1.5 transition-all cursor-pointer"
               title="Official Competence Certificate"
             >
-              <Printer className="w-3.5 h-3.5 text-amber-400" />
+              <Printer className="w-3.5 h-3.5 text-white" />
               <span className="hidden sm:inline">Certificate</span>
             </button>
           )}
 
           <button
             onClick={handleToggleTheme}
-            className="p-2 rounded-xl glass-card-hover text-slate-300 hover:text-white bg-slate-800/60 border border-slate-700/50"
-            title={isCleanTheme ? 'Switch to Dark Slate Theme' : 'Switch to Clean Studio Minimalist Theme'}
+            className="p-2 rounded-xl text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#FF5E1E] transition-colors cursor-pointer"
+            title={isLight ? 'Switch to Dark Obsidian Theme' : 'Switch to Studio White Theme'}
             aria-label="Toggle Theme"
           >
-            {isCleanTheme ? (
-              <Moon className="w-4 h-4 text-indigo-400" />
+            {isLight ? (
+              <Moon className="w-4 h-4 text-[#FF5E1E]" />
             ) : (
-              <Sun className="w-4 h-4 text-amber-400" />
+              <Sun className="w-4 h-4 text-[#FF5E1E]" />
             )}
           </button>
 
           <button
             onClick={handleToggleSound}
-            className="p-2 rounded-xl glass-card-hover text-slate-300 hover:text-white bg-slate-800/60 border border-slate-700/50"
+            className="p-2 rounded-xl text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#FF5E1E] transition-colors cursor-pointer"
             title={settings.soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
             aria-label={settings.soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
           >
             {settings.soundEnabled ? (
-              <Volume2 className="w-4 h-4 text-emerald-400" />
+              <Volume2 className="w-4 h-4 text-[#22C55E]" />
             ) : (
-              <VolumeX className="w-4 h-4 text-slate-500" />
+              <VolumeX className="w-4 h-4 text-zinc-500" />
             )}
           </button>
 
           <button
             onClick={handleRestart}
-            className="p-2 rounded-xl glass-card-hover text-slate-400 hover:text-rose-400 bg-slate-800/40 border border-slate-800 hover:border-rose-500/40"
+            className="p-2 rounded-xl text-zinc-400 hover:text-red-400 bg-[#18181D] border border-[#27272A] hover:border-red-500/40 transition-colors cursor-pointer"
             title="Reset Game Progress"
             aria-label="Reset Game Progress"
           >
@@ -195,4 +237,3 @@ export const TopHUD: React.FC<TopHUDProps> = ({
     </header>
   );
 };
-

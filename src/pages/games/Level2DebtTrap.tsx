@@ -74,27 +74,27 @@ export const Level2DebtTrap: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 sm:py-8 space-y-6">
       {/* Level Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-2xl p-5 border border-rose-500/30">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-2xl p-5 border border-[#27272A]">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 font-numeric">
+            <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/40 font-numeric">
               Level 2 Dungeon
             </span>
-            <span className="text-xs font-semibold text-slate-400">
+            <span className="text-xs font-bold text-zinc-400">
               Predatory Debt & Compound Interest Traps
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white">
+          <h1 className="text-xl sm:text-2xl font-black text-white">
             Credit & Debt Trap Dungeon
           </h1>
         </div>
 
         {/* Step Progress Bar */}
-        <div className="flex items-center gap-2 bg-slate-900/80 px-3.5 py-2 rounded-xl border border-slate-800">
-          <span className="text-xs text-slate-400 font-medium">Scenario:</span>
-          <div className="flex items-center gap-1.5 font-numeric font-bold text-sm text-white">
-            <span>{currentScenarioIndex + 1}</span>
-            <span className="text-slate-500">/</span>
+        <div className="flex items-center gap-2 bg-[#18181D] px-3.5 py-2 rounded-xl border border-[#27272A]">
+          <span className="text-xs text-zinc-400 font-bold">Scenario:</span>
+          <div className="flex items-center gap-1.5 font-numeric font-black text-sm text-white">
+            <span className="text-[#FF5E1E]">{currentScenarioIndex + 1}</span>
+            <span className="text-zinc-600">/</span>
             <span>{DEBT_SCENARIOS.length}</span>
           </div>
         </div>
@@ -110,43 +110,43 @@ export const Level2DebtTrap: React.FC = () => {
           className="space-y-6"
         >
           {/* Main Scenario Card */}
-          <GlassCard className="p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-glass space-y-5">
+          <GlassCard className="p-6 sm:p-8 rounded-3xl border border-[#27272A] shadow-xl space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-950/70 text-rose-300 border border-rose-800/60 flex items-center gap-1.5">
+              <span className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full bg-[#FF5E1E]/15 text-[#FF5E1E] border border-[#FF5E1E]/40 flex items-center gap-1.5">
                 <AlertOctagon className="w-3.5 h-3.5" />
                 {scenario.badge}
               </span>
-              <span className="text-sm font-bold font-numeric text-slate-300">
-                Amount: <strong className="text-white text-base">{formatCurrency(scenario.principalAmount)}</strong>
+              <span className="text-sm font-bold font-numeric text-zinc-300">
+                Amount: <strong className="text-white text-base font-black">{formatCurrency(scenario.principalAmount)}</strong>
               </span>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl font-extrabold text-white">
+              <h2 className="text-xl sm:text-2xl font-black text-white">
                 {scenario.title}
               </h2>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
                 {scenario.description}
               </p>
             </div>
 
             {/* Quoted Terms vs Hidden Catch Inspection Box */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1">
-                <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block">
+              <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-1">
+                <span className="text-[11px] font-black text-[#FF5E1E] uppercase tracking-wider block">
                   Promoted Marketing Claim:
                 </span>
-                <p className="text-xs sm:text-sm text-slate-300">
+                <p className="text-xs sm:text-sm text-zinc-200 font-medium">
                   {scenario.quotedTerms}
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-800/40 space-y-1">
-                <span className="text-[11px] font-bold text-rose-400 uppercase tracking-wider block flex items-center gap-1">
+              <div className="p-3.5 rounded-2xl bg-[#18181D] border border-red-500/40 space-y-1">
+                <span className="text-[11px] font-black text-red-400 uppercase tracking-wider block flex items-center gap-1">
                   <ShieldAlert className="w-3.5 h-3.5" />
                   Hidden Fine Print Trap:
                 </span>
-                <p className="text-xs sm:text-sm text-slate-300">
+                <p className="text-xs sm:text-sm text-zinc-200 font-medium">
                   {scenario.hiddenCatch}
                 </p>
               </div>
@@ -162,8 +162,8 @@ export const Level2DebtTrap: React.FC = () => {
             </div>
 
             {/* Decision Choices */}
-            <div className="pt-4 border-t border-slate-800 space-y-3">
-              <h3 className="text-sm font-bold text-slate-300">
+            <div className="pt-4 border-t border-[#27272A] space-y-3">
+              <h3 className="text-sm font-black text-white">
                 Choose Your Financial Move:
               </h3>
 
@@ -179,17 +179,17 @@ export const Level2DebtTrap: React.FC = () => {
                       onClick={() => handleSelectOption(option)}
                       className={`p-5 rounded-2xl text-left border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-indigo-900/40 border-indigo-400 shadow-neon-indigo'
-                          : 'glass-card hover:bg-slate-800/80 border-slate-700/80 hover:border-slate-600'
+                          ? 'bg-[#FF5E1E]/20 border-[#FF5E1E] shadow-brand-orange text-white'
+                          : 'bg-[#18181D] hover:bg-[#222328] border-[#27272A] hover:border-[#FF5E1E] text-zinc-200'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <span className="text-sm sm:text-base font-bold text-white leading-snug">
+                        <span className="text-sm sm:text-base font-black text-white leading-snug">
                           {option.label}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                        <ChevronRight className="w-4 h-4 text-[#FF5E1E] shrink-0 mt-0.5" />
                       </div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
+                      <p className="text-xs text-zinc-400 leading-relaxed">
                         {option.tagline}
                       </p>
                     </motion.button>
@@ -203,4 +203,3 @@ export const Level2DebtTrap: React.FC = () => {
     </div>
   );
 };
-

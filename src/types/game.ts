@@ -92,9 +92,18 @@ export interface Badge {
   category: 'budget' | 'debt' | 'invest' | 'scam' | 'mastery';
 }
 
+export interface VideoBackgroundSettings {
+  enabled: boolean;
+  url: string;
+  preset: 'particles' | 'cyber' | 'minimal' | 'custom';
+  opacity: number;
+}
+
 export interface GameSettings {
   soundEnabled: boolean;
   reducedMotion: boolean;
+  theme: 'dark' | 'light';
+  videoBackground: VideoBackgroundSettings;
 }
 
 export interface GameState {
@@ -120,7 +129,7 @@ export interface GameState {
   scam: ScamState;
   badges: string[]; // badge IDs
   settings: GameSettings;
-  gameStage: 'landing' | 'onboarding' | 'dashboard' | 'level1' | 'level2' | 'level3' | 'results' | 'leaderboard';
+  gameStage: 'landing' | 'onboarding' | 'dashboard' | 'level1' | 'level2' | 'level3' | 'results' | 'leaderboard' | 'simulator';
   history: {
     timestamp: number;
     netWorthChange: number;
@@ -165,6 +174,9 @@ export type GameAction =
   | { type: 'RESET_STREAK' }
   | { type: 'TOGGLE_SOUND' }
   | { type: 'TOGGLE_REDUCED_MOTION' }
+  | { type: 'SET_THEME'; payload: 'dark' | 'light' }
+  | { type: 'TOGGLE_VIDEO_BACKGROUND' }
+  | { type: 'SET_VIDEO_BACKGROUND'; payload: Partial<VideoBackgroundSettings> }
   | { type: 'RESTART_GAME' }
   | { type: 'LOAD_SAVED_GAME'; payload: GameState };
 

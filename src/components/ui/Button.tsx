@@ -4,7 +4,7 @@ import { soundManager } from '../../services/audioService';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   children: React.ReactNode;
-  variant?: 'emerald' | 'indigo' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'orange' | 'emerald' | 'indigo' | 'secondary' | 'danger' | 'ghost' | 'dark';
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
@@ -13,7 +13,7 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 
 export const Button: React.FC<ButtonProps> = ({
   children,
-  variant = 'indigo',
+  variant = 'orange',
   size = 'md',
   icon,
   iconPosition = 'left',
@@ -32,7 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
     }
   };
 
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-colors duration-150 select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-fin-bg';
+  const baseStyles = 'inline-flex items-center justify-center font-bold rounded-xl transition-all duration-150 select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
 
   const sizeStyles = {
     sm: 'text-xs px-3 py-1.5 gap-1.5',
@@ -41,11 +41,13 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const variantStyles = {
-    emerald: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-neon-emerald border border-emerald-400/30 focus-visible:ring-emerald-400',
-    indigo: 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-neon-indigo border border-indigo-400/30 focus-visible:ring-indigo-400',
-    secondary: 'glass-card hover:bg-slate-700/70 text-slate-100 border border-slate-700/60 focus-visible:ring-slate-400',
-    danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-neon-rose border border-rose-400/30 focus-visible:ring-rose-400',
-    ghost: 'hover:bg-slate-800/60 text-slate-300 hover:text-white focus-visible:ring-slate-400',
+    orange: 'bg-[#FF5E1E] hover:bg-[#E04E15] text-white shadow-brand-orange border border-[#FF5E1E]/50 focus-visible:ring-[#FF5E1E]',
+    dark: 'bg-[#0A0A0C] hover:bg-[#18181D] text-white border border-[#27272A] focus-visible:ring-[#FF5E1E]',
+    emerald: 'bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-discord border border-[#22C55E]/40 focus-visible:ring-[#22C55E]',
+    indigo: 'bg-[#FF5E1E] hover:bg-[#E04E15] text-white shadow-brand-orange border border-[#FF5E1E]/40 focus-visible:ring-[#FF5E1E]',
+    secondary: 'bg-[#18181D] hover:bg-[#222328] text-white border border-[#27272A] focus-visible:ring-[#FF5E1E]',
+    danger: 'bg-[#EF4444] hover:bg-[#DC2626] text-white shadow-discord border border-[#EF4444]/40 focus-visible:ring-[#EF4444]',
+    ghost: 'hover:bg-[#18181D] text-zinc-300 hover:text-white focus-visible:ring-[#FF5E1E]',
   };
 
   return (
@@ -64,4 +66,3 @@ export const Button: React.FC<ButtonProps> = ({
     </motion.button>
   );
 };
-

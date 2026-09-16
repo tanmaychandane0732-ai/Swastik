@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GameProvider, useGame } from './contexts/GameContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { TopHUD } from './components/hud/TopHUD';
+import { LiveVideoBackground } from './components/common/LiveVideoBackground';
 import { FeedbackModal } from './components/feedback/FeedbackModal';
 import { BadgeModal } from './components/badges/BadgeModal';
 import { CertificateModal } from './components/certificate/CertificateModal';
@@ -13,12 +14,14 @@ import { Level2DebtTrap } from './pages/games/Level2DebtTrap';
 import { Level3ScamRadar } from './pages/games/Level3ScamRadar';
 import { ResultsPage } from './pages/ResultsPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
+import { LifeSimulatorGame } from './pages/games/LifeSimulatorGame';
 
 const GameShell: React.FC = () => {
   const { state, dispatch } = useGame();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isBadgesOpen, setIsBadgesOpen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
+  const [isVideoConfigOpen, setIsVideoConfigOpen] = useState(false);
 
   const renderCurrentStage = () => {
     switch (state.gameStage) {
@@ -57,22 +60,36 @@ const GameShell: React.FC = () => {
       case 'leaderboard':
         return <LeaderboardPage />;
 
+      case 'simulator':
+        return (
+          <LifeSimulatorGame
+            onOpenCertificate={() => setIsCertificateOpen(true)}
+          />
+        );
+
       default:
         return <DashboardPage />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-fin-bg text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className="min-h-screen bg-fin-bg text-white flex flex-col font-sans selection:bg-[#FF5E1E]/30 selection:text-[#FF5E1E] relative">
+      {/* Live Ambient Video Background Component */}
+      <LiveVideoBackground
+        isConfigOpen={isVideoConfigOpen}
+        onCloseConfig={() => setIsVideoConfigOpen(false)}
+      />
+
       {/* Persistent Financial HUD */}
       <TopHUD
         onOpenBadges={() => setIsBadgesOpen(true)}
         onOpenLeaderboard={() => dispatch({ type: 'SET_STAGE', payload: 'leaderboard' })}
         onOpenCertificate={() => setIsCertificateOpen(true)}
+        onOpenVideoSettings={() => setIsVideoConfigOpen(true)}
       />
 
       {/* Main Gameplay Canvas */}
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {renderCurrentStage()}
       </main>
 

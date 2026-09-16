@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
-import { GameState, GameAction, EducationalFeedback } from '../types/game';
+import { GameState, GameAction, EducationalFeedback, GameSettings } from '../types/game';
 import { persistenceService } from '../services/persistence';
 import { soundManager } from '../services/audioService';
 import { calculateStreakMultiplier, calculateFinancialHealthScore } from '../utils/financialMath';
@@ -49,6 +49,13 @@ export const INITIAL_STATE: GameState = {
   settings: {
     soundEnabled: true,
     reducedMotion: false,
+    theme: 'dark',
+    videoBackground: {
+      enabled: false,
+      url: 'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-31627-large.mp4',
+      preset: 'cyber',
+      opacity: 0.35,
+    },
   },
   gameStage: 'landing',
   history: [
@@ -333,6 +340,57 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'SET_THEME': {
+      const nextTheme = action.payload;
+      const nextSettings = { ...state.settings, theme: nextTheme };
+      persistenceService.saveSettings(nextSettings);
+      if (typeof document !== 'undefined') {
+        if (nextTheme === 'light') {
+          document.documentElement.classList.remove('dark');
+          document.body.classList.add('theme-clean');
+        } else {
+          document.documentElement.classList.add('dark');
+          document.body.classList.remove('theme-clean');
+        }
+      }
+      return {
+        ...state,
+        settings: nextSettings,
+      };
+    }
+
+    case 'TOGGLE_VIDEO_BACKGROUND': {
+      const current = state.settings.videoBackground || INITIAL_STATE.settings.videoBackground;
+      const nextSettings = {
+        ...state.settings,
+        videoBackground: {
+          ...current,
+          enabled: !current.enabled,
+        },
+      };
+      persistenceService.saveSettings(nextSettings);
+      return {
+        ...state,
+        settings: nextSettings,
+      };
+    }
+
+    case 'SET_VIDEO_BACKGROUND': {
+      const current = state.settings.videoBackground || INITIAL_STATE.settings.videoBackground;
+      const nextSettings = {
+        ...state.settings,
+        videoBackground: {
+          ...current,
+          ...action.payload,
+        },
+      };
+      persistenceService.saveSettings(nextSettings);
+      return {
+        ...state,
+        settings: nextSettings,
+      };
+    }
+
     case 'RESTART_GAME': {
       persistenceService.resetGame();
       return {
@@ -367,14 +425,30 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const saved = persistenceService.loadGame();
     const savedSettings = persistenceService.loadSettings();
     if (saved) {
+      const mergedSettings: GameSettings = {
+        ...INITIAL_STATE.settings,
+        ...(saved.settings || {}),
+        videoBackground: {
+          ...INITIAL_STATE.settings.videoBackground,
+          ...(saved.settings?.videoBackground || {}),
+        },
+      };
       if (savedSettings) {
         soundManager.setMuted(!savedSettings.soundEnabled);
       }
-      return saved;
+      return { ...saved, settings: mergedSettings };
     }
     if (savedSettings) {
       soundManager.setMuted(!savedSettings.soundEnabled);
-      return { ...INITIAL_STATE, settings: savedSettings };
+      const mergedSettings: GameSettings = {
+        ...INITIAL_STATE.settings,
+        ...savedSettings,
+        videoBackground: {
+          ...INITIAL_STATE.settings.videoBackground,
+          ...(savedSettings.videoBackground || {}),
+        },
+      };
+      return { ...INITIAL_STATE, settings: mergedSettings };
     }
     return INITIAL_STATE;
   });
@@ -389,10 +463,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     whatYouShouldLearn: '',
   });
 
-  // Auto-persist game state changes
+  // Auto-persist game state changes & sync theme
   useEffect(() => {
     persistenceService.saveGame(state);
   }, [state]);
+
+  useEffect(() => {
+    if (state.settings.theme === 'light') {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.add('theme-clean');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.body.classList.remove('theme-clean');
+    }
+  }, [state.settings.theme]);
 
   const showFeedback = (data: Omit<EducationalFeedback, 'isOpen'>) => {
     if (data.verdict === 'success') {
