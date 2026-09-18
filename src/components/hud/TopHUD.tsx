@@ -11,6 +11,8 @@ interface TopHUDProps {
   onOpenLeaderboard?: () => void;
   onOpenCertificate?: () => void;
   onOpenVideoSettings?: () => void;
+  onOpenJudgeDemo?: () => void;
+  onOpenDailyChallenge?: () => void;
 }
 
 export const TopHUD: React.FC<TopHUDProps> = ({
@@ -18,6 +20,8 @@ export const TopHUD: React.FC<TopHUDProps> = ({
   onOpenLeaderboard,
   onOpenCertificate,
   onOpenVideoSettings,
+  onOpenJudgeDemo,
+  onOpenDailyChallenge,
 }) => {
   const { state, dispatch } = useGame();
   const { player, netWorth, financialHealth, score, streak, streakMultiplier, settings } = state;
@@ -76,6 +80,10 @@ export const TopHUD: React.FC<TopHUDProps> = ({
               </div>
               <span className="text-xs font-bold text-zinc-200 truncate max-w-[100px]">
                 {player.name}
+              </span>
+              <span className="text-[9px] uppercase tracking-wider text-[#22C55E] font-black flex items-center gap-1 pl-1.5 border-l border-[#27272A]" title="Telemetry Flight Connection Active">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                Live
               </span>
             </div>
           )}
@@ -178,14 +186,87 @@ export const TopHUD: React.FC<TopHUDProps> = ({
             </button>
           )}
 
+          {/* Judge Demo Button for Hack2Ignite GD-01 */}
+          {onOpenJudgeDemo && (
+            <button
+              onClick={onOpenJudgeDemo}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-amber-500 to-[#FF5E1E] hover:from-amber-600 hover:to-[#E04E15] border border-amber-400/60 shadow-brand-orange transition-all cursor-pointer animate-pulse"
+              title="2-Minute Tour for Hackathon Judges"
+            >
+              <span>⚡ Judge Demo</span>
+            </button>
+          )}
+
+          {/* Aviation Navigation Tabs */}
+          <button
+            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
+            className={`hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              state.gameStage === 'training-deck' || state.gameStage === 'scam-detective' || state.gameStage === 'turbulence'
+                ? 'bg-[#FF5E1E] text-white shadow-brand-orange'
+                : 'text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#FF5E1E]'
+            }`}
+            title="Aviation Training Deck (Scam Detective & Turbulence)"
+          >
+            <span>🎯 Training Deck</span>
+          </button>
+
           <button
             onClick={() => dispatch({ type: 'SET_STAGE', payload: 'simulator' })}
-            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-black text-white bg-[#FF5E1E]/20 hover:bg-[#FF5E1E] border border-[#FF5E1E]/50 transition-all cursor-pointer shadow-sm"
-            title="Play Dynamic Life Simulator Odyssey"
+            className={`hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              state.gameStage === 'simulator'
+                ? 'bg-[#FF5E1E] text-white shadow-brand-orange'
+                : 'text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#FF5E1E]'
+            }`}
+            title="Launch Financial Flight Simulator"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#FF5E1E]" />
-            <span>Life Simulator</span>
+            <span>✈️ Flight Sim</span>
           </button>
+
+          <button
+            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'diagnostic' })}
+            className={`hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              state.gameStage === 'diagnostic'
+                ? 'bg-[#22C55E] text-white shadow-sm'
+                : 'text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-[#22C55E]'
+            }`}
+            title="Pre & Post Financial IQ Test"
+          >
+            <span>🧠 IQ Test</span>
+          </button>
+
+          <button
+            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'academy' })}
+            className={`hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              state.gameStage === 'academy'
+                ? 'bg-amber-500 text-white shadow-sm'
+                : 'text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-amber-500'
+            }`}
+            title="FinQuest 60-Sec Academy"
+          >
+            <span>🎓 Academy</span>
+          </button>
+
+          <button
+            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'classroom' })}
+            className={`hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              state.gameStage === 'classroom'
+                ? 'bg-blue-500 text-white shadow-sm'
+                : 'text-zinc-300 hover:text-white bg-[#18181D] border border-[#27272A] hover:border-blue-500'
+            }`}
+            title="Educator Cockpit & Flight League"
+          >
+            <span>🏫 Classroom</span>
+          </button>
+
+          {onOpenDailyChallenge && (
+            <button
+              onClick={onOpenDailyChallenge}
+              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black text-amber-300 bg-amber-950/40 hover:bg-amber-900/60 border border-amber-700/60 transition-all cursor-pointer"
+              title="Daily 60-Second Cockpit Dilemma"
+            >
+              <span>🔥 Daily Dilemma</span>
+            </button>
+          )}
 
           {onOpenCertificate && (
             <button

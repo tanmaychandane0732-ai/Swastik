@@ -43,3 +43,4 @@ export const TeamLogo: React.FC<TeamLogoProps> = ({
     </div>
   );
 };
+

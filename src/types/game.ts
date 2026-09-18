@@ -129,7 +129,7 @@ export interface GameState {
   scam: ScamState;
   badges: string[]; // badge IDs
   settings: GameSettings;
-  gameStage: 'landing' | 'onboarding' | 'dashboard' | 'level1' | 'level2' | 'level3' | 'results' | 'leaderboard' | 'simulator';
+  gameStage: 'landing' | 'onboarding' | 'dashboard' | 'level1' | 'level2' | 'level3' | 'results' | 'leaderboard' | 'simulator' | 'diagnostic' | 'academy' | 'classroom' | 'scam-detective' | 'turbulence' | 'training-deck';
   history: {
     timestamp: number;
     netWorthChange: number;

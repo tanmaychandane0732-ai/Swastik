@@ -1,0 +1,97 @@
+import { ClassroomCohort } from '../types/flightSimulator';
+
+export const SAMPLE_COHORT_DATA: ClassroomCohort = {
+  cohortName: 'B.Tech FinTech & Engineering Batch 2026',
+  institution: 'National Institute of Technology & Management',
+  totalStudents: 42,
+  averagePreIQ: 48,
+  averagePostIQ: 81,
+  averageDeltaPercent: 68,
+  topFailureTrap: 'Telegram "VIP Stock Tip" & 7-Day Loan Apps (68% failure rate on first encounter)',
+  riskDistribution: {
+    lowRisk: 24,       // 57%
+    moderateRisk: 11,  // 26%
+    highRisk: 5,       // 12%
+    criticalDebt: 2,   // 5%
+  },
+  students: [
+    {
+      id: 's_01',
+      name: 'Aarav Sharma',
+      preFlightIQ: 42,
+      postFlightIQ: 88,
+      deltaIQ: 46,
+      archetype: 'Strategic Flight Captain',
+      flightStatus: 'smooth',
+      resilienceScore: 94,
+      completedAt: 'Today',
+    },
+    {
+      id: 's_02',
+      name: 'Priya Iyer',
+      preFlightIQ: 56,
+      postFlightIQ: 92,
+      deltaIQ: 36,
+      archetype: 'Vigilant Scam-Proof Navigator',
+      flightStatus: 'smooth',
+      resilienceScore: 97,
+      completedAt: 'Yesterday',
+    },
+    {
+      id: 's_03',
+      name: 'Rohan Deshmukh',
+      preFlightIQ: 38,
+      postFlightIQ: 79,
+      deltaIQ: 41,
+      archetype: 'Calculated Risk-Taker',
+      flightStatus: 'smooth',
+      resilienceScore: 86,
+      completedAt: 'Today',
+    },
+    {
+      id: 's_04',
+      name: 'Ananya Verma',
+      preFlightIQ: 50,
+      postFlightIQ: 85,
+      deltaIQ: 35,
+      archetype: 'Conservative Parachute Holder',
+      flightStatus: 'smooth',
+      resilienceScore: 89,
+      completedAt: '2 days ago',
+    },
+    {
+      id: 's_05',
+      name: 'Vikram Mehta',
+      preFlightIQ: 35,
+      postFlightIQ: 72,
+      deltaIQ: 37,
+      archetype: 'Impulsive High-Altitude Flyer',
+      flightStatus: 'turbulent',
+      resilienceScore: 74,
+      completedAt: 'Yesterday',
+    },
+    {
+      id: 's_06',
+      name: 'Sneha Kulkarni',
+      preFlightIQ: 44,
+      postFlightIQ: 83,
+      deltaIQ: 39,
+      archetype: 'Strategic Flight Captain',
+      flightStatus: 'smooth',
+      resilienceScore: 91,
+      completedAt: 'Today',
+    },
+    {
+      id: 's_07',
+      name: 'Kabir Sen',
+      preFlightIQ: 32,
+      postFlightIQ: 64,
+      deltaIQ: 32,
+      archetype: 'Debt-Trapped Glider',
+      flightStatus: 'crash',
+      resilienceScore: 58,
+      completedAt: '3 days ago',
+    },
+  ],
+};
+

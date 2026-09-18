@@ -36,49 +36,70 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Obsidian Black Glass Card */
+  /* Premium iPhone/Apple Dark Smoked Glass Material */
   .glass-card {
-    background: #121215;
-    border: 1px solid #27272A;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    background-color: rgba(12, 14, 18, 0.74);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 40%, rgba(0, 0, 0, 0.12) 100%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   /* Studio Pure White Card */
   .theme-clean .glass-card {
-    background: #FFFFFF;
-    border: 1px solid #E4E7EC;
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
+    background-color: rgba(255, 255, 255, 0.88);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 100%);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(228, 231, 236, 0.85);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     color: #0A0A0C;
   }
 
   .glass-card-hover {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .glass-card-hover:hover {
-    background: #18181D;
-    border-color: #FF5E1E;
-    box-shadow: 0 8px 24px -4px rgba(255, 94, 30, 0.2);
+  .glass-card-hover:hover,
+  .glass-card.glass-card-hover:hover {
+    background-color: rgba(16, 18, 24, 0.78);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.035) 40%, rgba(0, 0, 0, 0.10) 100%);
+    border-color: rgba(255, 255, 255, 0.20) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.14);
     transform: translateY(-2px);
   }
 
   .theme-clean .glass-card-hover:hover {
-    background: #FFFFFF;
+    background-color: #FFFFFF;
     border-color: #FF5E1E;
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.08);
   }
 
-  /* Dark Panel */
+  /* Dark Smoked Glass Panel (Headers, Navbars, Large Shells) */
   .glass-panel {
-    background: #121215;
-    border: 1px solid #27272A;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    background-color: rgba(12, 14, 18, 0.76);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.08) 100%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
+    backdrop-filter: blur(20px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   /* Light Panel */
   .theme-clean .glass-panel {
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     border: 1px solid #E4E7EC;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Refine border-color when glass elements carry legacy dark border utilities */
+  .glass-card.border-\[\#27272A\],
+  .glass-panel.border-\[\#27272A\],
+  .glass-card.border-slate-800,
+  .glass-card.border-slate-700\/70 {
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .glass-input {
@@ -258,5 +279,14 @@
 
   .printable-certificate * {
     color: #0A0A0C !important;
+  }
+
+  .printable-certificate .certificate-recipient-name {
+    font-size: 26pt !important;
+    font-weight: 900 !important;
+    color: #0A0A0C !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: inline-block !important;
   }
 }

@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield, Zap, Sparkles, TrendingUp, HelpCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Sparkles, TrendingUp, HelpCircle, ChevronRight, CheckCircle2, Play, User, Award } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
 import { Button } from '../components/ui/Button';
 import { TeamLogo } from '../components/common/TeamLogo';
 
 interface LandingPageProps {
-  onStartQuest: () => void;
+  onStartQuest: (name?: string) => void;
+  onOpenCertificate?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onStartQuest }) => {
-  const { dispatch } = useGame();
+export const LandingPage: React.FC<LandingPageProps> = ({ onStartQuest, onOpenCertificate }) => {
+  const { state } = useGame();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [nameInput, setNameInput] = useState(state.player.name || '');
+
+  const handleStartPlaying = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (nameInput.trim()) {
+      onStartQuest(nameInput.trim());
+    } else {
+      onStartQuest();
+    }
+  };
 
   return (
     <div className="relative min-h-[calc(100vh-65px)] flex flex-col justify-center items-center px-4 py-8 sm:py-16 overflow-hidden">
@@ -91,33 +102,86 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartQuest }) => {
           </div>
         </motion.div>
 
-        {/* Primary CTAs */}
+        {/* Name Entry & Start Playing Option */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2"
+          className="max-w-xl mx-auto space-y-4 pt-2"
         >
-          <Button
-            variant="orange"
-            size="lg"
-            className="w-full sm:w-auto text-base px-9 py-4 shadow-brand-orange"
-            icon={<ArrowRight className="w-5 h-5" />}
-            iconPosition="right"
-            onClick={onStartQuest}
-          >
-            START QUEST
-          </Button>
+          {/* Interactive Start Playing Glass Box */}
+          <div className="glass-card rounded-3xl p-5 sm:p-7 border-2 border-[#FF5E1E]/50 shadow-brand-orange space-y-4 text-center">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5E1E]/20 text-[#FF5E1E] text-xs font-black font-numeric border border-[#FF5E1E]/40">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>BEGIN YOUR FINANCIAL FLIGHT</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white">
+                Enter Your Name to Start Playing
+              </h2>
+              <p className="text-xs text-zinc-300 max-w-md mx-auto">
+                Your name will be personalized across your cockpit telemetry and printed on your official Certificate of Financial Competence.
+              </p>
+            </div>
 
-          <Button
-            variant="secondary"
-            size="lg"
-            className="w-full sm:w-auto"
-            icon={<HelpCircle className="w-5 h-5 text-[#FF5E1E]" />}
-            onClick={() => setShowHowItWorks(!showHowItWorks)}
-          >
-            {showHowItWorks ? 'HIDE OVERVIEW' : 'HOW IT WORKS'}
-          </Button>
+            <form onSubmit={handleStartPlaying} className="space-y-3">
+              <div className="relative max-w-md mx-auto">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+                  <User className="w-4 h-4 text-[#FF5E1E]" />
+                </div>
+                <input
+                  type="text"
+                  maxLength={32}
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  placeholder="Enter your full name (e.g. Tanmay Chandane)..."
+                  className="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-[#18181D]/90 border border-[#27272A] text-white text-sm font-bold placeholder-zinc-500 focus:outline-none focus:border-[#FF5E1E] focus:ring-2 focus:ring-[#FF5E1E]/30 transition-all"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button
+                  type="submit"
+                  variant="orange"
+                  size="lg"
+                  className="w-full sm:flex-1 text-base px-8 py-4 shadow-brand-orange font-black"
+                  icon={<Play className="w-5 h-5 fill-current" />}
+                  iconPosition="right"
+                >
+                  START PLAYING
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                  icon={<HelpCircle className="w-5 h-5 text-[#FF5E1E]" />}
+                  onClick={() => setShowHowItWorks(!showHowItWorks)}
+                >
+                  {showHowItWorks ? 'HIDE' : 'HOW IT WORKS'}
+                </Button>
+              </div>
+            </form>
+
+            <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-3 border-t border-[#27272A]">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
+                <span>Printed on Official A4 Certificate</span>
+              </span>
+
+              {onOpenCertificate && (
+                <button
+                  type="button"
+                  onClick={onOpenCertificate}
+                  className="text-[#FF5E1E] hover:underline font-bold cursor-pointer inline-flex items-center gap-1"
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Preview Certificate →</span>
+                </button>
+              )}
+            </div>
+          </div>
         </motion.div>
 
         {/* How It Works Collapsible Drawer */}

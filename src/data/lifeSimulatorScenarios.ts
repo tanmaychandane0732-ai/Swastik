@@ -409,3 +409,4 @@ export const SIMULATOR_SCENARIOS: SimulatorScenario[] = [
     ],
   },
 ];
+

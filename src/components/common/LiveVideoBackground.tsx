@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Video, Sliders, X, Check, Film, Eye, Sparkles } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
@@ -42,53 +42,16 @@ export const LiveVideoBackground: React.FC<LiveVideoBackgroundProps> = ({
   onCloseConfig,
 }) => {
   const { state, dispatch } = useGame();
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoSettings = state.settings.videoBackground || {
-    enabled: false,
-    url: VIDEO_PRESETS[0].url,
+    enabled: true,
+    url: '/hero.mp4',
     preset: 'cyber',
     opacity: 0.35,
   };
 
-  const isLight = state.settings.theme === 'light';
-
-  useEffect(() => {
-    if (videoRef.current && videoSettings.enabled) {
-      videoRef.current.play().catch(() => {
-        // Autoplay may be restricted until user interaction
-      });
-    }
-  }, [videoSettings.enabled, videoSettings.url]);
-
   return (
     <>
-      {/* Background Video Element */}
-      {videoSettings.enabled && (
-        <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none -z-20">
-          <video
-            ref={videoRef}
-            key={videoSettings.url}
-            src={videoSettings.url}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover transition-opacity duration-700"
-            style={{ opacity: videoSettings.opacity }}
-          />
-
-          {/* Theme Scrim Overlay (ensures high contrast for text and cards) */}
-          <div
-            className={`absolute inset-0 ${
-              isLight
-                ? 'bg-white/85 backdrop-blur-[1px]'
-                : 'bg-[#0A0A0C]/75 backdrop-blur-[1px]'
-            }`}
-          />
-        </div>
-      )}
-
       {/* Video Customization Configuration Modal */}
       <AnimatePresence>
         {isConfigOpen && (

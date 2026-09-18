@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Printer, X, ShieldCheck, Sparkles, Edit3, Check, User } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
@@ -19,6 +19,12 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
   const [customName, setCustomName] = useState(player.name || '');
   const [isEditingInline, setIsEditingInline] = useState(false);
 
+  useEffect(() => {
+    if (player.name) {
+      setCustomName(player.name);
+    }
+  }, [player.name, isOpen]);
+
   if (!isOpen) return null;
 
   const persona = generateFinancialPersona(state);
@@ -38,7 +44,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
     dispatch({ type: 'SET_PLAYER_NAME', payload: newName });
   };
 
-  const displayName = customName.trim() || player.name || 'Alex Trader';
+  const displayName = customName.trim() || player.name || 'FinQuest Pilot';
 
   return (
     <AnimatePresence>
@@ -65,7 +71,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
             <div className="flex-1 flex items-center gap-3">
               <label htmlFor="certificateNameInput" className="text-xs font-extrabold uppercase tracking-wider text-[#FF5E1E] shrink-0 flex items-center gap-1.5">
                 <Edit3 className="w-3.5 h-3.5" />
-                <span>Enter Your Name:</span>
+                <span>Name on Certificate:</span>
               </label>
 
               <div className="relative flex-1 max-w-sm">
@@ -148,7 +154,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#22C55E] border-2 border-[#121215]" />
                 </div>
 
-                <div className="text-2xl sm:text-4xl font-black text-white tracking-wide">
+                <div className="text-2xl sm:text-4xl font-black text-white tracking-wide certificate-recipient-name">
                   {displayName}
                 </div>
               </div>

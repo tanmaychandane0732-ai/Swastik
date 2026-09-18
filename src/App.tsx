@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GameProvider, useGame } from './contexts/GameContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { TopHUD } from './components/hud/TopHUD';
@@ -15,6 +15,15 @@ import { Level3ScamRadar } from './pages/games/Level3ScamRadar';
 import { ResultsPage } from './pages/ResultsPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LifeSimulatorGame } from './pages/games/LifeSimulatorGame';
+import { DiagnosticPage } from './pages/DiagnosticPage';
+import { AcademyPage } from './pages/AcademyPage';
+import { ClassroomCockpit } from './components/flight/ClassroomCockpit';
+import { JudgeDemoModeModal } from './components/flight/JudgeDemoModeModal';
+import { DailyFlightChallengeModal } from './components/flight/DailyFlightChallengeModal';
+import { CursorBuddy } from './components/common/CursorBuddy';
+import { TrainingDeckPage } from './pages/TrainingDeckPage';
+import { ScamDetectiveGame } from './components/scam/ScamDetectiveGame';
+import { FinancialTurbulenceGame } from './components/turbulence/FinancialTurbulenceGame';
 
 const GameShell: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -22,19 +31,31 @@ const GameShell: React.FC = () => {
   const [isBadgesOpen, setIsBadgesOpen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [isVideoConfigOpen, setIsVideoConfigOpen] = useState(false);
+  const [isJudgeDemoOpen, setIsJudgeDemoOpen] = useState(false);
+  const [isDailyChallengeOpen, setIsDailyChallengeOpen] = useState(false);
+  const bgVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (bgVideoRef.current) {
+      bgVideoRef.current.muted = true;
+      bgVideoRef.current.play().catch(() => {});
+    }
+  }, []);
 
   const renderCurrentStage = () => {
     switch (state.gameStage) {
       case 'landing':
         return (
           <LandingPage
-            onStartQuest={() => {
-              if (state.player.name) {
+            onStartQuest={(playerName?: string) => {
+              if (playerName && playerName.trim()) {
+                dispatch({ type: 'SET_PLAYER_NAME', payload: playerName.trim() });
                 dispatch({ type: 'SET_STAGE', payload: 'dashboard' });
               } else {
                 setIsOnboardingOpen(true);
               }
             }}
+            onOpenCertificate={() => setIsCertificateOpen(true)}
           />
         );
 
@@ -67,13 +88,54 @@ const GameShell: React.FC = () => {
           />
         );
 
+      case 'diagnostic':
+        return <DiagnosticPage />;
+
+      case 'academy':
+        return <AcademyPage />;
+
+      case 'classroom':
+        return (
+          <ClassroomCockpit
+            onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'dashboard' })}
+          />
+        );
+
+      case 'training-deck':
+        return <TrainingDeckPage />;
+
+      case 'scam-detective':
+        return (
+          <ScamDetectiveGame
+            onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
+          />
+        );
+
+      case 'turbulence':
+        return (
+          <FinancialTurbulenceGame
+            onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
+          />
+        );
+
       default:
         return <DashboardPage />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-fin-bg text-white flex flex-col font-sans selection:bg-[#FF5E1E]/30 selection:text-[#FF5E1E] relative">
+    <div className="min-h-screen text-white flex flex-col font-sans selection:bg-[#FF5E1E]/30 selection:text-[#FF5E1E] relative">
+      {/* Background Video at Lowest Visual Layer */}
+      <video
+        ref={bgVideoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        src="/hero.mp4"
+        className="fixed inset-0 w-full h-full object-cover pointer-events-none z-0"
+      />
+
       {/* Live Ambient Video Background Component */}
       <LiveVideoBackground
         isConfigOpen={isVideoConfigOpen}
@@ -86,6 +148,8 @@ const GameShell: React.FC = () => {
         onOpenLeaderboard={() => dispatch({ type: 'SET_STAGE', payload: 'leaderboard' })}
         onOpenCertificate={() => setIsCertificateOpen(true)}
         onOpenVideoSettings={() => setIsVideoConfigOpen(true)}
+        onOpenJudgeDemo={() => setIsJudgeDemoOpen(true)}
+        onOpenDailyChallenge={() => setIsDailyChallengeOpen(true)}
       />
 
       {/* Main Gameplay Canvas */}
@@ -107,6 +171,23 @@ const GameShell: React.FC = () => {
         isOpen={isCertificateOpen}
         onClose={() => setIsCertificateOpen(false)}
       />
+
+      {/* Judge Demo Walkthrough Modal (2 Min) */}
+      <JudgeDemoModeModal
+        isOpen={isJudgeDemoOpen}
+        onClose={() => setIsJudgeDemoOpen(false)}
+        onNavigateToStage={(stage) => dispatch({ type: 'SET_STAGE', payload: stage as any })}
+      />
+
+      {/* Daily Flight Dilemma Modal */}
+      <DailyFlightChallengeModal
+        isOpen={isDailyChallengeOpen}
+        onClose={() => setIsDailyChallengeOpen(false)}
+        onIncrementStreak={() => dispatch({ type: 'INCREMENT_STREAK' })}
+      />
+
+      {/* Interactive Cursor-Aware Companion */}
+      <CursorBuddy />
     </div>
   );
 };

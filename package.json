@@ -5,10 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:backend": "npm --prefix backend run dev",
+    "start:backend": "node backend/dist/server.js",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:backend": "npm --prefix backend test",
+    "test:all": "vitest run && npm --prefix backend test"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

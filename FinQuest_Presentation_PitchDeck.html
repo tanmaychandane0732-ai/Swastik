@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FinQuest — Financial Flight Simulator Pitch Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #09090B;
+      color: #F4F4F5;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .slide {
+      width: 297mm;
+      height: 210mm;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 80% 20%, rgba(255, 94, 30, 0.08) 0%, rgba(9, 9, 11, 1) 70%);
+      padding: 36px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-bottom: 1px solid #1F1F24;
+    }
+
+    /* Grid overlay pattern */
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      background: #FF5E1E;
+      color: #000;
+      font-weight: 900;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 0 15px rgba(255, 94, 30, 0.4);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #FFF;
+    }
+
+    .brand-title span {
+      color: #FF5E1E;
+    }
+
+    .track-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      background: rgba(255, 94, 30, 0.15);
+      border: 1px solid rgba(255, 94, 30, 0.35);
+      color: #FF5E1E;
+      border-radius: 20px;
+    }
+
+    .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #71717A;
+      font-weight: 700;
+    }
+
+    .content {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 16px 0;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #71717A;
+      font-weight: 600;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 12px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .team-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #A1A1AA;
+    }
+
+    .team-badge strong {
+      color: #FF5E1E;
+    }
+
+    /* Typography & Components */
+    h1.hero-title {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #E4E4E7 60%, #FF5E1E 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2.slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+    }
+
+    p.subtitle {
+      font-size: 14px;
+      color: #A1A1AA;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .quote-box {
+      background: rgba(24, 24, 29, 0.85);
+      border-left: 4px solid #FF5E1E;
+      border-radius: 0 14px 14px 0;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(39, 39, 42, 0.8);
+      border-left-width: 4px;
+      border-left-color: #FF5E1E;
+    }
+
+    .quote-box p {
+      font-size: 15px;
+      font-weight: 600;
+      color: #F4F4F5;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(24, 24, 29, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 18px;
+      position: relative;
+    }
+
+    .card.highlight {
+      border-color: rgba(255, 94, 30, 0.4);
+      background: rgba(255, 94, 30, 0.04);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #A1A1AA;
+      line-height: 1.45;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #D4D4D8;
+    }
+
+    .pill.orange { background: rgba(255, 94, 30, 0.2); color: #FF5E1E; border: 1px solid rgba(255, 94, 30, 0.3); }
+    .pill.green { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .pill.blue { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+    .metric-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 26px;
+      font-weight: 800;
+      color: #FF5E1E;
+      margin: 4px 0;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: #71717A;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 11px;
+    }
+
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #A1A1AA;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #D4D4D8;
+    }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #FF5E1E;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: COVER SLIDE -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">FIN<span>QUEST</span></div>
+      </div>
+      <div class="track-tag">HACK2IGNITE 2026 • GD-01 TRACK</div>
+      <div class="slide-number">01 / 10</div>
+    </div>
+
+    <div class="content" style="justify-content: center;">
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <span class="pill orange">GD-01: Financial Literacy & Math</span>
+        <span class="pill green">Production-Grade Full Stack</span>
+        <span class="pill blue">AI Flight Coach Powered by Gemini</span>
+      </div>
+
+      <h1 class="hero-title">FINANCIAL FLIGHT SIMULATOR</h1>
+      <p class="subtitle" style="font-size: 18px; max-width: 800px; color: #D4D4D8; margin-bottom: 24px;">
+        High-stakes experiential learning with zero real-world financial risk. Transforming youth financial literacy through aeronautical simulation, behavioral psychometrics, and automated AI coaching.
+      </p>
+
+      <div class="quote-box" style="max-width: 840px;">
+        <p>"Pilots don't fly passenger planes without thousands of hours in a flight simulator. Why do we let young adults enter the economy without a financial flight simulator?"</p>
+      </div>
+
+      <div class="grid-4" style="max-width: 840px; margin-top: 10px;">
+        <div class="card">
+          <div class="metric-label">Target Audience</div>
+          <div style="font-size: 16px; font-weight: 800; color: #FFF; margin-top: 4px;">Gen-Z & Young Adults</div>
+          <div class="card-desc" style="font-size: 11px;">College grads & first-jobbers</div>
+        </div>
+        <div class="card">
+          <div class="metric-label">Aviation Metaphor</div>
+          <div style="font-size: 16px; font-weight: 800; color: #22C55E; margin-top: 4px;">Net Worth = Altitude</div>
+          <div class="card-desc" style="font-size: 11px;">Debt = Aerodynamic Drag</div>
+        </div>
+        <div class="card">
+          <div class="metric-label">Dual Engine</div>
+          <div style="font-size: 16px; font-weight: 800; color: #FF5E1E; margin-top: 4px;">Postgres + In-Memory</div>
+          <div class="card-desc" style="font-size: 11px;">100% Zero-Crash Uptime</div>
+        </div>
+        <div class="card">
+          <div class="metric-label">Certification</div>
+          <div style="font-size: 16px; font-weight: 800; color: #60A5FA; margin-top: 4px;">Printable Certificate</div>
+          <div class="card-desc" style="font-size: 11px;">Official Team Swastik Seal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Engineered by <strong>Team Swastik</strong> (Lead: Tanmay Chandane)</div>
+      <div>FinQuest Flight Deck v2.0 • Presentation Deck</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: THE PROBLEM STATEMENT -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">THE <span>PROBLEM</span></div>
+      </div>
+      <div class="track-tag">THE YOUTH FINANCIAL EMERGENCY</div>
+      <div class="slide-number">02 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Why Traditional Financial Education Fails Young Adults</h2>
+      <p class="subtitle">Young adults leave colleges knowing calculus and history, yet enter an aggressive economy weaponized with instant credit traps, predatory algorithms, and frictionless UPI debt.</p>
+
+      <div class="grid-3">
+        <div class="card highlight">
+          <div class="card-title">⚠️ The 42% APR Compounding Debt Trap</div>
+          <p class="card-desc">Credit card revolving balances and deceptive "No-Cost EMI" options charge up to 36–42% APR. A ₹30,000 festive shopping balance paid with only minimum dues takes <strong>over 8 years to clear</strong> and costs ₹48,000+ in pure interest.</p>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title">🚨 Reverse UPI & Cyber Fraud Epidemic</div>
+          <p class="card-desc">Cyber fraud complaints in India surged past 1.5 million in 2025. Young users repeatedly fall for fake UPI refund QR codes, Telegram stock tips, and fake employment tasks, erasing entire liquid savings in seconds.</p>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title">📉 Passive Learning Has Zero Retention</div>
+          <p class="card-desc">Boring YouTube seminars and textbook chapters do not create behavioral muscle memory. People only learn financial consequences when their own bank balance hits zero—a lesson that ruins lives in the real world.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;" class="card">
+        <div class="card-title" style="color: #FF5E1E;">🎯 The Core Mission of FinQuest under GD-01</div>
+        <p class="card-desc" style="font-size: 13px; color: #E4E4E7;">
+          To create an <strong>action-driven Financial Flight Simulator</strong> that lets young adults crash and recover in a high-fidelity virtual economy, teaching them mathematical compounding, debt defense, fraud recognition, and liquidity management <strong>before they risk a single real rupee</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • Problem Formulation & Validation</div>
+      <div>Slide 02 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: CORE PRODUCT & THE FLIGHT METAPHOR -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">THE <span>FLIGHT METAPHOR</span></div>
+      </div>
+      <div class="track-tag">PRODUCT DESIGN & GAMIFICATION</div>
+      <div class="slide-number">03 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Translating Personal Finance into Aeronautical Telemetry</h2>
+      <p class="subtitle">By mapping abstract financial metrics to familiar cockpit aerodynamics, FinQuest gives young adults an immediate, visual, and intuitive understanding of cause and effect.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">✈️ Cockpit Flight Telemetry</div>
+          <table>
+            <tr><th>Flight Instrument</th><th>Financial Meaning</th><th>Real Impact</th></tr>
+            <tr><td><strong>Altitude (FT)</strong></td><td>Net Worth (Assets - Debt)</td><td>Cruising elevation of your career wealth</td></tr>
+            <tr><td><strong>Fuel Remaining (L)</strong></td><td>Liquid Cash Runway</td><td>Survival buffer against sudden shocks</td></tr>
+            <tr><td><strong>Airspeed (KTS)</strong></td><td>Monthly Free Cash Flow</td><td>Propulsion power: Salary minus expenses</td></tr>
+            <tr><td><strong>Aerodynamic Drag</strong></td><td>Revolving High-APR Debt</td><td>Parasitic drag eating your airspeed</td></tr>
+            <tr><td><strong>Radar Lock</strong></td><td>Scam & Cyber Shield</td><td>Detecting phishing and fraudulent traps</td></tr>
+            <tr><td><strong>Cabin Stress (%)</strong></td><td>Financial Distress Level</td><td>High debt/low runway risks flight stall</td></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛩️ Flight Mission States</div>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 10px; border-radius: 10px;">
+              <div style="font-weight: 800; color: #22C55E; font-size: 13px;">🟢 Smooth Cruise (Positive Lift)</div>
+              <div style="font-size: 11px; color: #A1A1AA;">Zero revolving debt, 3+ months liquid fuel buffer, disciplined automated index SIPs compounding upward.</div>
+            </div>
+            <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 10px; border-radius: 10px;">
+              <div style="font-weight: 800; color: #F59E0B; font-size: 13px;">🟡 Turbulent Airspace (High Drag)</div>
+              <div style="font-size: 11px; color: #A1A1AA;">BNPL obligations consume >30% of take-home pay; emergency runway under 1 month. Altitude begins to drop.</div>
+            </div>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px; border-radius: 10px;">
+              <div style="font-weight: 800; color: #EF4444; font-size: 13px;">🔴 Critical Debt Stall (Emergency Crash)</div>
+              <div style="font-size: 11px; color: #A1A1AA;">Negative net worth, CIBIL drops below 600, multiple default penalties trigger full cockpit alarm sequence.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • Aeronautical Gamification System</div>
+      <div>Slide 03 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: SYSTEM ARCHITECTURE & FULL STACK MONOLITH -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">SYSTEM <span>ARCHITECTURE</span></div>
+      </div>
+      <div class="track-tag">FULL-STACK MODULAR MONOLITH</div>
+      <div class="slide-number">04 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Resilient Full-Stack Architecture Built for Zero Downtime</h2>
+      <p class="subtitle">Engineered with a dual-persistence layer: production-grade PostgreSQL with Prisma ORM, seamlessly paired with a high-speed in-memory store so the app runs out of the box anywhere.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🎨 Frontend Client (Port 5173)</div>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px; margin-top: 6px;">
+            <li><strong>React 19 + TypeScript + Vite</strong></li>
+            <li>Dark Smoked Glassmorphism UI</li>
+            <li>Live Ambient Video Background (<span class="code-tag">hero.mp4</span>)</li>
+            <li>Procedural <strong>Web Audio API</strong> synthesis</li>
+            <li>Framer Motion springs & canvas confetti</li>
+            <li>Centralized API Client with <strong>offline fallback</strong></li>
+          </ul>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title">⚙️ Backend Server (Port 5000)</div>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px; margin-top: 6px;">
+            <li><strong>Node.js + Express + TypeScript</strong></li>
+            <li>Prisma ORM with PostgreSQL schema</li>
+            <li><strong>100% In-Memory Fallback</strong> store</li>
+            <li>JWT Bearer token auth + Guest flight pass</li>
+            <li>Helmet security headers & CORS policy</li>
+            <li>Strict Zod request validation</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧠 AI & Math Engines</div>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px; margin-top: 6px;">
+            <li><strong>Google Gemini 1.5 Flash AI</strong> Coach</li>
+            <li>3.5% monthly compound debt engine</li>
+            <li>CIBIL Credit Score algorithm (300-850)</li>
+            <li>5-Trait <strong>Decision DNA</strong> psychometrics</li>
+            <li>6-Axis <strong>Risk Radar</strong> polygon engine</li>
+            <li>5-Year Counterfactual <strong>What-If</strong> model</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; padding: 12px 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 800; font-size: 12px; color: #FF5E1E;">RESTful Telemetry Endpoints:</span>
+          <span class="code-tag">/api/health</span>
+          <span class="code-tag">/api/auth</span>
+          <span class="code-tag">/api/sessions</span>
+          <span class="code-tag">/api/ai/coach</span>
+          <span class="code-tag">/api/assessments</span>
+          <span class="code-tag">/api/analytics</span>
+          <span class="code-tag">/api/classroom</span>
+          <span class="code-tag">/api/challenges</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • High-Reliability Architecture</div>
+      <div>Slide 04 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 6-MONTH INDIAN REALITY LIFE SIMULATOR -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">6-MONTH <span>SIMULATION</span></div>
+      </div>
+      <div class="track-tag">INDIAN REALITY SCENARIO PACK</div>
+      <div class="slide-number">05 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Real-World Economic Milestones for Indian Young Adults</h2>
+      <p class="subtitle">A sequential 6-month career flight simulating the pivotal financial decisions a young professional encounters in metropolitan India (Pune, Bengaluru, Mumbai, Gurgaon).</p>
+
+      <div class="grid-3" style="gap: 12px;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: 800; color: #FF5E1E;">MONTH 01</div>
+          <div class="card-title" style="font-size: 12px;">Pune Tech Salary & 50/30/20 Rule</div>
+          <p class="card-desc" style="font-size: 11px;">Allocate first ₹60,000 paycheck between Hinjawadi rent, food, and friends' impromptu Goa luxury trip. Teaches liquid emergency runway.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: 800; color: #FF5E1E;">MONTH 02</div>
+          <div class="card-title" style="font-size: 12px;">Great Indian Festival BNPL Trap</div>
+          <p class="card-desc" style="font-size: 11px;">Targeted with 0% No-Cost EMI for a ₹95,000 smartphone. Revealing processing fees, penalty APR, and compounding opportunity cost.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: 800; color: #FF5E1E;">MONTH 03</div>
+          <div class="card-title" style="font-size: 12px;">Emergency Dental Surgery Shock</div>
+          <p class="card-desc" style="font-size: 11px;">Sudden ₹28,000 root canal with insurance deductible clauses. Demonstrates why liquid cash runway prevents emergency loan traps.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: 800; color: #FF5E1E;">MONTH 04</div>
+          <div class="card-title" style="font-size: 12px;">Cyber Threat: Reverse UPI QR Phishing</div>
+          <p class="card-desc" style="font-size: 11px;">Buyer on OLX insists on scanning a QR code to "send advance payment". Teaches Golden Hour action and National Cybercrime 1930 protocol.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: 800; color: #FF5E1E;">MONTH 05</div>
+          <div class="card-title" style="font-size: 12px;">Compounding Fork: SIP vs Penny Stocks</div>
+          <p class="card-desc" style="font-size: 11px;">Colleague promises 400% returns on a secret Telegram penny stock. Choosing between proven Nifty 50 compounding and pump-and-dump fraud.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: 800; color: #FF5E1E;">MONTH 06</div>
+          <div class="card-title" style="font-size: 12px;">Appraisal & Tax Regime Sovereignty</div>
+          <p class="card-desc" style="font-size: 11px;">15% salary hike and deciding between New Tax Regime and Old Tax Regime with 80C, ELSS, and NPS. Calculating final 6-month wealth altitude.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • 6-Month Indian Reality Curriculum</div>
+      <div>Slide 05 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: TRAINING DECK (SCAM DETECTIVE & TURBULENCE) -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">TRAINING <span>DECK</span></div>
+      </div>
+      <div class="track-tag">INTERACTIVE HACKATHON MINI-GAMES</div>
+      <div class="slide-number">06 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Targeted Behavioral Simulators: Fraud & Crisis Management</h2>
+      <p class="subtitle">Two high-intensity specialized modules designed to build instant reflexive defense against cyber scams and black-swan emergency shocks.</p>
+
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">🚨 Scam Detective: Interactive Phishing Radar</div>
+          <p class="card-desc" style="margin-bottom: 12px;">Realistic mobile interface simulating the 5 most rampant cyber scams targeting Indian youths:</p>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px;">
+            <li><strong>Fake Part-Time YouTube Job</strong>: ₹2,500/day for liking videos (advance deposit trick).</li>
+            <li><strong>Telegram Pump & Dump</strong>: "SEBI Insider Tip" guaranteeing 50% weekly crypto return.</li>
+            <li><strong>Electricity Disconnection SMS</strong>: Urgent power cut alert with fake APK link.</li>
+            <li><strong>Fake Instagram Influencer Deal</strong>: Demanding shipping fee for "free gifts".</li>
+            <li><strong>Urgent Family Distress UPI</strong>: Spoofed friend number asking for urgent hospital fee.</li>
+          </ul>
+          <div style="margin-top: 10px; font-size: 11px; color: #22C55E; font-weight: 700;">
+            Features clickable Red Flag tags, Suspicion Meter (0-100), and 1930 Helpline debriefs.
+          </div>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title">🌪️ Financial Turbulence: Sudden In-Flight Downdrafts</div>
+          <p class="card-desc" style="margin-bottom: 12px;">High-pressure crisis simulator with ticking timers and sudden economic shocks:</p>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px;">
+            <li><strong>Bike Engine Seizure</strong>: ₹14,000 repair cost or public transit commute.</li>
+            <li><strong>Freelance Client Default</strong>: ₹35,000 invoice unpaid; managing rent cashflow.</li>
+            <li><strong>Sudden Medical Emergency</strong>: ₹50,000 hospitalization without cashless TPA.</li>
+            <li><strong>Tech Layoff Scare</strong>: 3 months of emergency runway testing under burn rate.</li>
+          </ul>
+          <div style="margin-top: 10px; font-size: 11px; color: #FF5E1E; font-weight: 700;">
+            Evaluates pilot composure, avoids predatory payday loan traps, and restores flight altitude.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • Aviation Training Deck</div>
+      <div>Slide 06 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: ALGORITHMS & MATHEMATICAL MODELS -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">MATH & <span>ALGORITHMS</span></div>
+      </div>
+      <div class="track-tag">PROPRIETARY ENGINES & PSYCHOMETRICS</div>
+      <div class="slide-number">07 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Mathematical Rigor Behind Flight Simulation</h2>
+      <p class="subtitle">FinQuest does not use randomized gamified points. All scores, curves, and archetypes are computed using authentic banking formulas and behavioral psychology models.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🧮 Compounding Debt Math</div>
+          <div class="code-tag" style="margin: 6px 0; display: block;">Interest = Debt × (APR / 12)</div>
+          <p class="card-desc">Simulates standard Indian credit card rate of <strong>3.5% monthly (~42% APR)</strong> with compounding penalties. Visually contrasts minimum due payments vs principal payoff.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 6-Axis Risk Radar</div>
+          <div class="code-tag" style="margin: 6px 0; display: block;">Polygon Area (0 - 100 on 6 Axes)</div>
+          <p class="card-desc">Computes real-time vulnerability across: <strong>Debt Risk, Emergency Runway, Lifestyle Creep, Volatility Exposure, Scam Susceptibility, and Credit Fragility</strong>.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔮 What-If 5-Year Divergence</div>
+          <div class="code-tag" style="margin: 6px 0; display: block;">NetWorth(t) = C(1+r)^t - D(1+i)^t</div>
+          <p class="card-desc">Projects a 60-month counterfactual showing the exact wealth difference between chosen decision vs disciplined route over a 5-year horizon.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-title" style="color: #22C55E;">🧬 Decision DNA Engine (5 Behavioral Traits & 6 Aviation Archetypes)</div>
+        <div class="grid-3" style="gap: 8px; margin-top: 8px; font-size: 11px;">
+          <div><strong>✈️ Strategic Flight Captain</strong>: Disciplined compounding, 0 debt drag.</div>
+          <div><strong>🛡️ Scam-Proof Navigator</strong>: Impenetrable fraud defense, high CIBIL.</div>
+          <div><strong>🧭 Calculated Risk-Taker</strong>: Balanced equity exposure with cash buffer.</div>
+          <div><strong>🚀 Impulsive High-Flyer</strong>: High ambition vulnerable to FOMO traps.</div>
+          <div><strong>🛬 Debt-Trapped Glider</strong>: Revolving BNPL/EMI eating monthly airspeed.</div>
+          <div><strong>🪂 Conservative Parachuter</strong>: High cash reserves losing to inflation drag.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • Financial Mathematical Models</div>
+      <div>Slide 07 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: EDUCATOR COCKPIT, DAILY CHALLENGES & CERTIFICATE -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">COMMUNITY & <span>CLASSROOM</span></div>
+      </div>
+      <div class="track-tag">EDUCATOR TOOLS & SOCIAL LEARNING</div>
+      <div class="slide-number">08 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Beyond Single-Player: Classroom Cohorts & Community Dilemmas</h2>
+      <p class="subtitle">Equipping professors, universities, and student squadrons with actionable telemetry dashboards and certified credentials.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🏫 Classroom Squadron Cockpit</div>
+          <p class="card-desc">Flight instructors and college professors can create private squadron cohorts (e.g. <span class="code-tag">IIMB-2026</span>) to monitor cohort-wide analytics:</p>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px; margin-top: 6px;">
+            <li>Cohort Completion Rate (92% benchmark)</li>
+            <li>Classroom Failure Trap Identification</li>
+            <li>Average Financial IQ Gain (+68%)</li>
+            <li>Aviation Archetype distribution charts</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🗳️ Daily Flight Dilemma</div>
+          <p class="card-desc">Daily bite-sized real-world decision with live community crowd-voting:</p>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px; margin-top: 6px;">
+            <li>24-hour community voting percentages</li>
+            <li>Daily resilience flight streak tracker</li>
+            <li>Immediate feedback on crowd bias vs mathematical truth</li>
+            <li>Bonus pilot XP points for optimal maneuvers</li>
+          </ul>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title">📜 Official Certified Certificate</div>
+          <p class="card-desc">Dynamic <strong>Certificate of Financial Competence</strong> issued upon simulation completion:</p>
+          <ul style="font-size: 11px; color: #D4D4D8; line-height: 1.6; margin-left: 14px; margin-top: 6px;">
+            <li>Dynamic Pilot Name, Call sign & Flight Score</li>
+            <li>Assigned Aviation Decision DNA Archetype</li>
+            <li>Official Team Swastik seal & Track GD-01 citation</li>
+            <li>Print-ready SVG vector export for LinkedIn</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • Classroom & Social Architecture</div>
+      <div>Slide 08 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: VERIFICATION & CODE QUALITY -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">VERIFICATION & <span>QUALITY</span></div>
+      </div>
+      <div class="track-tag">ENGINEERING RIGOR & 100% GREEN TESTS</div>
+      <div class="slide-number">09 / 10</div>
+    </div>
+
+    <div class="content">
+      <h2 class="slide-title">Battle-Tested Codebase with 100% Automated Test Coverage</h2>
+      <p class="subtitle">FinQuest is not a prototype or slide-ware. It is an end-to-end built, compiled, and verified software system with 43 automated unit and integration tests passing green.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="metric-label">Backend Tests (Vitest)</div>
+          <div class="metric-value" style="color: #22C55E;">12 / 12</div>
+          <div class="card-desc">Auth registration, JWT decoding, guest pass, 42% APR compounding math, 6-month simulation lifecycle, Decision DNA, and Risk Radar algorithms.</div>
+        </div>
+
+        <div class="card">
+          <div class="metric-label">Frontend Tests (Vitest)</div>
+          <div class="metric-value" style="color: #22C55E;">31 / 31</div>
+          <div class="card-desc">50/30/20 budget allocations, debt snowball vs avalanche calculations, investment risk modeling, Scam Detective flagging, and flight simulator telemetry.</div>
+        </div>
+
+        <div class="card">
+          <div class="metric-label">Total Verified Tests</div>
+          <div class="metric-value" style="color: #FF5E1E;">43 / 43</div>
+          <div class="card-desc">100% passing test rate across client and server. Both TypeScript and Vite production builds pass with code 0.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">🛡️ Hackathon Reliability & Graceful Degradation Matrix</div>
+        <table>
+          <tr><th>Component</th><th>Online Mode</th><th>Offline / Disconnected Mode</th><th>Judge Impact</th></tr>
+          <tr><td><strong>Database Layer</strong></td><td>PostgreSQL via Prisma ORM</td><td>In-Memory Store with pre-seeded scenarios</td><td>100% Uptime, Zero Config Required</td></tr>
+          <tr><td><strong>AI Flight Coach</strong></td><td>Google Gemini 1.5 Flash API</td><td>Deterministic RBI/SEBI Regulatory Coach</td><td>Zero API Key Dependency for Testing</td></tr>
+          <tr><td><strong>Audio & SFX</strong></td><td>Web Audio API Synthesis</td><td>Procedural Local Oscillators</td><td>Instant Playback, No Asset Download Lag</td></tr>
+          <tr><td><strong>Client Telemetry</strong></td><td>Live Bearer API Requests</td><td>Local GameContext State Mirror</td><td>Smooth, Uninterrupted 60 FPS Experience</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">Team Swastik • Engineering Rigor & Test Verification</div>
+      <div>Slide 09 of 10</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: CONCLUSION & GD-01 WINNING PROPOSITION -->
+  <div class="slide">
+    <div class="header">
+      <div class="brand-group">
+        <div class="logo-badge">FQ</div>
+        <div class="brand-title">SUMMARY & <span>IMPACT</span></div>
+      </div>
+      <div class="track-tag">HACK2IGNITE 2026 • FINAL VERDICT</div>
+      <div class="slide-number">10 / 10</div>
+    </div>
+
+    <div class="content" style="justify-content: center;">
+      <h2 class="slide-title" style="font-size: 32px; margin-bottom: 12px;">Why FinQuest Wins GD-01</h2>
+      <p class="subtitle" style="font-size: 15px; margin-bottom: 24px;">
+        FinQuest addresses the most critical educational need of this generation: giving young adults the cockpit hours they need to survive and thrive in a complex modern economy.
+      </p>
+
+      <div class="grid-4">
+        <div class="card highlight">
+          <div class="card-title" style="color: #FF5E1E;">🎯 Problem Urgency</div>
+          <p class="card-desc">Tackles youth debt crises, 42% APR traps, and cyber scams impacting millions of first-time jobbers in India.</p>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title" style="color: #22C55E;">💡 Innovative Metaphor</div>
+          <p class="card-desc">Translates dry finance into high-adrenaline aviation aerodynamics that young adults instinctively love.</p>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title" style="color: #60A5FA;">🚀 Flawless Execution</div>
+          <p class="card-desc">Full-stack modular monolith with 43 passing tests, dark glassmorphism UI, live video, and Web Audio SFX.</p>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-title" style="color: #F59E0B;">📈 Measurable Impact</div>
+          <p class="card-desc">Proves quantifiable learning outcomes via Pre/Post Financial IQ Delta (+68% average resilience gain).</p>
+        </div>
+      </div>
+
+      <div class="quote-box" style="margin-top: 24px; text-align: center;">
+        <p style="font-size: 18px; color: #FFF; font-style: normal; font-weight: 800;">
+          "Equipping the next generation of financial aviators to take flight with confidence."
+        </p>
+        <p style="font-size: 12px; color: #FF5E1E; margin-top: 4px; font-weight: 700;">
+          Team Swastik • Hack2Ignite GD-01 Track • Built with Pride in India
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="team-badge">FinQuest — Financial Flight Simulator • Final Pitch Presentation</div>
+      <div>Thank You Judges & Mentors!</div>
+    </div>
+  </div>
+
+</body>
+</html>
+

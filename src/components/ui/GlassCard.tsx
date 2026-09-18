@@ -24,9 +24,9 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
   return (
     <motion.div
-      whileHover={hoverEffect ? { y: -3, scale: 1.01 } : undefined}
+      whileHover={hoverEffect ? { y: -2, scale: 1.006 } : undefined}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className={`glass-card rounded-2xl p-4 sm:p-6 transition-all duration-200 ${glowStyles[glow]} ${className}`}
+      className={`glass-card ${hoverEffect ? 'glass-card-hover cursor-pointer' : ''} rounded-2xl p-4 sm:p-6 transition-all duration-250 ${glowStyles[glow]} ${className}`}
       {...props}
     >
       {children}

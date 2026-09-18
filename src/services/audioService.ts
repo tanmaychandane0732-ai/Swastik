@@ -192,6 +192,48 @@ class AudioEngine {
       });
     } catch {}
   }
+
+  /**
+   * Subtle scanner sonar click for red flag detection
+   */
+  public playRedFlag(): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1760, ctx.currentTime); // A6
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } catch {}
+  }
+
+  /**
+   * Deep cockpit turbulence rumble with frequency modulation
+   */
+  public playTurbulence(): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(80, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(50, ctx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+    } catch {}
+  }
 }
 
 export const soundManager = new AudioEngine();
