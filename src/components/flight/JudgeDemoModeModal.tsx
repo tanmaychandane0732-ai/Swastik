@@ -17,6 +17,7 @@ import {
 import { GlassCard } from '../ui/GlassCard';
 import { Button } from '../ui/Button';
 import { TeamLogo } from '../common/TeamLogo';
+import { soundManager } from '../../services/audioService';
 
 interface JudgeDemoModeModalProps {
   isOpen: boolean;
@@ -75,32 +76,41 @@ export const JudgeDemoModeModal: React.FC<JudgeDemoModeModalProps> = ({
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center border-b border-[#27272A] px-6 bg-[#18181D]/60 text-xs font-bold font-numeric">
+            <div className="flex items-center border-b border-white/08 px-6 bg-white/02 text-xs font-bold font-numeric">
               <button
-                onClick={() => setActiveTab('philosophy')}
-                className={`py-3 px-4 border-b-2 transition-all ${
+                onClick={() => {
+                  soundManager.playNavChange();
+                  setActiveTab('philosophy');
+                }}
+                className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
                   activeTab === 'philosophy'
-                    ? 'border-[#FF5E1E] text-white'
+                    ? 'border-[#FF6A2A] text-white'
                     : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 1. Aviation Philosophy (GD-01)
               </button>
               <button
-                onClick={() => setActiveTab('features')}
-                className={`py-3 px-4 border-b-2 transition-all ${
+                onClick={() => {
+                  soundManager.playNavChange();
+                  setActiveTab('features');
+                }}
+                className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
                   activeTab === 'features'
-                    ? 'border-[#FF5E1E] text-white'
+                    ? 'border-[#FF6A2A] text-white'
                     : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 2. Live Feature Teleportation
               </button>
               <button
-                onClick={() => setActiveTab('tech')}
-                className={`py-3 px-4 border-b-2 transition-all ${
+                onClick={() => {
+                  soundManager.playNavChange();
+                  setActiveTab('tech');
+                }}
+                className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
                   activeTab === 'tech'
-                    ? 'border-[#FF5E1E] text-white'
+                    ? 'border-[#FF6A2A] text-white'
                     : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >

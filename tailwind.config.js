@@ -7,6 +7,14 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        // Body/UI: Inter — clean, neutral, premium
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        // Headings: Plus Jakarta Sans — bold, distinctive, premium display
+        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        // Monospace: JetBrains Mono — numeric labels, telemetry only
+        mono: ['JetBrains Mono', 'monospace'],
+      },
       colors: {
         // Signature Orange / Black / White Industrial Theme
         brand: {

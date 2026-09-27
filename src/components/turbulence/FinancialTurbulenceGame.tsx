@@ -174,9 +174,9 @@ export const FinancialTurbulenceGame: React.FC<FinancialTurbulenceGameProps> = (
     });
 
     if (choice.resilienceDelta >= 0) {
-      soundManager.playSuccess();
+      soundManager.playFlightStabilized();
     } else {
-      soundManager.playWarning();
+      soundManager.playConsequence();
     }
 
     setPhase('consequence');
@@ -265,11 +265,11 @@ export const FinancialTurbulenceGame: React.FC<FinancialTurbulenceGameProps> = (
           <div className="h-6 w-px bg-[#27272A] hidden sm:block" />
 
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5E1E] animate-pulse" />
-            <h1 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
-              <span>🌪️ Financial Turbulence</span>
-              <span className="hidden md:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/40 font-numeric">
-                Cockpit Shock Sim
+            <span className="w-2 h-2 rounded-full bg-[#FF6A2A] animate-pulse" />
+            <h1 className="font-display text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <span>Financial Turbulence</span>
+              <span className="label-telemetry px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                LIVE COCKPIT SIMULATION
               </span>
             </h1>
           </div>

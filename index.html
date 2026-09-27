@@ -9,9 +9,28 @@
     <meta name="description" content="FinQuest is an interactive financial literacy game for the Hack2Ignite Innovation Challenge GD-01 track. Master budgeting, debt management, compound interest, and scam detection." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        try {
+          const saved = localStorage.getItem('finquest_settings_v1');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && parsed.theme === 'light') {
+              document.documentElement.classList.remove('dark');
+              document.documentElement.classList.add('light');
+              document.addEventListener('DOMContentLoaded', function() {
+                document.body.classList.add('theme-clean');
+              });
+            } else {
+              document.documentElement.classList.add('dark');
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
-  <body class="bg-fin-bg text-slate-100 min-h-screen font-sans antialiased selection:bg-fin-emerald selection:text-white overflow-x-hidden">
+  <body class="min-h-screen font-sans antialiased overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

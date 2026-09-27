@@ -224,7 +224,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
 
               {/* Right Verification Code & Date */}
               <div className="text-center sm:text-right space-y-1">
-                <span className="font-mono text-[11px] text-[#FF5E1E] font-black block">
+                <span className="font-mono text-[11px] text-[#FF6A2A] font-black block">
                   ID: {credentialId}
                 </span>
                 <div className="w-32 h-[1px] bg-zinc-600 mx-auto sm:ml-auto sm:mr-0" />
@@ -233,6 +233,11 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
                 </span>
               </div>
             </div>
+
+            {/* Compliance & Educational Milestones Disclaimer */}
+            <p className="text-[9px] text-[#A7ABB4] text-center pt-2 border-t border-white/06">
+              Official FinQuest GD-01 Learning Record · Complete simulation milestones to earn and verify · Not an accredited statutory or regulatory certification
+            </p>
           </div>
         </motion.div>
       </div>

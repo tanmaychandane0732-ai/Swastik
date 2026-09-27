@@ -21,6 +21,7 @@ import { useGame } from '../contexts/GameContext';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
 import { TeamLogo } from '../components/common/TeamLogo';
+import { soundManager } from '../services/audioService';
 
 export const DiagnosticPage: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -36,6 +37,7 @@ export const DiagnosticPage: React.FC = () => {
   const isLastQuestion = currentIndex === questions.length - 1;
 
   const handleSelectOption = (optionId: string) => {
+    soundManager.playClick();
     setSelectedAnswers((prev) => ({
       ...prev,
       [currentQ.id]: optionId,
@@ -43,10 +45,12 @@ export const DiagnosticPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    soundManager.playClick();
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
       // Complete test
+      soundManager.playFinancialIqResult();
       const diagnosticResult = DiagnosticService.evaluateSubmission(
         questions,
         selectedAnswers
@@ -93,19 +97,21 @@ export const DiagnosticPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-3 sm:px-6 py-6 sm:py-8 space-y-6 select-none text-left">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-6 border border-[#27272A] shadow-xl">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-[#22C55E]/20 text-[#22C55E] border border-[#22C55E]/40 font-numeric">
-              Empirical Assessment Engine
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-6 border border-white/10 shadow-xl">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-[#22C55E]/15 text-[#22C55E] border border-[#22C55E]/30">
+              EMPIRICAL ASSESSMENT ENGINE
             </span>
-            <span className="text-xs text-zinc-400 font-bold">Hack2Ignite GD-01</span>
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-white/06 text-zinc-300 border border-white/10">
+              LIVE EVALUATION
+            </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
             Pre & Post Financial IQ Diagnostic
           </h1>
-          <p className="text-xs text-zinc-400">
-            Measure your baseline financial intelligence before takeoff and verify your learning gain
+          <p className="text-xs text-[#A7ABB4]">
+            Measure your baseline financial intelligence before takeoff and verify your learning gain.
           </p>
         </div>
 
@@ -114,7 +120,10 @@ export const DiagnosticPage: React.FC = () => {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'dashboard' })}
+            onClick={() => {
+              soundManager.playClick();
+              dispatch({ type: 'SET_STAGE', payload: 'dashboard' });
+            }}
           >
             Quest Hub
           </Button>

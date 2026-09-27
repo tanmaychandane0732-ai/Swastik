@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 import { Button } from '../ui/Button';
+import { useSmoothScroll } from '../providers/SmoothScrollProvider';
 
 interface FinQuestInfoPanelProps {
   isOpen: boolean;
@@ -28,7 +29,23 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { dispatch } = useGame();
+  const { state, dispatch } = useGame();
+  const isLight = state.settings.theme === 'light';
+  const { stop: stopLenis, start: startLenis } = useSmoothScroll();
+
+  // Isolate panel scrolling: Pause Lenis and lock body scroll while open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    stopLenis();
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      startLenis();
+    };
+  }, [isOpen, stopLenis, startLenis]);
 
   // Close on Escape key
   useEffect(() => {
@@ -88,144 +105,238 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-end justify-end p-3 sm:p-7 pointer-events-none">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center sm:items-end sm:justify-end p-3 sm:p-7 pointer-events-none"
+          role="dialog"
+          aria-modal="true"
+          aria-label="What is FinQuest Information Panel"
+          data-lenis-prevent="true"
+        >
           {/* Subtle Ambient Dimming Backdrop (Preserves video clarity) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/25 backdrop-blur-[2px] pointer-events-auto cursor-pointer"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] pointer-events-auto cursor-pointer"
+            aria-label="Close Information Panel backdrop"
           />
 
-          {/* Premium Dark Smoked Glass Panel */}
+          {/* Premium Glass Modal Panel with Constrained Height and Flex-Col structure */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 25 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-            className="relative w-full max-w-[500px] max-h-[82vh] sm:max-h-[80vh] overflow-y-auto rounded-3xl p-6 sm:p-7 pointer-events-auto shadow-2xl z-10 my-auto sm:my-0 sm:mb-16 select-text"
+            data-lenis-prevent="true"
+            className={`relative w-full max-w-[540px] h-[85dvh] max-h-[85dvh] sm:h-[80vh] sm:max-h-[80vh] flex flex-col rounded-3xl pointer-events-auto shadow-2xl z-10 my-auto sm:my-0 sm:mb-16 select-text overflow-hidden transition-colors duration-400 ${
+              isLight ? 'glass-panel text-zinc-900 border-zinc-200' : 'glass-panel text-white border-white/10'
+            }`}
             style={{
-              background: 'rgba(12, 14, 18, 0.74)',
+              background: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(12, 14, 18, 0.88)',
               backdropFilter: 'blur(24px) saturate(140%)',
               WebkitBackdropFilter: 'blur(24px) saturate(140%)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              boxShadow:
-                '0 24px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.12)',
+              boxShadow: isLight
+                ? '0 24px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1)'
+                : '0 24px 80px rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
             }}
           >
-            {/* Header */}
-            <div className="flex items-start justify-between gap-4 pb-5 border-b border-white/10 mb-6">
+            {/* ── 1. Sticky Header ─────────────────────────────────── */}
+            <div
+              className={`p-5 sm:p-6 pb-4 border-b flex-shrink-0 flex items-start justify-between gap-4 ${
+                isLight ? 'border-zinc-200 bg-white/50' : 'border-white/10 bg-black/20'
+              } backdrop-blur-md z-10`}
+            >
               <div className="space-y-1.5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5E1E]/15 border border-[#FF5E1E]/40 text-[#FF5E1E] text-[10px] font-black tracking-widest uppercase font-numeric">
                   <Sparkles className="w-3 h-3 text-amber-400" />
-                  <span>GD-01 • FINANCIAL LITERACY</span>
+                  <span>GD-01 • THE FINANCIAL FLIGHT SIMULATOR</span>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-                  Learn Money. Make Better Decisions.
+                <h2 className={`text-lg sm:text-xl font-black tracking-tight leading-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                  Train Before Real Life Makes The Decision For You
                 </h2>
-                <p className="text-xs text-zinc-300 leading-relaxed max-w-sm">
-                  FinQuest is an educational financial-life simulation designed to help users understand how everyday financial decisions can affect their future.
+                <p className={`text-xs leading-relaxed max-w-sm ${isLight ? 'text-zinc-600' : 'text-zinc-300'}`}>
+                  FinQuest is an educational Financial Flight Simulator where young adults practice high-stakes financial decisions with zero real-world risk.
                 </p>
               </div>
 
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer shrink-0 mt-1"
+                className={`p-2 rounded-xl transition-all cursor-pointer shrink-0 mt-1 ${
+                  isLight
+                    ? 'text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 border border-zinc-300'
+                    : 'text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+                }`}
                 aria-label="Close Information Panel"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-6 text-left">
+            {/* ── 2. Native Scrollable Content Container ───────────── */}
+            <div
+              data-lenis-prevent="true"
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-6 pt-4 space-y-6 scroll-smooth select-text"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain',
+              }}
+              tabIndex={0}
+              aria-label="What is FinQuest details"
+            >
+              {/* Flight Simulator Pilot Metaphor Banner */}
+              <div className={`p-4 rounded-2xl border-l-4 border-l-[#FF5E1E] space-y-1.5 ${isLight ? 'bg-orange-50/70 border border-orange-100' : 'bg-[#FF5E1E]/10 border border-[#FF5E1E]/20'}`}>
+                <p className={`text-xs sm:text-sm font-semibold italic leading-relaxed ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>
+                  "Pilots don’t fly passenger planes without thousands of hours in a flight simulator. Why do we let young adults enter the economy without a financial flight simulator?"
+                </p>
+                <span className="text-[10px] font-black text-[#FF5E1E] uppercase tracking-wider block font-numeric">
+                  Core Mission: High-stakes learning with zero real-world financial risk
+                </span>
+              </div>
+
               {/* Section 1: What is FinQuest? */}
               <section className="space-y-2">
                 <h3 className="text-sm font-black uppercase tracking-wider text-[#FF5E1E] flex items-center gap-1.5">
                   <Target className="w-4 h-4" />
                   <span>What is FinQuest?</span>
                 </h3>
-                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                  FinQuest is an <strong className="text-white">interactive educational game</strong> focused on financial literacy. It translates complex economic formulas into dynamic, hands-on scenarios where users make real-time decisions and immediately see the ripple effects on cashflow, net worth, and debt.
-                </p>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Instead of passive reading, you learn by doing—making financial education practical, memorable, and immediately applicable to real life.
+                <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                  FinQuest is an <strong className={isLight ? 'text-zinc-900' : 'text-white'}>interactive educational web game</strong> specifically built for Hack2Ignite Track GD-01 (Financial Literacy). It translates complex compounding mathematics, debt dynamics, and cashflow allocations into a hands-on simulation.
                 </p>
               </section>
 
               {/* Section 2: Why Did We Build FinQuest? */}
-              <section className="space-y-2 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-                <h3 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-                  <Lightbulb className="w-4 h-4 text-amber-400" />
+              <section className={`space-y-2 p-4 rounded-2xl ${isLight ? 'bg-zinc-50 border border-zinc-200' : 'bg-white/[0.03] border border-white/[0.08]'}`}>
+                <h3 className={`text-sm font-black uppercase tracking-wider flex items-center gap-1.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                  <Lightbulb className="w-4 h-4 text-amber-500" />
                   <span>Why Did We Build FinQuest?</span>
                 </h3>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Many people learn financial concepts theoretically, yet struggle to understand how those concepts behave in real-life pressure situations.
+                <p className={`text-xs leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                  Young adults learn financial definitions theoretically, but rarely encounter high-pressure situations—like an unexpected salary cut, a 36% APR credit card trap, or a deceptive UPI QR scam—until real money is on the line.
                 </p>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  FinQuest bridges this critical gap. Here, you can make bold decisions, experience realistic consequences, learn from mistakes in a risk-free environment, and build instinctive financial decision-making habits.
+                <p className={`text-xs leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                  FinQuest bridges this gap by creating an interactive sandbox where you can make bold decisions, witness consequence ripples, and develop protective instincts before entering the real economy.
                 </p>
               </section>
 
-              {/* Section 3: The Problem We Are Solving */}
+              {/* Section 3: The Real-World Problem */}
               <section className="space-y-2">
-                <h3 className="text-sm font-black uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                <h3 className="text-sm font-black uppercase tracking-wider text-red-500 flex items-center gap-1.5">
                   <AlertTriangle className="w-4 h-4" />
-                  <span>The Real-World Problem</span>
+                  <span>The Real-World Problem We Solve</span>
                 </h3>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Every day, individuals face choices involving salaries, predatory "No-Cost EMI" schemes, high-interest loans, crypto doubling scams, and sudden medical emergencies. Traditional education teaches isolated formulas, but rarely demonstrates how one hasty choice restricts options six months later.
+                <p className={`text-xs leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                  Predatory "No-Cost EMI" marketing, cyber scams, instant loan apps, and medical emergencies routinely trap young people in cycles of compounding debt. Isolated textbooks don't teach how a purchase today restricts emergency options six months down the line.
                 </p>
               </section>
 
-              {/* Section 4: Our Solution */}
+              {/* Section 4: Our Solution Loop */}
               <section className="space-y-2">
                 <h3 className="text-sm font-black uppercase tracking-wider text-[#22C55E] flex items-center gap-1.5">
                   <Zap className="w-4 h-4" />
-                  <span>Our Solution: Cause → Decision → Consequence</span>
+                  <span>Our Solution: The Feedback Loop</span>
                 </h3>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  FinQuest transforms financial literacy into an interactive life simulation. Every step follows a real-world feedback loop:
+                <p className={`text-xs leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                  FinQuest operates on an authentic aviation-inspired feedback loop:
                 </p>
-                <div className="grid grid-cols-4 gap-1 text-center pt-1 font-numeric">
-                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-                    <span className="text-[10px] text-zinc-400 block font-bold">1. Cause</span>
-                    <span className="text-xs font-black text-white">Event</span>
+                <div className="grid grid-cols-4 gap-1.5 text-center pt-1 font-numeric">
+                  <div className={`p-2 rounded-xl ${isLight ? 'bg-zinc-100 border border-zinc-200' : 'bg-white/[0.04] border border-white/[0.08]'}`}>
+                    <span className={`text-[10px] block font-bold ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>1. Event</span>
+                    <span className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>Cause</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-                    <span className="text-[10px] text-zinc-400 block font-bold">2. Decision</span>
-                    <span className="text-xs font-black text-[#FF5E1E]">Choice</span>
+                  <div className={`p-2 rounded-xl ${isLight ? 'bg-zinc-100 border border-zinc-200' : 'bg-white/[0.04] border border-white/[0.08]'}`}>
+                    <span className={`text-[10px] block font-bold ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>2. Choice</span>
+                    <span className="text-xs font-black text-[#FF5E1E]">Decision</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-                    <span className="text-[10px] text-zinc-400 block font-bold">3. Impact</span>
-                    <span className="text-xs font-black text-amber-400">Outcome</span>
+                  <div className={`p-2 rounded-xl ${isLight ? 'bg-zinc-100 border border-zinc-200' : 'bg-white/[0.04] border border-white/[0.08]'}`}>
+                    <span className={`text-[10px] block font-bold ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>3. Ripple</span>
+                    <span className="text-xs font-black text-amber-500">Consequence</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-                    <span className="text-[10px] text-zinc-400 block font-bold">4. Learning</span>
+                  <div className={`p-2 rounded-xl ${isLight ? 'bg-zinc-100 border border-zinc-200' : 'bg-white/[0.04] border border-white/[0.08]'}`}>
+                    <span className={`text-[10px] block font-bold ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>4. Growth</span>
                     <span className="text-xs font-black text-[#22C55E]">Habit</span>
                   </div>
                 </div>
               </section>
 
-              {/* Section 5: Highlighted 6-Month Financial Life Simulator */}
-              <div className="p-4 sm:p-5 rounded-2xl border border-[#FF5E1E]/40 bg-[#FF5E1E]/[0.06] space-y-2 relative overflow-hidden">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#FF5E1E]/20 text-[#FF5E1E] text-[10px] font-black uppercase">
-                  <Award className="w-3 h-3" />
-                  <span>Featured Mode: Dynamic Decision Odyssey</span>
+              {/* Section 5: What Is Inside FinQuest? (Complete Feature List) */}
+              <section className="space-y-3">
+                <h3 className={`text-sm font-black uppercase tracking-wider flex items-center gap-1.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                  <Award className="w-4 h-4 text-[#FF5E1E]" />
+                  <span>What Is Inside FinQuest?</span>
+                </h3>
+
+                <div className="space-y-2">
+                  <div className={`p-3 rounded-2xl border ${isLight ? 'bg-white border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">✈️</span>
+                      <h4 className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                        6-Month Financial Flight Simulator
+                      </h4>
+                    </div>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      Dynamic half-year career flight with salary allocations, unexpected events, and CIBIL credit score tracking.
+                    </p>
+                  </div>
+
+                  <div className={`p-3 rounded-2xl border ${isLight ? 'bg-white border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🚨</span>
+                      <h4 className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                        Scam Detective Forensic Sim
+                      </h4>
+                    </div>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      Interactive simulated smartphone to uncover red flags in fake UPI, KYC phishing, and Telegram pump-and-dump schemes.
+                    </p>
+                  </div>
+
+                  <div className={`p-3 rounded-2xl border ${isLight ? 'bg-white border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🌪️</span>
+                      <h4 className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                        Financial Turbulence Emergency Drills
+                      </h4>
+                    </div>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      Cockpit alarm events simulating urgent medical bills, hardware failure, and cascading cashflow crises.
+                    </p>
+                  </div>
+
+                  <div className={`p-3 rounded-2xl border ${isLight ? 'bg-white border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🧠</span>
+                      <h4 className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                        Pre/Post Financial IQ & Decision DNA
+                      </h4>
+                    </div>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      Quantifiable IQ Delta learning gains, 6-axis Risk Radar, and behavioral personality archetype classification.
+                    </p>
+                  </div>
+
+                  <div className={`p-3 rounded-2xl border ${isLight ? 'bg-white border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">📜</span>
+                      <h4 className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                        Personalized Official Certificate (A4 Printable)
+                      </h4>
+                    </div>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      Verified Certificate of Financial Competence with your name printed and official competence badges.
+                    </p>
+                  </div>
                 </div>
-                <h4 className="text-sm sm:text-base font-black text-white">
-                  6-Month Financial Life Simulator
-                </h4>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Experience a dynamic half-year career odyssey. Choices branch 100% based on your balances—taking high-interest debt locks out debt-free cash solutions during unexpected emergencies later!
-                </p>
-              </div>
+              </section>
 
               {/* Section 6: What Will You Learn? (6 Compact Glass Cards) */}
               <section className="space-y-3">
-                <h3 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+                <h3 className={`text-sm font-black uppercase tracking-wider flex items-center gap-1.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
                   <BookOpen className="w-4 h-4 text-[#FF5E1E]" />
                   <span>What Will You Learn?</span>
                 </h3>
@@ -236,15 +347,19 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
                     return (
                       <div
                         key={pillar.title}
-                        className="p-3 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all space-y-1"
+                        className={`p-3 rounded-xl border transition-all space-y-1 ${
+                          isLight
+                            ? 'bg-zinc-50 border-zinc-200 hover:bg-zinc-100 hover:border-zinc-300'
+                            : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20'
+                        }`}
                       >
                         <div className="flex items-center gap-2">
                           <Icon className={`w-3.5 h-3.5 ${pillar.color}`} />
-                          <span className="text-xs font-black text-white">
+                          <span className={`text-xs font-black ${isLight ? 'text-zinc-900' : 'text-white'}`}>
                             {pillar.title}
                           </span>
                         </div>
-                        <p className="text-[11px] text-zinc-400 leading-relaxed">
+                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
                           {pillar.description}
                         </p>
                       </div>
@@ -255,37 +370,37 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
 
               {/* Section 7: New to FinQuest? (3 Simple Steps) */}
               <section className="space-y-3 pt-1">
-                <h3 className="text-sm font-black uppercase tracking-wider text-white">
+                <h3 className={`text-sm font-black uppercase tracking-wider ${isLight ? 'text-zinc-900' : 'text-white'}`}>
                   New to FinQuest? 3 Simple Steps
                 </h3>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-center space-y-1">
+                  <div className={`p-3 rounded-xl border text-center space-y-1 ${isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
                     <span className="text-xs font-black text-[#FF5E1E] font-numeric block">
                       01
                     </span>
-                    <span className="text-xs font-black text-white block">Choose</span>
-                    <p className="text-[10px] text-zinc-400 leading-tight">
+                    <span className={`text-xs font-black block ${isLight ? 'text-zinc-900' : 'text-white'}`}>Choose</span>
+                    <p className={`text-[10px] leading-tight ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>
                       Pick your move when a situation hits.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-center space-y-1">
+                  <div className={`p-3 rounded-xl border text-center space-y-1 ${isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
                     <span className="text-xs font-black text-[#FF5E1E] font-numeric block">
                       02
                     </span>
-                    <span className="text-xs font-black text-white block">Experience</span>
-                    <p className="text-[10px] text-zinc-400 leading-tight">
+                    <span className={`text-xs font-black block ${isLight ? 'text-zinc-900' : 'text-white'}`}>Experience</span>
+                    <p className={`text-[10px] leading-tight ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>
                       See live balance and credit ripple effects.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-center space-y-1">
+                  <div className={`p-3 rounded-xl border text-center space-y-1 ${isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-white/[0.03] border-white/[0.08]'}`}>
                     <span className="text-xs font-black text-[#FF5E1E] font-numeric block">
                       03
                     </span>
-                    <span className="text-xs font-black text-white block">Learn</span>
-                    <p className="text-[10px] text-zinc-400 leading-tight">
+                    <span className={`text-xs font-black block ${isLight ? 'text-zinc-900' : 'text-white'}`}>Learn</span>
+                    <p className={`text-[10px] leading-tight ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>
                       Reinforce healthy financial habits.
                     </p>
                   </div>
@@ -301,13 +416,13 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
                     iconPosition="right"
                     onClick={handleStartSimulator}
                   >
-                    Start Your Journey →
+                    Start Your Flight Journey →
                   </Button>
                 </div>
               </section>
 
               {/* Section 8: Built for Learning (GD-01 Problem Statement) */}
-              <section className="pt-3 border-t border-white/10 text-center space-y-1.5 pb-1">
+              <section className="pt-3 border-t border-white/10 text-center space-y-1.5 pb-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block font-numeric">
                   Hack2Ignite Innovation Challenge • Track GD-01
                 </span>
@@ -325,4 +440,3 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
     </AnimatePresence>
   );
 };
-

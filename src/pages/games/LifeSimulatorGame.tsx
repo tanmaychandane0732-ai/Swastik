@@ -142,14 +142,14 @@ export const LifeSimulatorGame: React.FC<LifeSimulatorGameProps> = ({ onOpenCert
     const isOptimal = effects.scoreDelta >= 800;
 
     if (isOptimal) {
-      soundManager.playSuccess();
+      soundManager.playCorrectAnswer();
       confetti({
         particleCount: 50,
         spread: 60,
         origin: { y: 0.6 },
       });
     } else {
-      soundManager.playClick();
+      soundManager.playIncorrectAnswer();
     }
 
     // Compute next state
@@ -242,6 +242,7 @@ export const LifeSimulatorGame: React.FC<LifeSimulatorGameProps> = ({ onOpenCert
           setSelectedChoiceId(null);
         } else {
           // Completed all 6 months
+          soundManager.playFlightReportCompletion();
           setIsCompleted(true);
           confetti({
             particleCount: 100,
@@ -329,20 +330,23 @@ export const LifeSimulatorGame: React.FC<LifeSimulatorGameProps> = ({ onOpenCert
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 sm:py-8 space-y-6 select-none text-left">
       {/* Top Header & Team Swastik Attribution */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-5 sm:p-6 border border-[#27272A] shadow-xl">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/40 font-numeric">
-              Aviation Flight Simulator • GD-01
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-5 sm:p-6 border border-white/10 shadow-xl">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-[#FF6A2A]/15 text-[#FF6A2A] border border-[#FF6A2A]/30">
+              LIVE FLIGHT SIMULATION
             </span>
-            <span className="text-xs font-bold text-zinc-400">
-              High-Stakes Financial Learning • Zero Real-World Risk
+            <span className="label-telemetry text-zinc-400">
+              FLIGHT MONTH 0{playerState.month} OF 06
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-            <Plane className="w-5 h-5 text-[#FF5E1E]" />
+          <h1 className="font-display text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <Plane className="w-5 h-5 text-[#FF6A2A]" />
             <span>Financial Flight Simulator Cockpit</span>
           </h1>
+          <p className="text-xs text-[#A7ABB4]">
+            High-Stakes Financial Learning · Zero Real-World Rupee Risk
+          </p>
         </div>
 
         {/* Action Controls & Pack Selector */}

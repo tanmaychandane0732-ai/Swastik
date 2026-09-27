@@ -114,7 +114,7 @@ export const ScamDetectiveGame: React.FC<ScamDetectiveGameProps> = ({ onBackToHu
     setCasesInvestigated((prev) => prev + 1);
 
     if (opt.isSafe) {
-      soundManager.playSuccess();
+      soundManager.playCorrectAnswer();
       setScamsSuccessfullyEvaded((prev) => prev + 1);
       setScamShieldScore((prev) => Math.min(100, prev + 15));
       dispatch({
@@ -129,7 +129,7 @@ export const ScamDetectiveGame: React.FC<ScamDetectiveGameProps> = ({ onBackToHu
         },
       });
     } else {
-      soundManager.playWarning();
+      soundManager.playIncorrectAnswer();
       setScamShieldScore((prev) => Math.max(10, prev - 20));
       dispatch({
         type: 'RECORD_SCAM_VERDICT',
@@ -215,28 +215,35 @@ export const ScamDetectiveGame: React.FC<ScamDetectiveGameProps> = ({ onBackToHu
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 sm:py-8 space-y-6 select-none text-left">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-5 sm:p-6 border border-[var(--border-primary)] shadow-xl">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/40 font-numeric">
-              Cyber Forensics • Flight Training Deck
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-5 sm:p-6 border border-white/10 shadow-xl">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">
+              LIVE FORENSIC SIMULATION
             </span>
-            <span className="text-xs text-zinc-400 font-bold">
-              FinQuest Tactical Lab
+            <span className="label-telemetry text-zinc-400">
+              CASE {currentScenarioIndex + 1} OF {scenarios.length}
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] flex items-center gap-2">
+          <h1 className="font-display text-xl sm:text-2xl font-bold flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-red-400" />
             <span>Scam Detective: Forensic Investigation</span>
           </h1>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[#A7ABB4]">
             Inspect simulated digital communications, spot deceptive social engineering cues, and fortify your Scam Shield.
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
           <TeamLogo size="sm" showText={false} />
-          <Button variant="secondary" size="sm" onClick={onBackToHub}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              soundManager.playClick();
+              onBackToHub();
+            }}
+          >
             Training Deck
           </Button>
         </div>

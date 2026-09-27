@@ -21,26 +21,44 @@ import { ClassroomCockpit } from './components/flight/ClassroomCockpit';
 import { JudgeDemoModeModal } from './components/flight/JudgeDemoModeModal';
 import { DailyFlightChallengeModal } from './components/flight/DailyFlightChallengeModal';
 import { CursorBuddy } from './components/common/CursorBuddy';
+import { CursorRipple } from './components/common/CursorRipple';
 import { TrainingDeckPage } from './pages/TrainingDeckPage';
 import { ScamDetectiveGame } from './components/scam/ScamDetectiveGame';
 import { FinancialTurbulenceGame } from './components/turbulence/FinancialTurbulenceGame';
+import { SmoothScrollProvider } from './components/providers/SmoothScrollProvider';
+import { ScrollChapterIndicator } from './components/common/ScrollChapterIndicator';
+import { FinQuestStartupLoader } from './components/common/FinQuestStartupLoader';
+import { DynamicEnvironment } from './components/environment/DynamicEnvironment';
+import { ScrollImageSequenceCanvas } from './components/common/ScrollImageSequenceCanvas';
+
 
 const GameShell: React.FC = () => {
   const { state, dispatch } = useGame();
+  const [isStartupLoading, setIsStartupLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('finquest_startup_seen');
+    }
+    return true;
+  });
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isBadgesOpen, setIsBadgesOpen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [isVideoConfigOpen, setIsVideoConfigOpen] = useState(false);
   const [isJudgeDemoOpen, setIsJudgeDemoOpen] = useState(false);
   const [isDailyChallengeOpen, setIsDailyChallengeOpen] = useState(false);
+  const [activeLandingChapter, setActiveLandingChapter] = useState('hero');
   const bgVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (bgVideoRef.current) {
       bgVideoRef.current.muted = true;
-      bgVideoRef.current.play().catch(() => {});
+      if (!isStartupLoading) {
+        bgVideoRef.current.play().catch(() => {});
+      } else {
+        bgVideoRef.current.pause();
+      }
     }
-  }, []);
+  }, [isStartupLoading]);
 
   const renderCurrentStage = () => {
     switch (state.gameStage) {
@@ -56,6 +74,7 @@ const GameShell: React.FC = () => {
               }
             }}
             onOpenCertificate={() => setIsCertificateOpen(true)}
+            onActiveChapterChange={setActiveLandingChapter}
           />
         );
 
@@ -123,73 +142,102 @@ const GameShell: React.FC = () => {
     }
   };
 
+  const isLight = state.settings.theme === 'light';
+
   return (
-    <div className="min-h-screen text-white flex flex-col font-sans selection:bg-[#FF5E1E]/30 selection:text-[#FF5E1E] relative">
-      {/* Background Video at Lowest Visual Layer */}
-      <video
-        ref={bgVideoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        src="/hero.mp4"
-        className="fixed inset-0 w-full h-full object-cover pointer-events-none z-0"
-      />
+    <SmoothScrollProvider>
+      <div className={`min-h-screen ${isLight ? 'text-[#17191D] theme-clean' : 'text-[#F5F3EF]'} flex flex-col font-sans selection:bg-[#FF6A2A]/30 selection:text-[#FF6A2A] relative transition-colors duration-500`}>
+        {/* Cinematic Scroll-Linked Image Sequence Canvas (Landing & Hero) */}
+        {state.gameStage === 'landing' ? (
+          <ScrollImageSequenceCanvas isLight={isLight} />
+        ) : (
+          <>
+            {/* Background Video at Lowest Visual Layer for gameplay stages */}
+            <video
+              ref={bgVideoRef}
+              autoPlay
+              muted
+              loop
+              playsInline
+              src="/hero.mp4"
+              className={`fixed inset-0 w-full h-full object-cover pointer-events-none z-0 transition-opacity duration-500 ${isLight ? 'opacity-20' : 'opacity-40'}`}
+            />
+            {/* Atmospheric Overlay for gameplay stages */}
+            <div className={`fixed inset-0 pointer-events-none z-0 transition-colors duration-500 ${isLight ? 'bg-gradient-to-b from-[#F4F1EC]/88 via-[#F4F1EC]/78 to-[#F4F1EC]/92' : 'bg-gradient-to-b from-[#0A0C0F]/78 via-[#0A0C0F]/62 to-[#0A0C0F]/88'}`} />
+          </>
+        )}
 
-      {/* Live Ambient Video Background Component */}
-      <LiveVideoBackground
-        isConfigOpen={isVideoConfigOpen}
-        onCloseConfig={() => setIsVideoConfigOpen(false)}
-      />
+        {/* Dynamic Multi-Layer Scrolling Environment */}
+        <DynamicEnvironment activeChapter={activeLandingChapter} />
 
-      {/* Persistent Financial HUD */}
-      <TopHUD
-        onOpenBadges={() => setIsBadgesOpen(true)}
-        onOpenLeaderboard={() => dispatch({ type: 'SET_STAGE', payload: 'leaderboard' })}
-        onOpenCertificate={() => setIsCertificateOpen(true)}
-        onOpenVideoSettings={() => setIsVideoConfigOpen(true)}
-        onOpenJudgeDemo={() => setIsJudgeDemoOpen(true)}
-        onOpenDailyChallenge={() => setIsDailyChallengeOpen(true)}
-      />
+        {/* Live Ambient Video Background Component */}
+        <LiveVideoBackground
+          isConfigOpen={isVideoConfigOpen}
+          onCloseConfig={() => setIsVideoConfigOpen(false)}
+        />
 
-      {/* Main Gameplay Canvas */}
-      <main className="flex-1 relative z-10">
-        {renderCurrentStage()}
-      </main>
+        {/* Persistent Financial HUD */}
+        <TopHUD
+          onOpenBadges={() => setIsBadgesOpen(true)}
+          onOpenLeaderboard={() => dispatch({ type: 'SET_STAGE', payload: 'leaderboard' })}
+          onOpenCertificate={() => setIsCertificateOpen(true)}
+          onOpenVideoSettings={() => setIsVideoConfigOpen(true)}
+          onOpenJudgeDemo={() => setIsJudgeDemoOpen(true)}
+          onOpenDailyChallenge={() => setIsDailyChallengeOpen(true)}
+        />
 
-      {/* Global Modals */}
-      <FeedbackModal />
-      <BadgeModal
-        isOpen={isBadgesOpen}
-        onClose={() => setIsBadgesOpen(false)}
-      />
-      <OnboardingModal
-        isOpen={isOnboardingOpen}
-        onClose={() => setIsOnboardingOpen(false)}
-      />
-      <CertificateModal
-        isOpen={isCertificateOpen}
-        onClose={() => setIsCertificateOpen(false)}
-      />
+        {/* Main Gameplay Canvas */}
+        <main className="flex-1 relative z-10">
+          {renderCurrentStage()}
+        </main>
 
-      {/* Judge Demo Walkthrough Modal (2 Min) */}
-      <JudgeDemoModeModal
-        isOpen={isJudgeDemoOpen}
-        onClose={() => setIsJudgeDemoOpen(false)}
-        onNavigateToStage={(stage) => dispatch({ type: 'SET_STAGE', payload: stage as any })}
-      />
+        {/* Chapter indicator — only on landing page scroll story */}
+        <ScrollChapterIndicator
+          visible={state.gameStage === 'landing'}
+          onActiveChapterChange={setActiveLandingChapter}
+        />
 
-      {/* Daily Flight Dilemma Modal */}
-      <DailyFlightChallengeModal
-        isOpen={isDailyChallengeOpen}
-        onClose={() => setIsDailyChallengeOpen(false)}
-        onIncrementStreak={() => dispatch({ type: 'INCREMENT_STREAK' })}
-      />
+        {/* Global Modals */}
+        <FeedbackModal />
+        <BadgeModal
+          isOpen={isBadgesOpen}
+          onClose={() => setIsBadgesOpen(false)}
+        />
+        <OnboardingModal
+          isOpen={isOnboardingOpen}
+          onClose={() => setIsOnboardingOpen(false)}
+        />
+        <CertificateModal
+          isOpen={isCertificateOpen}
+          onClose={() => setIsCertificateOpen(false)}
+        />
 
-      {/* Interactive Cursor-Aware Companion */}
-      <CursorBuddy />
-    </div>
+        {/* Judge Demo Walkthrough Modal (2 Min) */}
+        <JudgeDemoModeModal
+          isOpen={isJudgeDemoOpen}
+          onClose={() => setIsJudgeDemoOpen(false)}
+          onNavigateToStage={(stage) => dispatch({ type: 'SET_STAGE', payload: stage as any })}
+        />
+
+        {/* Daily Flight Dilemma Modal */}
+        <DailyFlightChallengeModal
+          isOpen={isDailyChallengeOpen}
+          onClose={() => setIsDailyChallengeOpen(false)}
+          onIncrementStreak={() => dispatch({ type: 'INCREMENT_STREAK' })}
+        />
+
+        {/* Interactive Cursor-Aware Companion & Ripple Engine */}
+        <CursorBuddy />
+        <CursorRipple />
+
+        {/* Cinematic Startup Flight Calibration Loader */}
+        {isStartupLoading && (
+          <FinQuestStartupLoader onComplete={() => setIsStartupLoading(false)} />
+        )}
+      </div>
+    </SmoothScrollProvider>
   );
+
 };
 
 export default function App() {

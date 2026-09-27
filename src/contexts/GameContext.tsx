@@ -347,8 +347,10 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       if (typeof document !== 'undefined') {
         if (nextTheme === 'light') {
           document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
           document.body.classList.add('theme-clean');
         } else {
+          document.documentElement.classList.remove('light');
           document.documentElement.classList.add('dark');
           document.body.classList.remove('theme-clean');
         }
@@ -471,8 +473,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (state.settings.theme === 'light') {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
       document.body.classList.add('theme-clean');
     } else {
+      document.documentElement.classList.remove('light');
       document.documentElement.classList.add('dark');
       document.body.classList.remove('theme-clean');
     }

@@ -35,27 +35,31 @@ export const ClassroomCockpit: React.FC<ClassroomCockpitProps> = ({ onBackToHub 
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-8 space-y-6 select-none text-left">
       {/* Top Cockpit Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-6 border border-[#27272A] shadow-xl">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/40 font-numeric">
-              Institutional Cockpit (B2B2C)
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-6 border border-white/10 shadow-xl">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
+              INSTITUTIONAL COCKPIT · B2B2C
             </span>
-            <span className="text-xs text-zinc-400 font-bold">
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-white/06 text-zinc-300 border border-white/10">
               {cohort.institution}
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
             Educator Flight Telemetry: {cohort.cohortName}
           </h1>
-          <p className="text-xs text-zinc-400">
-            Real-time cohort performance analytics, failure traps, and learning progress tracking
+          <p className="text-xs text-[#A7ABB4]">
+            Real-time cohort performance analytics, failure traps, and learning progress tracking.
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
           <TeamLogo size="sm" showText={true} />
-          <Button variant="secondary" size="sm" onClick={onBackToHub}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onBackToHub}
+          >
             Return to Hub
           </Button>
         </div>

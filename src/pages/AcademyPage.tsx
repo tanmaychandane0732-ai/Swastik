@@ -17,6 +17,7 @@ import { useGame } from '../contexts/GameContext';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
 import { TeamLogo } from '../components/common/TeamLogo';
+import { soundManager } from '../services/audioService';
 
 export const AcademyPage: React.FC = () => {
   const { dispatch } = useGame();
@@ -27,6 +28,7 @@ export const AcademyPage: React.FC = () => {
   const activeModule = ACADEMY_MODULES.find((m) => m.id === selectedModuleId) || ACADEMY_MODULES[0];
 
   const handleSelectModule = (mod: AcademyModule) => {
+    soundManager.playClick();
     setSelectedModuleId(mod.id);
     setSelectedQuizOption(null);
     setIsQuizSubmitted(false);
@@ -34,6 +36,11 @@ export const AcademyPage: React.FC = () => {
 
   const handleQuizSubmit = () => {
     if (selectedQuizOption !== null) {
+      if (selectedQuizOption === activeModule.quickCheck.correctIndex) {
+        soundManager.playCorrectAnswer();
+      } else {
+        soundManager.playIncorrectAnswer();
+      }
       setIsQuizSubmitted(true);
     }
   };
@@ -41,19 +48,21 @@ export const AcademyPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-8 space-y-6 select-none text-left">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-6 border border-[#27272A] shadow-xl">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 font-numeric">
-              Micro-Learning Hub • 60-Sec Cards
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card rounded-3xl p-6 border border-white/10 shadow-xl">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
+              MICRO-LEARNING HUB · 60-SEC CARDS
             </span>
-            <span className="text-xs text-zinc-400 font-bold">FinQuest Flight School</span>
+            <span className="label-telemetry px-2 py-0.5 rounded-full bg-white/06 text-zinc-300 border border-white/10">
+              FLIGHT ACADEMY
+            </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
             FinQuest Flight Academy
           </h1>
-          <p className="text-xs text-zinc-400">
-            Rapid aviation mental models to fly through modern personal finance with zero debt stalls
+          <p className="text-xs text-[#A7ABB4]">
+            Rapid aviation mental models to fly through modern personal finance with zero debt stalls.
           </p>
         </div>
 
@@ -62,7 +71,10 @@ export const AcademyPage: React.FC = () => {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => dispatch({ type: 'SET_STAGE', payload: 'dashboard' })}
+            onClick={() => {
+              soundManager.playClick();
+              dispatch({ type: 'SET_STAGE', payload: 'dashboard' });
+            }}
           >
             Quest Hub
           </Button>

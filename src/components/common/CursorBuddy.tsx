@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { FinQuestInfoPanel } from './FinQuestInfoPanel';
+import { useGame } from '../../contexts/GameContext';
 
 export const CursorBuddy: React.FC = () => {
+  const { state } = useGame();
+  const isLight = state.settings.theme === 'light';
   const containerRef = useRef<HTMLDivElement>(null);
   const [isNearby, setIsNearby] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -152,19 +155,31 @@ export const CursorBuddy: React.FC = () => {
               : 'hover:border-white/25'
           }`}
         >
-          {/* Dark Smoked Glass Capsule */}
+          {/* Dynamic Smoked or Crystal Glass Capsule */}
           <div
-            className="absolute inset-0 rounded-full transition-colors duration-300"
+            className="absolute inset-0 rounded-full transition-all duration-300"
             style={{
-              background: isNearby
+              background: isLight
+                ? isNearby
+                  ? 'rgba(255, 255, 255, 0.95)'
+                  : 'rgba(255, 255, 255, 0.85)'
+                : isNearby
                 ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(0, 0, 0, 0.15) 100%), rgba(16, 18, 24, 0.76)'
                 : 'linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(0, 0, 0, 0.12) 100%), rgba(14, 16, 21, 0.65)',
               backdropFilter: 'blur(18px) saturate(140%)',
               WebkitBackdropFilter: 'blur(18px) saturate(140%)',
-              border: isNearby
+              border: isLight
+                ? isNearby
+                  ? '1px solid #FF5E1E'
+                  : '1px solid rgba(226, 232, 240, 0.9)'
+                : isNearby
                 ? '1px solid rgba(255, 255, 255, 0.24)'
                 : '1px solid rgba(255, 255, 255, 0.12)',
-              boxShadow: isNearby
+              boxShadow: isLight
+                ? isNearby
+                  ? '0 12px 30px rgba(0, 0, 0, 0.12), 0 0 15px rgba(255, 94, 30, 0.25)'
+                  : '0 8px 24px rgba(0, 0, 0, 0.06)'
+                : isNearby
                 ? '0 16px 50px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 94, 30, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16)'
                 : '0 12px 40px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.09)',
             }}
@@ -173,7 +188,7 @@ export const CursorBuddy: React.FC = () => {
           {/* Subtle Ambient Brand Glow when cursor is close */}
           <div
             className={`absolute inset-0 rounded-full transition-opacity duration-300 pointer-events-none ${
-              isNearby ? 'opacity-100 bg-[#FF5E1E]/10 blur-sm' : 'opacity-0'
+              isNearby ? 'opacity-100 bg-[#FF5E1E]/15 blur-sm' : 'opacity-0'
             }`}
           />
 
@@ -203,7 +218,7 @@ export const CursorBuddy: React.FC = () => {
 
           {/* Subtle Tooltip on Hover */}
           <div className="absolute bottom-full mb-2.5 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-            <div className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider text-zinc-300 border border-white/10 bg-[#0C0E12]/80 backdrop-blur-md shadow-lg flex items-center gap-1.5">
+            <div className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-zinc-800 border-zinc-300 bg-white/95 shadow-md' : 'text-zinc-300 border-white/10 bg-[#0C0E12]/80 backdrop-blur-md shadow-lg'} border flex items-center gap-1.5`}>
               <span className="w-1.5 h-1.5 rounded-full bg-[#FF5E1E] animate-pulse" />
               <span>What is FinQuest? (Click Me)</span>
             </div>
