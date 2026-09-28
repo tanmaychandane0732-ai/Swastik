@@ -15,17 +15,20 @@ import {
   Check,
   Sparkles,
   RotateCcw,
+  LogOut,
 } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 import { soundManager } from '../../services/audioService';
 import { useSmoothScroll } from '../providers/SmoothScrollProvider';
 import { ConfirmationModal } from '../common/ConfirmationModal';
+import { localAuth } from '../../services/localAuth';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenLeaderboard: () => void;
   onOpenCertificate: () => void;
+  onOpenAuth?: (tab?: 'register' | 'login' | 'guest') => void;
 }
 
 export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
@@ -33,6 +36,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   onClose,
   onOpenLeaderboard,
   onOpenCertificate,
+  onOpenAuth,
 }) => {
   const { state, dispatch } = useGame();
   const isLight = state.settings.theme === 'light';
@@ -559,6 +563,37 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                 <p className={`label-telemetry ${isLight ? 'text-[#9EA3AD]' : 'text-[#5A5E68]'}`}>
                   FLIGHT SIMULATION MANAGEMENT
                 </p>
+                {/* Switch Pilot / Sign Out */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    localAuth.logout();
+                    dispatch({ type: 'SET_PLAYER_NAME', payload: '' });
+                    onClose();
+                    onOpenAuth?.('login');
+                  }}
+                  className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer group ${
+                    isLight
+                      ? 'bg-amber-500/05 hover:bg-amber-500/10 border-amber-500/15 text-amber-600'
+                      : 'bg-amber-500/08 hover:bg-amber-500/15 border-amber-500/20 text-amber-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-amber-500/15 text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                      <LogOut className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-bold">Switch Pilot / Sign Out</p>
+                      <p className={`text-[11px] ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                        Log in with another account or create a callsign
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 opacity-50 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+
+                {/* Reset Flight Progress */}
                 <button
                   type="button"
                   onClick={() => setIsConfirmRestartOpen(true)}

@@ -16,6 +16,7 @@ interface TopHUDProps {
   onOpenVideoSettings?: () => void;
   onOpenJudgeDemo?: () => void;
   onOpenDailyChallenge?: () => void;
+  onOpenAuth?: (tab?: 'register' | 'login' | 'guest') => void;
 }
 
 interface NavItem {
@@ -39,6 +40,7 @@ export const TopHUD: React.FC<TopHUDProps> = ({
   onOpenLeaderboard,
   onOpenCertificate,
   onOpenJudgeDemo,
+  onOpenAuth,
 }) => {
   const { state, dispatch } = useGame();
   const { player, netWorth, financialHealth, score, streakMultiplier, settings } = state;
@@ -49,6 +51,9 @@ export const TopHUD: React.FC<TopHUDProps> = ({
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Check if pilot is identified
+  const isIdentified = !!(player.name && player.name.trim() !== '' && player.name !== 'Cadet');
 
   // Close mobile navigation on Escape key
   useEffect(() => {
@@ -67,6 +72,13 @@ export const TopHUD: React.FC<TopHUDProps> = ({
 
     if (item.action === 'judgeDemo') {
       onOpenJudgeDemo?.();
+      return;
+    }
+
+    // Protect game stages if user has not entered name or logged in
+    if (!isIdentified && item.stage && item.stage !== 'landing') {
+      soundManager.playWarning();
+      onOpenAuth?.('register');
       return;
     }
 
@@ -222,6 +234,38 @@ export const TopHUD: React.FC<TopHUDProps> = ({
                 )}
               </div>
 
+              {/* Pilot Status or Sign In Button */}
+              {!isIdentified ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    onOpenAuth?.('register');
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#FF6A2A]/15 text-[#FF6A2A] border border-[#FF6A2A]/35 hover:bg-[#FF6A2A] hover:text-white transition-all cursor-pointer shadow-sm"
+                  title="Sign In or Register Cadet Account"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Sign In / Log In</span>
+                  <span className="sm:hidden">Sign In</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setIsProfileOpen(true);
+                  }}
+                  className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                    isLight ? 'bg-black/04 border-black/08 text-zinc-800' : 'bg-white/06 border-white/10 text-zinc-200'
+                  }`}
+                  title="Active Pilot Callsign"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
+                  <span className="max-w-[100px] truncate">{player.name}</span>
+                </button>
+              )}
+
               {/* Minimalist Profile Icon Button (Top Right Entrypoint) */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -316,18 +360,30 @@ export const TopHUD: React.FC<TopHUDProps> = ({
                 })}
               </div>
 
-              {/* Mobile Quick Profile Action */}
+              {/* Mobile Quick Auth / Profile Action */}
               <div className="mt-3 pt-3 border-t border-white/08 flex items-center justify-between">
-                <span className="text-xs text-[#A7ABB4]">Pilot: {player.name || 'Cadet'}</span>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsProfileOpen(true);
-                  }}
-                  className="text-xs font-bold text-[#FF6A2A] hover:underline cursor-pointer"
-                >
-                  View Profile Drawer →
-                </button>
+                <span className="text-xs text-[#A7ABB4]">Pilot: {player.name || 'Not Signed In'}</span>
+                {!isIdentified ? (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenAuth?.('register');
+                    }}
+                    className="text-xs font-bold text-[#FF6A2A] hover:underline cursor-pointer"
+                  >
+                    Sign In / Log In →
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsProfileOpen(true);
+                    }}
+                    className="text-xs font-bold text-[#FF6A2A] hover:underline cursor-pointer"
+                  >
+                    View Profile Drawer →
+                  </button>
+                )}
               </div>
             </motion.div>
           </>
@@ -346,6 +402,7 @@ export const TopHUD: React.FC<TopHUDProps> = ({
         onOpenCertificate={() => {
           onOpenCertificate?.();
         }}
+        onOpenAuth={onOpenAuth}
       />
     </>
   );

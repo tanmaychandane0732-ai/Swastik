@@ -61,9 +61,9 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
     return ENVIRONMENT_PALETTES[activeMood] || ENVIRONMENT_PALETTES.home;
   }, [activeMood]);
 
-  // Financial health reactivity
-  const healthWarningOpacity = financialHealth < 40 ? 0.35 : financialHealth < 60 ? 0.15 : 0;
-  const healthResilienceOpacity = financialHealth >= 75 ? 0.25 : 0;
+  // Financial health reactivity (sheer 1% tint)
+  const healthWarningOpacity = financialHealth < 40 ? 0.025 : financialHealth < 60 ? 0.01 : 0;
+  const healthResilienceOpacity = financialHealth >= 75 ? 0.018 : 0;
 
   // Multi-layer continuous scroll parallax offsets (clamped)
   const bgMeshY = prefersReducedMotion ? 0 : scrollProgress * 180;
@@ -76,7 +76,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
       className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none"
       aria-hidden="true"
     >
-      {/* ── 1. BaseGradient (Fluid Continuous Ambient Mesh) ─────────── */}
+      {/* ── 1. BaseGradient (Fluid Continuous Ambient Mesh - Ultra-sheer 1% tint) ── */}
       <motion.div
         animate={{
           background: isLight ? palette.lightBg : palette.ambientBg,
@@ -89,7 +89,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
         className="absolute inset-0 w-full h-[120vh] transition-opacity duration-1000"
       />
 
-      {/* ── 2. AtmosphericGlow (Multi-Orb Organic Light Architecture) ── */}
+      {/* ── 2. AtmosphericGlow (Multi-Orb Organic Light Architecture - ~1% Opacity) ── */}
       <div
         className="absolute inset-0 overflow-hidden"
         style={{ transform: `translate3d(0, ${orbsParallaxY}px, 0)` }}
@@ -109,7 +109,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             scale: { duration: 18, repeat: Infinity, ease: 'easeInOut' },
           }}
           className={`absolute -top-36 -left-36 w-[560px] sm:w-[720px] h-[560px] sm:h-[720px] rounded-full blur-[130px] ${
-            isLight ? 'opacity-40 mix-blend-multiply' : 'opacity-35 mix-blend-screen'
+            isLight ? 'opacity-[0.015] mix-blend-multiply' : 'opacity-[0.015] mix-blend-screen'
           }`}
         />
 
@@ -128,7 +128,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             scale: { duration: 22, repeat: Infinity, ease: 'easeInOut' },
           }}
           className={`absolute top-[32%] -right-44 w-[520px] sm:w-[660px] h-[520px] sm:h-[660px] rounded-full blur-[140px] ${
-            isLight ? 'opacity-35 mix-blend-multiply' : 'opacity-30 mix-blend-screen'
+            isLight ? 'opacity-[0.012] mix-blend-multiply' : 'opacity-[0.012] mix-blend-screen'
           }`}
         />
 
@@ -145,7 +145,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             y: { duration: 17, repeat: Infinity, ease: 'easeInOut' },
           }}
           className={`absolute bottom-[5%] left-[25%] w-[440px] sm:w-[580px] h-[440px] sm:h-[580px] rounded-full blur-[110px] ${
-            isLight ? 'opacity-25 mix-blend-multiply' : 'opacity-25 mix-blend-screen'
+            isLight ? 'opacity-[0.010] mix-blend-multiply' : 'opacity-[0.010] mix-blend-screen'
           }`}
         />
       </div>
@@ -157,7 +157,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             opacity: [healthWarningOpacity * 0.6, healthWarningOpacity, healthWarningOpacity * 0.6],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(239,68,68,0.30)_0%,transparent_70%)] mix-blend-screen pointer-events-none"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(239,68,68,0.015)_0%,transparent_70%)] mix-blend-screen pointer-events-none"
         />
       )}
 
@@ -168,29 +168,29 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             opacity: [healthResilienceOpacity * 0.7, healthResilienceOpacity, healthResilienceOpacity * 0.7],
           }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,197,94,0.22)_0%,transparent_65%)] mix-blend-screen pointer-events-none"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,197,94,0.015)_0%,transparent_65%)] mix-blend-screen pointer-events-none"
         />
       )}
 
-      {/* ── 3. LightField (SceneAI-Inspired Atmospheric Sunlight Shaft) ─ */}
+      {/* ── 3. LightField (SceneAI-Inspired Atmospheric Sunlight Shaft - 1% Sheer) ─ */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
             rotate: prefersReducedMotion ? -25 : -25 + scrollProgress * 15,
-            opacity: isLight ? 0.35 : 0.45,
+            opacity: isLight ? 0.012 : 0.015,
           }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className={`absolute top-0 right-1/4 w-[320px] sm:w-[460px] h-[130vh] origin-top transform ${
             isLight
-              ? 'bg-gradient-to-b from-sky-300/25 via-amber-200/15 to-transparent blur-3xl'
-              : 'bg-gradient-to-b from-sky-400/18 via-[#FF6A2A]/08 to-transparent blur-3xl'
+              ? 'bg-gradient-to-b from-sky-300/10 via-amber-200/05 to-transparent blur-3xl'
+              : 'bg-gradient-to-b from-sky-400/08 via-[#FF6A2A]/04 to-transparent blur-3xl'
           }`}
         />
       </div>
 
       {/* ── 4. AbstractShapes (Aviation Compass & Artificial Horizon) ── */}
       <div
-        className="absolute inset-0 overflow-hidden opacity-35 sm:opacity-45"
+        className="absolute inset-0 overflow-hidden opacity-10 sm:opacity-15"
         style={{ transform: `translate3d(0, ${compassParallaxY}px, 0)` }}
       >
         <motion.svg

@@ -31,6 +31,7 @@ import { FinQuestStartupLoader } from './components/common/FinQuestStartupLoader
 import { DynamicEnvironment } from './components/environment/DynamicEnvironment';
 import { ScrollImageSequenceCanvas } from './components/common/ScrollImageSequenceCanvas';
 import { BackToTop } from './components/common/BackToTop';
+import { localAuth } from './services/localAuth';
 
 
 const GameShell: React.FC = () => {
@@ -42,6 +43,7 @@ const GameShell: React.FC = () => {
     return true;
   });
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [onboardingInitialTab, setOnboardingInitialTab] = useState<'register' | 'login' | 'guest'>('register');
   const [isBadgesOpen, setIsBadgesOpen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [isVideoConfigOpen, setIsVideoConfigOpen] = useState(false);
@@ -61,6 +63,17 @@ const GameShell: React.FC = () => {
     }
   }, [isStartupLoading]);
 
+  // Auto pop-up auth/identification window after loading screen finishes if user is not identified
+  useEffect(() => {
+    if (!isStartupLoading) {
+      const isIdentified = localAuth.isIdentified() || (!!state.player.name && state.player.name.trim() !== '' && state.player.name !== 'Cadet');
+      if (!isIdentified) {
+        setOnboardingInitialTab('register');
+        setIsOnboardingOpen(true);
+      }
+    }
+  }, [isStartupLoading, state.player.name]);
+
   const renderCurrentStage = () => {
     switch (state.gameStage) {
       case 'landing':
@@ -71,11 +84,16 @@ const GameShell: React.FC = () => {
                 dispatch({ type: 'SET_PLAYER_NAME', payload: playerName.trim() });
                 dispatch({ type: 'SET_STAGE', payload: 'dashboard' });
               } else {
+                setOnboardingInitialTab('guest');
                 setIsOnboardingOpen(true);
               }
             }}
             onOpenCertificate={() => setIsCertificateOpen(true)}
             onActiveChapterChange={setActiveLandingChapter}
+            onOpenAuth={(tab) => {
+              setOnboardingInitialTab(tab || 'register');
+              setIsOnboardingOpen(true);
+            }}
           />
         );
 
@@ -185,6 +203,10 @@ const GameShell: React.FC = () => {
           onOpenVideoSettings={() => setIsVideoConfigOpen(true)}
           onOpenJudgeDemo={() => setIsJudgeDemoOpen(true)}
           onOpenDailyChallenge={() => setIsDailyChallengeOpen(true)}
+          onOpenAuth={(tab) => {
+            setOnboardingInitialTab(tab || 'register');
+            setIsOnboardingOpen(true);
+          }}
         />
 
         {/* Main Gameplay Canvas */}
@@ -207,6 +229,7 @@ const GameShell: React.FC = () => {
         <OnboardingModal
           isOpen={isOnboardingOpen}
           onClose={() => setIsOnboardingOpen(false)}
+          initialTab={onboardingInitialTab}
         />
         <CertificateModal
           isOpen={isCertificateOpen}
@@ -234,7 +257,16 @@ const GameShell: React.FC = () => {
 
         {/* Cinematic Startup Flight Calibration Loader */}
         {isStartupLoading && (
-          <FinQuestStartupLoader onComplete={() => setIsStartupLoading(false)} />
+          <FinQuestStartupLoader
+            onComplete={() => {
+              setIsStartupLoading(false);
+              const isIdentified = localAuth.isIdentified() || (!!state.player.name && state.player.name.trim() !== '' && state.player.name !== 'Cadet');
+              if (!isIdentified) {
+                setOnboardingInitialTab('register');
+                setIsOnboardingOpen(true);
+              }
+            }}
+          />
         )}
       </div>
     </SmoothScrollProvider>

@@ -41,17 +41,20 @@ import { RiskRadar } from '../components/flight/RiskRadar';
 import { RiskRadarMetrics } from '../types/flightSimulator';
 import { ScrollReveal } from '../components/environment/ScrollReveal';
 import { ExpandableFAQ } from '../components/common/ExpandableFAQ';
+import { localAuth } from '../services/localAuth';
 
 interface LandingPageProps {
   onStartQuest: (name?: string) => void;
   onOpenCertificate?: () => void;
   onActiveChapterChange?: (chapterId: string) => void;
+  onOpenAuth?: (tab?: 'register' | 'login' | 'guest') => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onStartQuest,
   onOpenCertificate,
   onActiveChapterChange,
+  onOpenAuth,
 }) => {
   const { state, dispatch } = useGame();
   const isLight = state.settings.theme === 'light';
@@ -95,16 +98,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     setNameInput(val);
     if (val.trim()) {
       dispatch({ type: 'SET_PLAYER_NAME', payload: val.trim() });
+      localAuth.startAsGuest(val.trim());
     }
   };
 
   const handleStartPlaying = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (nameInput.trim()) {
+      localAuth.startAsGuest(nameInput.trim());
       dispatch({ type: 'SET_PLAYER_NAME', payload: nameInput.trim() });
       onStartQuest(nameInput.trim());
     } else {
-      onStartQuest();
+      if (onOpenAuth) {
+        onOpenAuth('guest');
+      } else {
+        onStartQuest();
+      }
     }
   };
 
@@ -233,10 +242,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   return (
     <div className="relative min-h-screen flex flex-col justify-start items-center px-3 sm:px-6 py-6 sm:py-12 overflow-x-hidden space-y-20 sm:space-y-28">
-      {/* Ambient glow orbs — parallax-slow ensures these move slightly slower than content on scroll */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[480px] h-[480px] bg-[#FF6A2A]/12 rounded-full blur-3xl pointer-events-none parallax-slow" />
-      <div className="absolute top-[38%] right-8 w-72 h-72 bg-[#FF6A2A]/08 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-[72%] left-8 w-72 h-72 bg-[#FF6A2A]/08 rounded-full blur-3xl pointer-events-none" />
+      {/* Ambient glow orbs — ultra-sheer 1% tint to prevent blocking background */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[480px] h-[480px] bg-[#FF6A2A]/[0.015] rounded-full blur-3xl pointer-events-none parallax-slow" />
+      <div className="absolute top-[38%] right-8 w-72 h-72 bg-[#FF6A2A]/[0.01] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[72%] left-8 w-72 h-72 bg-[#FF6A2A]/[0.01] rounded-full blur-3xl pointer-events-none" />
 
       {/* ========================================================================= */}
       {/* 1. CINEMATIC HERO SECTION                                                */}
@@ -344,6 +353,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </Button>
               </div>
             </form>
+
+            {/* Quick Pilot Auth Options: Sign In (Create Account) / Log In / Callsign */}
+            <div className={`flex flex-wrap items-center justify-center gap-2 pt-1 pb-1 text-xs ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+              <span className="text-[11px]">Flight Clearance:</span>
+              <button
+                type="button"
+                onClick={() => onOpenAuth?.('register')}
+                className="text-[11px] font-bold text-[#FF6A2A] hover:underline cursor-pointer flex items-center gap-1"
+              >
+                <span>✨ Sign In (New Account)</span>
+              </button>
+              <span className="text-zinc-500 text-[10px]">•</span>
+              <button
+                type="button"
+                onClick={() => onOpenAuth?.('login')}
+                className={`text-[11px] font-bold hover:underline cursor-pointer flex items-center gap-1 ${
+                  isLight ? 'text-zinc-800' : 'text-zinc-200'
+                }`}
+              >
+                <span>🔑 Log In</span>
+              </button>
+              <span className="text-zinc-500 text-[10px]">•</span>
+              <button
+                type="button"
+                onClick={() => onOpenAuth?.('guest')}
+                className={`text-[11px] font-medium hover:underline cursor-pointer ${
+                  isLight ? 'text-zinc-500' : 'text-zinc-400'
+                }`}
+              >
+                <span>Quick Callsign</span>
+              </button>
+            </div>
 
             <div className={`flex items-center justify-between text-[11px] pt-3 border-t ${isLight ? 'border-zinc-200 text-zinc-600' : 'border-[#27272A] text-zinc-400'}`}>
               <span className="flex items-center gap-1.5">
