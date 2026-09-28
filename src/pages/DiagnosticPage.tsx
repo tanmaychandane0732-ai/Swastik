@@ -26,6 +26,7 @@ import { soundManager } from '../services/audioService';
 export const DiagnosticPage: React.FC = () => {
   const { state, dispatch } = useGame();
   const questions = PRE_FLIGHT_DIAGNOSTIC_QUESTIONS;
+  const isLight = state.settings.theme === 'light';
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
@@ -145,7 +146,7 @@ export const DiagnosticPage: React.FC = () => {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-24 sm:w-32 h-2 bg-[#18181D] rounded-full overflow-hidden">
+            <div className={`w-24 sm:w-32 h-2 rounded-full overflow-hidden ${isLight ? 'bg-black/10' : 'bg-[#18181D]'}`}>
               <div
                 className="h-full bg-[#FF5E1E] rounded-full transition-all duration-300"
                 style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
@@ -155,14 +156,14 @@ export const DiagnosticPage: React.FC = () => {
 
           {/* Scenario & Question Prompt */}
           <div className="space-y-3">
-            <div className="p-4 rounded-2xl bg-[#18181D] border border-[#27272A] text-xs sm:text-sm text-zinc-300 leading-relaxed">
-              <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">
+            <div className={`p-4 rounded-2xl border text-xs sm:text-sm leading-relaxed ${isLight ? 'bg-black/04 border-black/08 text-[#444]' : 'bg-[#18181D] border-[#27272A] text-zinc-300'}`}>
+              <span className={`text-[10px] uppercase font-bold block mb-1 ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-500'}`}>
                 Real-World Scenario:
               </span>
               {currentQ.scenario}
             </div>
 
-            <h2 className="text-base sm:text-lg font-black text-white">
+            <h2 className={`text-base sm:text-lg font-black ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               {currentQ.question}
             </h2>
           </div>
@@ -179,6 +180,8 @@ export const DiagnosticPage: React.FC = () => {
                   className={`w-full p-4 sm:p-5 rounded-2xl border text-left transition-all text-xs sm:text-sm leading-relaxed cursor-pointer relative ${
                     isSelected
                       ? 'bg-[#FF5E1E]/20 border-[#FF5E1E] text-white shadow-brand-orange'
+                      : isLight
+                      ? 'bg-black/03 hover:bg-black/06 border-black/08 hover:border-[#FF5E1E]/60 text-[#333]'
                       : 'bg-[#18181D] hover:bg-[#222328] border-[#27272A] hover:border-[#FF5E1E]/60 text-zinc-200'
                   }`}
                 >
@@ -188,7 +191,7 @@ export const DiagnosticPage: React.FC = () => {
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                         isSelected
                           ? 'border-[#FF5E1E] bg-[#FF5E1E] text-white'
-                          : 'border-zinc-600'
+                          : isLight ? 'border-black/20' : 'border-zinc-600'
                       }`}
                     >
                       {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -241,8 +244,8 @@ export const DiagnosticPage: React.FC = () => {
             </div>
 
             {/* Category Breakdown Bars */}
-            <div className="p-5 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-3 max-w-xl mx-auto font-numeric text-left">
-              <span className="text-[11px] font-bold text-zinc-400 block uppercase">
+            <div className={`p-5 rounded-2xl border space-y-3 max-w-xl mx-auto font-numeric text-left ${isLight ? 'bg-black/04 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
+              <span className={`text-[11px] font-bold block uppercase ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-400'}`}>
                 Category Flight Competency:
               </span>
 
@@ -250,53 +253,41 @@ export const DiagnosticPage: React.FC = () => {
                 <>
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
-                      <span className="text-zinc-300">Debt & Interest Defense</span>
+                      <span className={isLight ? 'text-[#444]' : 'text-zinc-300'}>Debt &amp; Interest Defense</span>
                       <span className="text-[#FF5E1E]">{result.categoryScores.debt}%</span>
                     </div>
-                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#FF5E1E] rounded-full"
-                        style={{ width: `${result.categoryScores.debt}%` }}
-                      />
+                    <div className={`h-2 rounded-full overflow-hidden ${isLight ? 'bg-black/10' : 'bg-zinc-800'}`}>
+                      <div className="h-full bg-[#FF5E1E] rounded-full" style={{ width: `${result.categoryScores.debt}%` }} />
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
-                      <span className="text-zinc-300">Scam & Phishing Shield</span>
+                      <span className={isLight ? 'text-[#444]' : 'text-zinc-300'}>Scam &amp; Phishing Shield</span>
                       <span className="text-[#22C55E]">{result.categoryScores.scam}%</span>
                     </div>
-                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#22C55E] rounded-full"
-                        style={{ width: `${result.categoryScores.scam}%` }}
-                      />
+                    <div className={`h-2 rounded-full overflow-hidden ${isLight ? 'bg-black/10' : 'bg-zinc-800'}`}>
+                      <div className="h-full bg-[#22C55E] rounded-full" style={{ width: `${result.categoryScores.scam}%` }} />
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
-                      <span className="text-zinc-300">Emergency Buffer & Budgeting</span>
+                      <span className={isLight ? 'text-[#444]' : 'text-zinc-300'}>Emergency Buffer &amp; Budgeting</span>
                       <span className="text-amber-400">{result.categoryScores.budget}%</span>
                     </div>
-                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-amber-400 rounded-full"
-                        style={{ width: `${result.categoryScores.budget}%` }}
-                      />
+                    <div className={`h-2 rounded-full overflow-hidden ${isLight ? 'bg-black/10' : 'bg-zinc-800'}`}>
+                      <div className="h-full bg-amber-400 rounded-full" style={{ width: `${result.categoryScores.budget}%` }} />
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
-                      <span className="text-zinc-300">Compounding & Long-Term Assets</span>
+                      <span className={isLight ? 'text-[#444]' : 'text-zinc-300'}>Compounding &amp; Long-Term Assets</span>
                       <span className="text-blue-400">{result.categoryScores.investing}%</span>
                     </div>
-                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-blue-400 rounded-full"
-                        style={{ width: `${result.categoryScores.investing}%` }}
-                      />
+                    <div className={`h-2 rounded-full overflow-hidden ${isLight ? 'bg-black/10' : 'bg-zinc-800'}`}>
+                      <div className="h-full bg-blue-400 rounded-full" style={{ width: `${result.categoryScores.investing}%` }} />
                     </div>
                   </div>
                 </>

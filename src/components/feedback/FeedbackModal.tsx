@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utils/formatters';
 
 export const FeedbackModal: React.FC = () => {
   const { feedback, hideFeedback } = useGame();
+  const isLight = false; // feedback modal always shown over dark backdrop — keep dark-style interior
   const { isOpen, title, verdict, headline, financialImpact, whyItHappened, whatYouShouldLearn, didYouKnow } = feedback;
 
   if (!isOpen) return null;

@@ -9,6 +9,7 @@ import { TeamLogo } from '../components/common/TeamLogo';
 export const DashboardPage: React.FC = () => {
   const { state, dispatch } = useGame();
   const { completedLevels, levelScores, player } = state;
+  const isLight = state.settings.theme === 'light';
 
   const levels = [
     {
@@ -51,13 +52,13 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Player Greeting Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card rounded-3xl p-6 sm:p-8 border border-[#27272A] shadow-xl">
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card rounded-3xl p-6 sm:p-8 border shadow-xl ${isLight ? 'border-black/10' : 'border-white/10'}`}>
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 text-xs font-black text-[#FF5E1E] uppercase tracking-wider">
             <span className="w-2 h-2 rounded-full bg-[#FF5E1E] animate-pulse" />
             <span>Active Financial Career Hub</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className={`text-2xl sm:text-3xl font-black ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
             Ready for your next move, {player.name || 'FinQuester'}?
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
@@ -122,17 +123,17 @@ export const DashboardPage: React.FC = () => {
           {/* Pre-Flight IQ */}
           <button
             onClick={() => dispatch({ type: 'SET_STAGE', payload: 'diagnostic' })}
-            className="p-4 rounded-2xl bg-[#18181D]/80 hover:bg-[#222328] border border-[#27272A] hover:border-[#22C55E] transition-all text-left group cursor-pointer"
+            className={`p-4 rounded-2xl border transition-all text-left group cursor-pointer ${isLight ? 'bg-black/04 hover:bg-black/07 border-black/08 hover:border-[#22C55E]' : 'bg-white/04 hover:bg-white/07 border-white/08 hover:border-[#22C55E]'}`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-black text-white group-hover:text-[#22C55E] transition-colors">
+              <span className={`text-xs font-black group-hover:text-[#22C55E] transition-colors ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
                 🧠 Financial IQ Test
               </span>
               <span className="text-[10px] uppercase font-bold text-[#22C55E] bg-[#22C55E]/10 px-2 py-0.5 rounded border border-[#22C55E]/30 font-numeric">
                 Pre / Post Delta
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400">
+            <p className={`text-[11px] ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
               Measure your baseline financial intelligence and verify measured learning gains.
             </p>
           </button>
@@ -140,17 +141,17 @@ export const DashboardPage: React.FC = () => {
           {/* FinQuest Academy */}
           <button
             onClick={() => dispatch({ type: 'SET_STAGE', payload: 'academy' })}
-            className="p-4 rounded-2xl bg-[#18181D]/80 hover:bg-[#222328] border border-[#27272A] hover:border-amber-400 transition-all text-left group cursor-pointer"
+            className={`p-4 rounded-2xl border transition-all text-left group cursor-pointer ${isLight ? 'bg-black/04 hover:bg-black/07 border-black/08 hover:border-amber-400' : 'bg-white/04 hover:bg-white/07 border-white/08 hover:border-amber-400'}`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-black text-white group-hover:text-amber-400 transition-colors">
+              <span className={`text-xs font-black group-hover:text-amber-400 transition-colors ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
                 🎓 60-Sec Academy
               </span>
               <span className="text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30 font-numeric">
                 Micro-Cards
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400">
+            <p className={`text-[11px] ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
               Aviation mental models on CIBIL scores, UPI safety, and compound interest.
             </p>
           </button>
@@ -158,17 +159,17 @@ export const DashboardPage: React.FC = () => {
           {/* Educator Cockpit */}
           <button
             onClick={() => dispatch({ type: 'SET_STAGE', payload: 'classroom' })}
-            className="p-4 rounded-2xl bg-[#18181D]/80 hover:bg-[#222328] border border-[#27272A] hover:border-blue-400 transition-all text-left group cursor-pointer"
+            className={`p-4 rounded-2xl border transition-all text-left group cursor-pointer ${isLight ? 'bg-black/04 hover:bg-black/07 border-black/08 hover:border-blue-400' : 'bg-white/04 hover:bg-white/07 border-white/08 hover:border-blue-400'}`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-black text-white group-hover:text-blue-400 transition-colors">
+              <span className={`text-xs font-black group-hover:text-blue-400 transition-colors ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
                 🏫 Educator Cockpit
               </span>
               <span className="text-[10px] uppercase font-bold text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded border border-blue-400/30 font-numeric">
                 B2B2C League
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400">
+            <p className={`text-[11px] ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
               Simulated university cohort analytics, failure traps, and resilience leaderboards.
             </p>
           </button>
@@ -286,7 +287,7 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-black text-white flex items-center gap-2">
             <span>Career Quest Modules</span>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#18181D] text-zinc-400 border border-[#27272A]">
+            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full font-numeric ${isLight ? 'bg-black/06 text-[#656A73] border border-black/10' : 'bg-[#18181D] text-zinc-400 border border-[#27272A]'}`}>
               3 Playable Stages
             </span>
           </h2>
@@ -300,15 +301,15 @@ export const DashboardPage: React.FC = () => {
               <GlassCard
                 key={level.levelNumber}
                 hoverEffect={true}
-                className="flex flex-col justify-between p-6 rounded-3xl relative overflow-hidden border border-[#27272A]"
+                className={`flex flex-col justify-between p-6 rounded-3xl relative overflow-hidden border ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}
               >
                 {/* Level status pill */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-2xl bg-[#18181D] border border-[#27272A] flex items-center justify-center text-[#FF5E1E] font-black shadow-sm">
+                    <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center text-[#FF5E1E] font-black shadow-sm ${isLight ? 'bg-black/04 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#18181D] text-zinc-300 border border-[#27272A] font-numeric">
+                    <span className={`text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border font-numeric ${isLight ? 'bg-black/04 text-[#444] border-black/08' : 'bg-[#18181D] text-zinc-300 border-[#27272A]'}`}>
                       Level {level.levelNumber}
                     </span>
                   </div>
@@ -323,7 +324,7 @@ export const DashboardPage: React.FC = () => {
                       Unlocked
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 bg-[#18181D] border border-[#27272A] px-2 py-0.5 rounded-full">
+                    <span className={`flex items-center gap-1 text-[11px] font-bold text-zinc-500 border px-2 py-0.5 rounded-full ${isLight ? 'bg-black/04 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
                       <Lock className="w-3.5 h-3.5" />
                       Locked
                     </span>
@@ -332,21 +333,21 @@ export const DashboardPage: React.FC = () => {
 
                 {/* Level Details */}
                 <div className="space-y-2 mb-6">
-                  <h3 className="text-base font-black text-white leading-snug">
+                  <h3 className={`text-base font-black leading-snug ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
                     {level.title}
                   </h3>
                   <div className="text-xs font-bold text-[#FF5E1E]">
                     {level.subtitle}
                   </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
+                  <p className={`text-xs leading-relaxed ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
                     {level.description}
                   </p>
                 </div>
 
                 {/* Score and Launch Button */}
-                <div className="pt-4 border-t border-[#27272A] flex items-center justify-between gap-3">
+                <div className={`pt-4 border-t flex items-center justify-between gap-3 ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-zinc-500 uppercase font-bold">
+                    <span className={`text-[10px] uppercase font-bold ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-500'}`}>
                       Best Score
                     </span>
                     <span className="text-sm font-black font-numeric text-[#22C55E]">

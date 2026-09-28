@@ -19,6 +19,7 @@ interface ResultsPageProps {
 export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) => {
   const { state, dispatch, restartQuest } = useGame();
   const { player, netWorth, financialHealth, score, levelScores, badges } = state;
+  const isLight = state.settings.theme === 'light';
   const [copied, setCopied] = useState(false);
 
   const persona = generateFinancialPersona(state);
@@ -90,12 +91,12 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
 
       {/* Financial Persona Card */}
       <GlassCard className="p-6 sm:p-8 rounded-3xl border border-[#27272A] shadow-xl relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-[#27272A]">
+        <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
           <div>
             <span className="text-[11px] font-black uppercase tracking-widest text-[#FF5E1E] block mb-1">
               Your Financial Archetype
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
+            <h2 className={`text-2xl sm:text-3xl font-black flex items-center gap-2 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               <span>{persona.title}</span>
             </h2>
             <p className="text-xs sm:text-sm font-bold text-[#22C55E] mt-0.5">
@@ -103,23 +104,23 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
             </p>
           </div>
 
-          <span className="text-xs px-3 py-1.5 rounded-xl bg-[#18181D] border border-[#27272A] text-zinc-300 font-numeric font-bold">
+          <span className={`text-xs px-3 py-1.5 rounded-xl font-numeric font-bold ${isLight ? 'bg-black/05 border border-black/08 text-[#444]' : 'bg-[#18181D] border border-[#27272A] text-zinc-300'}`}>
             Health: {financialHealth}/100
           </span>
         </div>
 
-        <p className="text-sm text-zinc-300 leading-relaxed py-4">
+        <p className={`text-sm leading-relaxed py-4 ${isLight ? 'text-[#444]' : 'text-zinc-300'}`}>
           {persona.description}
         </p>
 
         {/* Strengths & Growth Areas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs">
-          <div className="p-4 rounded-2xl bg-[#18181D] border border-[#22C55E]/40 space-y-2">
+          <div className={`p-4 rounded-2xl border border-[#22C55E]/40 space-y-2 ${isLight ? 'bg-black/03' : 'bg-[#18181D]'}`}>
             <span className="font-black text-[#22C55E] flex items-center gap-1.5 text-xs uppercase tracking-wider">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
               Demonstrated Strengths
             </span>
-            <ul className="space-y-1.5 text-zinc-300">
+            <ul className={`space-y-1.5 ${isLight ? 'text-[#444]' : 'text-zinc-300'}`}>
               {persona.strengths.map((s: string, idx: number) => (
                 <li key={idx} className="flex items-start gap-1.5">
                   <span className="text-[#22C55E] mt-0.5">•</span>
@@ -129,12 +130,12 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
             </ul>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#18181D] border border-[#FF5E1E]/40 space-y-2">
+          <div className={`p-4 rounded-2xl border border-[#FF5E1E]/40 space-y-2 ${isLight ? 'bg-black/03' : 'bg-[#18181D]'}`}>
             <span className="font-black text-[#FF5E1E] flex items-center gap-1.5 text-xs uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-[#FF5E1E]" />
               Strategic Growth Habits
             </span>
-            <ul className="space-y-1.5 text-zinc-300">
+            <ul className={`space-y-1.5 ${isLight ? 'text-[#444]' : 'text-zinc-300'}`}>
               {persona.areasForGrowth.map((g: string, idx: number) => (
                 <li key={idx} className="flex items-start gap-1.5">
                   <span className="text-[#FF5E1E] mt-0.5">•</span>
@@ -146,19 +147,19 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
         </div>
       </GlassCard>
 
-      {/* Dotted Capability Matrix Section (Replicating Image 3 Aesthetic) */}
-      <GlassCard className="p-6 sm:p-8 rounded-3xl border border-[#27272A] text-center space-y-3">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-[#27272A] pb-3">
+      {/* Dotted Capability Matrix Section */}
+      <GlassCard className={`p-6 sm:p-8 rounded-3xl border text-center space-y-3 ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+        <div className={`flex flex-col sm:flex-row items-center justify-between gap-2 border-b pb-3 ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
           <div className="text-left">
-            <h3 className="text-base font-black text-white flex items-center gap-2">
+            <h3 className={`text-base font-black flex items-center gap-2 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               <TrendingUp className="w-4 h-4 text-[#FF5E1E]" />
               Financial Capability Scatter Matrix
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className={`text-xs ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
               Multivariate evaluation of your capital resilience and risk defenses
             </p>
           </div>
-          <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-[#18181D] border border-[#27272A] text-zinc-300 font-bold">
+          <span className={`font-mono text-xs px-2.5 py-1 rounded-md font-bold ${isLight ? 'bg-black/05 border border-black/08 text-[#444]' : 'bg-[#18181D] border border-[#27272A] text-zinc-300'}`}>
             MATRIX: FQ-618
           </span>
         </div>
@@ -178,8 +179,8 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
 
       {/* Numerical Metrics Summary Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="glass-card p-4 rounded-2xl border border-[#27272A] text-center">
-          <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+        <div className={`glass-card p-4 rounded-2xl border text-center ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+          <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
             Total Score
           </span>
           <div className="text-xl sm:text-2xl font-black font-numeric text-[#22C55E] mt-1">
@@ -187,17 +188,17 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
           </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-[#27272A] text-center">
-          <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+        <div className={`glass-card p-4 rounded-2xl border text-center ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+          <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
             Final Net Worth
           </span>
-          <div className="text-xl sm:text-2xl font-black font-numeric text-white mt-1">
+          <div className={`text-xl sm:text-2xl font-black font-numeric mt-1 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
             {formatCurrency(netWorth)}
           </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-[#27272A] text-center">
-          <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+        <div className={`glass-card p-4 rounded-2xl border text-center ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+          <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
             Health Rating
           </span>
           <div className="text-xl sm:text-2xl font-black font-numeric text-[#FF5E1E] mt-1">
@@ -205,8 +206,8 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
           </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-[#27272A] text-center">
-          <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+        <div className={`glass-card p-4 rounded-2xl border text-center ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+          <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
             Badges Earned
           </span>
           <div className="text-xl sm:text-2xl font-black font-numeric text-amber-400 mt-1">
@@ -216,29 +217,29 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
       </div>
 
       {/* Stage-by-Stage Breakdown */}
-      <GlassCard className="p-6 rounded-3xl border border-[#27272A] space-y-4">
-        <h3 className="text-base font-black text-white flex items-center gap-2">
+      <GlassCard className={`p-6 rounded-3xl border space-y-4 ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+        <h3 className={`text-base font-black flex items-center gap-2 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
           <TrendingUp className="w-4 h-4 text-[#FF5E1E]" />
           Quest Stage Scorecard
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A]">
-            <span className="text-xs text-zinc-400 font-bold block">Level 1: Budget Arena</span>
+          <div className={`p-3.5 rounded-2xl border ${isLight ? 'bg-black/03 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
+            <span className={`text-xs font-bold block ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>Level 1: Budget Arena</span>
             <span className="text-lg font-black font-numeric text-[#FF5E1E]">
               {levelScores.level1 || 850} pts
             </span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A]">
-            <span className="text-xs text-zinc-400 font-bold block">Level 2: Debt Dungeon</span>
+          <div className={`p-3.5 rounded-2xl border ${isLight ? 'bg-black/03 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
+            <span className={`text-xs font-bold block ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>Level 2: Debt Dungeon</span>
             <span className="text-lg font-black font-numeric text-red-400">
               {levelScores.level2 || 920} pts
             </span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A]">
-            <span className="text-xs text-zinc-400 font-bold block">Level 3: Scam Radar</span>
+          <div className={`p-3.5 rounded-2xl border ${isLight ? 'bg-black/03 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
+            <span className={`text-xs font-bold block ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>Level 3: Scam Radar</span>
             <span className="text-lg font-black font-numeric text-[#22C55E]">
               {levelScores.level3 || 1000} pts
             </span>

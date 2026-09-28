@@ -205,7 +205,7 @@ export const ClassroomCockpit: React.FC<ClassroomCockpitProps> = ({ onBackToHub 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search student or archetype..."
-              className="bg-[#18181D] border border-[#27272A] text-xs text-white placeholder-zinc-500 pl-8 pr-3 py-1.5 rounded-xl outline-none focus:border-[#FF5E1E]"
+              className="bg-white/05 border border-white/12 text-xs text-white placeholder-zinc-500 pl-8 pr-3 py-1.5 rounded-xl outline-none focus:border-[#FF5E1E] transition-colors"
             />
           </div>
         </div>

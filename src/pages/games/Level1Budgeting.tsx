@@ -13,6 +13,7 @@ import { BUDGET_EXPENSE_EXAMPLES, BUDGET_DID_YOU_KNOW } from '../../data/budgetD
 export const Level1Budgeting: React.FC = () => {
   const { state, dispatch, showFeedback } = useGame();
   const monthlyIncome = state.budget.income || 60000;
+  const isLight = state.settings.theme === 'light';
 
   // Initialize sliders with existing or sensible defaults (50/30/20 target)
   const [needs, setNeeds] = useState(state.budget.needs || 30000);
@@ -108,9 +109,9 @@ export const Level1Budgeting: React.FC = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3 bg-[#18181D] px-4 py-2 rounded-xl border border-[#27272A] shrink-0">
+        <div className={`flex items-center gap-3 px-4 py-2 rounded-xl border shrink-0 ${isLight ? 'bg-black/04 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-bold text-zinc-400">
+            <span className={`text-[10px] uppercase font-bold ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-400'}`}>
               Monthly Salary
             </span>
             <span className="text-lg font-black font-numeric text-[#FF5E1E]">
@@ -123,26 +124,26 @@ export const Level1Budgeting: React.FC = () => {
       {/* Main Interactive Arena: Sliders on Left, Live Donut Chart on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Interactive Sliders Column */}
-        <div className="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-7 border border-[#27272A] space-y-6">
-          <div className="flex items-center justify-between pb-3 border-b border-[#27272A]">
-            <h2 className="text-base font-black text-white flex items-center gap-2">
+        <div className={`lg:col-span-7 glass-card rounded-3xl p-5 sm:p-7 border space-y-6 ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
+          <div className={`flex items-center justify-between pb-3 border-b ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
+            <h2 className={`text-base font-black flex items-center gap-2 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               <PieChart className="w-4 h-4 text-[#FF5E1E]" />
               Adjust Category Buckets
             </h2>
 
             {/* Quick preset chips */}
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[11px] text-zinc-400 hidden sm:inline">Presets:</span>
+              <span className={`text-[11px] hidden sm:inline ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-400'}`}>Presets:</span>
               <button
                 onClick={() => handleApplyPreset('optimal')}
-                className="px-2.5 py-1 rounded-lg bg-[#18181D] hover:bg-[#222328] text-zinc-200 border border-[#27272A] hover:border-[#FF5E1E] text-[11px] font-bold transition-all cursor-pointer"
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${isLight ? 'bg-black/04 hover:bg-black/08 text-[#444] border-black/08 hover:border-[#FF5E1E]' : 'bg-[#18181D] hover:bg-[#222328] text-zinc-200 border-[#27272A] hover:border-[#FF5E1E]'}`}
                 title="50% Needs, 30% Wants, 20% Savings"
               >
                 50/30/20 Ideal
               </button>
               <button
                 onClick={() => handleApplyPreset('splurge')}
-                className="px-2.5 py-1 rounded-lg bg-[#18181D] hover:bg-[#222328] text-zinc-200 border border-[#27272A] hover:border-[#FF5E1E] text-[11px] font-bold transition-all cursor-pointer"
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer border ${isLight ? 'bg-black/04 hover:bg-black/08 text-[#444] border-black/08 hover:border-[#FF5E1E]' : 'bg-[#18181D] hover:bg-[#222328] text-zinc-200 border-[#27272A] hover:border-[#FF5E1E]'}`}
                 title="Heavy luxury spending"
               >
                 Splurge
@@ -151,7 +152,7 @@ export const Level1Budgeting: React.FC = () => {
           </div>
 
           {/* Slider 1: Needs */}
-          <div className="p-4 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-2">
+          <div className={`p-4 rounded-2xl border space-y-2 ${isLight ? 'bg-black/03 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
             <Slider
               codeTag="S618"
               label="1. Essential Needs"
@@ -165,8 +166,8 @@ export const Level1Budgeting: React.FC = () => {
               benchmarkPct={50}
               onChange={setNeeds}
             />
-            <div className="text-[11px] text-zinc-400 flex flex-wrap gap-x-3 gap-y-1 pt-1">
-              <span>Rent & Utilities</span>
+            <div className={`text-[11px] flex flex-wrap gap-x-3 gap-y-1 pt-1 ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-400'}`}>
+              <span>Rent &amp; Utilities</span>
               <span>•</span>
               <span>Groceries</span>
               <span>•</span>
@@ -175,7 +176,7 @@ export const Level1Budgeting: React.FC = () => {
           </div>
 
           {/* Slider 2: Wants */}
-          <div className="p-4 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-2">
+          <div className={`p-4 rounded-2xl border space-y-2 ${isLight ? 'bg-black/03 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
             <Slider
               codeTag="S620"
               label="2. Lifestyle Wants"
@@ -189,17 +190,17 @@ export const Level1Budgeting: React.FC = () => {
               benchmarkPct={30}
               onChange={setWants}
             />
-            <div className="text-[11px] text-zinc-400 flex flex-wrap gap-x-3 gap-y-1 pt-1">
+            <div className={`text-[11px] flex flex-wrap gap-x-3 gap-y-1 pt-1 ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-400'}`}>
               <span>Dining out</span>
               <span>•</span>
-              <span>Gadgets & Fashion</span>
+              <span>Gadgets &amp; Fashion</span>
               <span>•</span>
-              <span>Streaming & Travel</span>
+              <span>Streaming &amp; Travel</span>
             </div>
           </div>
 
           {/* Slider 3: Savings */}
-          <div className="p-4 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-2">
+          <div className={`p-4 rounded-2xl border space-y-2 ${isLight ? 'bg-black/03 border-black/08' : 'bg-[#18181D] border-[#27272A]'}`}>
             <Slider
               codeTag="S621"
               label="3. Future Savings & Investments"
@@ -213,7 +214,7 @@ export const Level1Budgeting: React.FC = () => {
               benchmarkPct={20}
               onChange={setSavings}
             />
-            <div className="text-[11px] text-zinc-400 flex flex-wrap gap-x-3 gap-y-1 pt-1">
+            <div className={`text-[11px] flex flex-wrap gap-x-3 gap-y-1 pt-1 ${isLight ? 'text-[#9EA3AD]' : 'text-zinc-400'}`}>
               <span>Emergency Cushion (3-6 mo)</span>
               <span>•</span>
               <span>Index Fund SIP</span>
@@ -247,12 +248,12 @@ export const Level1Budgeting: React.FC = () => {
         </div>
 
         {/* Live Visualization Column */}
-        <div className="lg:col-span-5 flex flex-col justify-between glass-card rounded-3xl p-5 sm:p-7 border border-[#27272A] space-y-6">
+        <div className={`lg:col-span-5 flex flex-col justify-between glass-card rounded-3xl p-5 sm:p-7 border space-y-6 ${isLight ? 'border-black/10' : 'border-[#27272A]'}`}>
           <div>
-            <h2 className="text-base font-black text-white mb-1">
+            <h2 className={`text-base font-black mb-1 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               Live Allocation Breakdown
             </h2>
-            <p className="text-xs text-zinc-400 mb-4">
+            <p className={`text-xs mb-4 ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
               Real-time balance against your ₹60,000 monthly cashflow
             </p>
 
@@ -266,12 +267,12 @@ export const Level1Budgeting: React.FC = () => {
           </div>
 
           {/* Educational Quick Tip */}
-          <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A] text-xs text-zinc-300 space-y-1">
+          <div className={`p-3.5 rounded-2xl border text-xs space-y-1 ${isLight ? 'bg-black/03 border-black/08 text-[#444]' : 'bg-[#18181D] border-[#27272A] text-zinc-300'}`}>
             <div className="flex items-center gap-1.5 font-black text-[#FF5E1E]">
               <Lightbulb className="w-4 h-4" />
               <span>Pro Rule: Pay Yourself First</span>
             </div>
-            <p className="leading-relaxed text-zinc-400 text-[11px]">
+            <p className={`leading-relaxed text-[11px] ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
               Don't save what is left after spending. Instead, automate your 20% savings on the day your salary credits, then spend what is left!
             </p>
           </div>
@@ -286,7 +287,7 @@ export const Level1Budgeting: React.FC = () => {
               iconPosition="right"
               onClick={handleSubmit}
             >
-              Lock In Budget & Check Score
+              Lock In Budget &amp; Check Score
             </Button>
           </div>
         </div>
