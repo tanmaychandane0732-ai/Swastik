@@ -108,7 +108,7 @@ export const FinancialCoachModal: React.FC<FinancialCoachModalProps> = ({
           transition={{ duration: 0.25 }}
           className="w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
         >
-          <GlassCard className="p-0 rounded-3xl border border-[#27272A] shadow-2xl flex flex-col overflow-hidden">
+          <GlassCard variant="elevated" className="p-0 rounded-3xl border border-[#27272A] shadow-2xl flex flex-col overflow-hidden">
             {/* Header */}
             <div className="p-4 sm:p-6 border-b border-[#27272A] flex items-center justify-between gap-3 bg-gradient-to-r from-[#FF5E1E]/15 via-transparent to-transparent">
               <div className="flex items-center gap-3">

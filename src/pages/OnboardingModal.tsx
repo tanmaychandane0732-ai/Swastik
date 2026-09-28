@@ -130,11 +130,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className={`relative w-full max-w-lg glass-panel rounded-3xl p-6 sm:p-8 border shadow-2xl z-10 my-auto ${
+          className={`relative w-full max-w-lg glass-elevated rounded-3xl p-6 sm:p-8 border shadow-2xl z-10 my-auto ${
             isLight
-              ? 'bg-white/95 text-zinc-900 border-zinc-200 shadow-[0_20px_60px_rgba(0,0,0,0.15)]'
-              : 'bg-[#0E1118]/95 text-white border-white/12 shadow-[0_25px_70px_rgba(0,0,0,0.7)]'
-          } backdrop-blur-2xl`}
+              ? 'text-[#17191D] border-black/10'
+              : 'text-[#F5F5F2] border-white/12'
+          }`}
         >
           {/* Close Button */}
           <button

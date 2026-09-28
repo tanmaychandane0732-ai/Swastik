@@ -61,7 +61,7 @@ export const FeedbackModal: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-          className={`relative w-full max-w-lg glass-panel rounded-3xl p-5 sm:p-7 border ${currentTheme.border} ${currentTheme.glow} z-10 my-auto shadow-2xl`}
+          className={`relative w-full max-w-lg glass-elevated rounded-3xl p-5 sm:p-7 border ${currentTheme.border} ${currentTheme.glow} z-10 my-auto shadow-2xl`}
         >
           {/* Header */}
           <div className="flex items-start justify-between gap-3 mb-4">

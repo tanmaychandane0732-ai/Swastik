@@ -129,18 +129,9 @@ export const FinQuestInfoPanel: React.FC<FinQuestInfoPanelProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', stiffness: 360, damping: 28 }}
             data-lenis-prevent="true"
-            className={`relative w-full max-w-[540px] h-[85dvh] max-h-[85dvh] sm:h-[80vh] sm:max-h-[80vh] flex flex-col rounded-3xl pointer-events-auto shadow-2xl z-10 my-auto sm:my-0 sm:mb-16 select-text overflow-hidden transition-colors duration-400 ${
-              isLight ? 'glass-panel text-zinc-900 border-zinc-200' : 'glass-panel text-white border-white/10'
+            className={`relative w-full max-w-[540px] h-[85dvh] max-h-[85dvh] sm:h-[80vh] sm:max-h-[80vh] flex flex-col rounded-3xl pointer-events-auto shadow-2xl z-10 my-auto sm:my-0 sm:mb-16 select-text overflow-hidden transition-colors duration-400 glass-elevated ${
+              isLight ? 'text-[#17191D] border-black/10' : 'text-[#F5F5F2] border-white/12'
             }`}
-            style={{
-              background: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(12, 14, 18, 0.88)',
-              backdropFilter: 'blur(24px) saturate(140%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(140%)',
-              border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.12)',
-              boxShadow: isLight
-                ? '0 24px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1)'
-                : '0 24px 80px rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-            }}
           >
             {/* ── 1. Sticky Header ─────────────────────────────────── */}
             <div

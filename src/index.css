@@ -16,10 +16,10 @@
     --color-border: rgba(255, 255, 255, 0.10);
     --color-border-strong: rgba(255, 255, 255, 0.18);
 
-    /* ── Text ────────────────────────────────────────────── */
-    --color-text-primary: #F5F3EF;
-    --color-text-secondary: #A7ABB4;
-    --color-text-muted: #5A5E68;
+    /* ── Text (Matching Section 14) ─────────────────────── */
+    --color-text-primary: #F5F5F2;
+    --color-text-secondary: #B5BAC3;
+    --color-text-muted: #7E8591;
 
     /* ── Accent / Brand ─────────────────────────────────── */
     --color-accent: #FF6A2A;
@@ -27,54 +27,87 @@
     --color-accent-champagne: #FFC48F;
     --color-accent-glow: rgba(255, 106, 42, 0.35);
 
-    /* ── Glass ───────────────────────────────────────────── */
-    --glass-bg: rgba(16, 19, 24, 0.72);
-    --glass-bg-elevated: rgba(18, 22, 29, 0.82);
+    /* ── Glass Material Hierarchy (Dark) ─────────────────── */
+    /* Level 1: Subtle (TopHUD, small controls, telemetry capsules) */
+    --glass-bg-subtle: rgba(15, 18, 24, 0.54);
+    --glass-blur-subtle: blur(14px) saturate(125%);
+    --glass-border-subtle: rgba(255, 255, 255, 0.08);
+    --glass-shadow-subtle: 0 8px 24px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    /* Level 2: Standard (Cards, feature panels, dashboards) */
+    --glass-bg: rgba(15, 18, 24, 0.64);
+    --glass-blur: blur(22px) saturate(135%);
     --glass-border: rgba(255, 255, 255, 0.10);
-    --glass-blur: blur(20px) saturate(140%);
+    --glass-border-hover: rgba(255, 255, 255, 0.16);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    /* Level 3: Elevated (Modals, Profile Drawer, Info Panels, key moments) */
+    --glass-bg-elevated: rgba(14, 17, 23, 0.78);
+    --glass-blur-elevated: blur(28px) saturate(140%);
+    --glass-border-elevated: rgba(255, 255, 255, 0.12);
+    --glass-shadow-elevated: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
     /* ── Panel ───────────────────────────────────────────── */
-    --panel-bg: rgba(10, 12, 16, 0.82);
-    --panel-border: rgba(255, 255, 255, 0.09);
+    --panel-bg: rgba(15, 18, 24, 0.64);
+    --panel-border: rgba(255, 255, 255, 0.10);
 
     /* ── Semantic Design Tokens ──────────────────────────── */
-    --text-primary: #F5F3EF;
-    --text-secondary: #CBD5E1;
-    --text-muted: #94A3B8;
+    --text-primary: #F5F5F2;
+    --text-secondary: #B5BAC3;
+    --text-muted: #7E8591;
     --text-inverse: #0A0C0F;
     --text-accent: #FF6A2A;
     --surface: #111419;
     --surface-elevated: #171A20;
     --border: rgba(255, 255, 255, 0.10);
-    --glass-background: rgba(16, 19, 24, 0.72);
+    --glass-background: rgba(15, 18, 24, 0.64);
   }
 
-  /* Light theme overrides on :root */
+  /* Light theme overrides on body.theme-clean */
   body.theme-clean {
     --color-base: #F4F1EC;
-    --color-surface: rgba(255, 255, 255, 0.82);
+    --color-surface: rgba(255, 255, 255, 0.75);
     --color-elevated: #FFFFFF;
-    --color-border: rgba(20, 25, 30, 0.10);
-    --color-border-strong: rgba(20, 25, 30, 0.20);
-    --color-text-primary: #0F172A;
-    --color-text-secondary: #334155;
-    --color-text-muted: #64748B;
-    --glass-bg: rgba(255, 255, 255, 0.88);
-    --glass-bg-elevated: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(20, 25, 30, 0.10);
-    --panel-bg: rgba(255, 255, 255, 0.94);
-    --panel-border: #E2E8F0;
+    --color-border: rgba(20, 24, 30, 0.10);
+    --color-border-strong: rgba(20, 24, 30, 0.18);
+    --color-text-primary: #17191D;
+    --color-text-secondary: #555C67;
+    --color-text-muted: #7A818C;
+
+    /* Level 1: Subtle */
+    --glass-bg-subtle: rgba(255, 255, 255, 0.55);
+    --glass-blur-subtle: blur(14px) saturate(120%);
+    --glass-border-subtle: rgba(20, 24, 30, 0.08);
+    --glass-shadow-subtle: 0 8px 24px rgba(20, 24, 30, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.50);
+
+    /* Level 2: Standard */
+    --glass-bg: rgba(255, 255, 255, 0.62);
+    --glass-blur: blur(22px) saturate(125%);
+    --glass-border: rgba(20, 24, 30, 0.10);
+    --glass-border-hover: rgba(20, 24, 30, 0.16);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    --glass-shadow: 0 20px 60px rgba(20, 24, 30, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+
+    /* Level 3: Elevated */
+    --glass-bg-elevated: rgba(255, 255, 255, 0.82);
+    --glass-blur-elevated: blur(28px) saturate(130%);
+    --glass-border-elevated: rgba(20, 24, 30, 0.12);
+    --glass-shadow-elevated: 0 30px 80px rgba(20, 24, 30, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+    --panel-bg: rgba(255, 255, 255, 0.68);
+    --panel-border: rgba(20, 24, 30, 0.10);
 
     /* Semantic light tokens */
-    --text-primary: #0F172A;
-    --text-secondary: #334155;
-    --text-muted: #64748B;
+    --text-primary: #17191D;
+    --text-secondary: #555C67;
+    --text-muted: #7A818C;
     --text-inverse: #FFFFFF;
-    --text-accent: #EA580C;
+    --text-accent: #FF6A2A;
     --surface: #FFFFFF;
     --surface-elevated: #F8FAFC;
-    --border: rgba(20, 25, 30, 0.10);
-    --glass-background: rgba(255, 255, 255, 0.88);
+    --border: rgba(20, 24, 30, 0.10);
+    --glass-background: rgba(255, 255, 255, 0.62);
   }
 
   body {
@@ -175,74 +208,153 @@
     );
   }
 
-  /* ── Premium Smoked Glass Card ───────────────────────────── */
-  .glass-card {
+  /* ── 1. Subtle Glass (Level 1 — TopHUD, small controls, telemetry capsules) ── */
+  .glass-subtle {
+    background-color: var(--glass-bg-subtle);
+    -webkit-backdrop-filter: var(--glass-blur-subtle);
+    backdrop-filter: var(--glass-blur-subtle);
+    border: 1px solid var(--glass-border-subtle);
+    box-shadow: var(--glass-shadow-subtle);
+  }
+
+  .theme-clean .glass-subtle {
+    background-color: var(--glass-bg-subtle);
+    -webkit-backdrop-filter: var(--glass-blur-subtle);
+    backdrop-filter: var(--glass-blur-subtle);
+    border: 1px solid var(--glass-border-subtle);
+    box-shadow: var(--glass-shadow-subtle);
+    color: #17191D;
+  }
+
+  /* ── 2. Standard Glass (Level 2 — Cards, feature panels, dashboards) ── */
+  .glass-card,
+  .glass-default,
+  .glass-panel {
     background-color: var(--glass-bg);
     background-image: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.07) 0%,
-      rgba(255, 255, 255, 0.02) 40%,
-      rgba(0, 0, 0, 0.15) 100%
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.01) 40%,
+      rgba(0, 0, 0, 0.12) 100%
     );
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.42),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    box-shadow: var(--glass-shadow);
   }
 
-  /* Light mode glass card */
-  .theme-clean .glass-card {
-    background-color: rgba(255, 255, 255, 0.88);
-    background-image: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.78) 100%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    backdrop-filter: blur(20px) saturate(120%);
-    border: 1px solid rgba(226, 232, 240, 0.90);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05),
-                inset 0 1px 0 rgba(255,255,255,1);
+  /* Light mode standard glass */
+  .theme-clean .glass-card,
+  .theme-clean .glass-default,
+  .theme-clean .glass-panel {
+    background-color: var(--glass-bg);
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.70) 0%,
+      rgba(248, 250, 252, 0.50) 100%
+    );
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
     color: #17191D;
   }
 
-  /* ── Glass Card Hover ─────────────────────────────────────── */
-  .glass-card-hover {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* ── 3. Elevated Glass (Level 3 — Modals, Profile Drawer, Info Panels, Cockpit) ── */
+  .glass-elevated {
+    background-color: var(--glass-bg-elevated);
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.01) 40%,
+      rgba(0, 0, 0, 0.16) 100%
+    );
+    -webkit-backdrop-filter: var(--glass-blur-elevated);
+    backdrop-filter: var(--glass-blur-elevated);
+    border: 1px solid var(--glass-border-elevated);
+    box-shadow: var(--glass-shadow-elevated);
   }
+
+  /* Light mode elevated glass */
+  .theme-clean .glass-elevated {
+    background-color: var(--glass-bg-elevated);
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(248, 250, 252, 0.70) 100%
+    );
+    -webkit-backdrop-filter: var(--glass-blur-elevated);
+    backdrop-filter: var(--glass-blur-elevated);
+    border: 1px solid var(--glass-border-elevated);
+    box-shadow: var(--glass-shadow-elevated);
+    color: #17191D;
+  }
+
+  /* ── 4. Interactive Glass (Tactile Hover Depth) ───────────── */
+  .glass-interactive,
+  .glass-card-hover {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-interactive:hover,
   .glass-card-hover:hover,
   .glass-card.glass-card-hover:hover {
-    background-color: rgba(20, 24, 32, 0.85);
-    background-image: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0.12) 100%);
-    border-color: rgba(255, 255, 255, 0.20) !important;
-    box-shadow: 0 28px 70px rgba(0,0,0,0.50),
-                inset 0 1px 0 rgba(255,255,255,0.14);
     transform: translateY(-2px);
+    border-color: var(--glass-border-hover) !important;
+    box-shadow: 0 24px 68px rgba(0, 0, 0, 0.36),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
-  .theme-clean .glass-card-hover:hover {
-    background-color: #FFFFFF;
-    border-color: #FF6A2A !important;
-    box-shadow: 0 16px 36px -4px rgba(0,0,0,0.08);
+  .theme-clean .glass-interactive:hover,
+  .theme-clean .glass-card-hover:hover,
+  .theme-clean .glass-card.glass-card-hover:hover {
+    transform: translateY(-2px);
+    border-color: rgba(20, 24, 30, 0.18) !important;
+    box-shadow: 0 24px 68px rgba(20, 24, 30, 0.16),
+                inset 0 1px 0 rgba(255, 255, 255, 0.85);
   }
 
-  /* ── Dark Smoked Glass Panel (Navbar, Headers, Shells) ────── */
-  .glass-panel {
-    background-color: rgba(10, 12, 16, 0.82);
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.10) 100%);
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
-    backdrop-filter: blur(24px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.45),
-                inset 0 1px 0 rgba(255,255,255,0.07);
+  /* ── 5. Subtle Glass Light Reflection ─────────────────────── */
+  .glass-reflection {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-reflection::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .theme-clean .glass-reflection::before {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, transparent 100%);
   }
 
-  /* Light mode panel */
-  .theme-clean .glass-panel {
-    background-color: rgba(255, 255, 255, 0.94);
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.85) 100%);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    color: #17191D;
+  /* ── 6. Accessibility & Reduced Motion ────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .glass-interactive:hover,
+    .glass-card-hover:hover,
+    .glass-card.glass-card-hover:hover {
+      transform: none !important;
+    }
+  }
+
+  /* ── 7. Mobile Performance Tuning ─────────────────────────── */
+  @media (max-width: 640px) {
+    :root {
+      --glass-blur: blur(16px) saturate(125%);
+      --glass-blur-elevated: blur(20px) saturate(130%);
+    }
+    body.theme-clean {
+      --glass-blur: blur(16px) saturate(120%);
+      --glass-blur-elevated: blur(20px) saturate(125%);
+    }
   }
 
   /* Fix legacy dark border classes applied to glass elements */
@@ -251,6 +363,13 @@
   .glass-card.border-slate-800,
   .glass-card.border-slate-700\/70 {
     border-color: rgba(255, 255, 255, 0.10);
+  }
+
+  .theme-clean .glass-card.border-\[\#27272A\],
+  .theme-clean .glass-panel.border-\[\#27272A\],
+  .theme-clean .glass-card.border-slate-800,
+  .theme-clean .glass-card.border-slate-700\/70 {
+    border-color: rgba(20, 24, 30, 0.10);
   }
 
   /* ── Glass Input ──────────────────────────────────────────── */

@@ -141,9 +141,9 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
             exit={{ x: '100%' }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             data-lenis-prevent="true"
-            className={`fixed top-0 right-0 h-[100dvh] max-h-[100dvh] w-full max-w-[380px] sm:max-w-[420px] z-50 flex flex-col glass-panel border-l overflow-hidden ${
-              isLight ? 'border-black/10 text-[#17191D]' : 'border-white/10 text-[#F5F3EF]'
-            } shadow-[0_0_60px_rgba(0,0,0,0.65)]`}
+            className={`fixed top-0 right-0 h-[100dvh] max-h-[100dvh] w-full max-w-[380px] sm:max-w-[420px] z-50 flex flex-col glass-elevated border-l overflow-hidden ${
+              isLight ? 'border-black/10 text-[#17191D]' : 'border-white/12 text-[#F5F5F2]'
+            } shadow-[0_30px_80px_rgba(0,0,0,0.55)]`}
             aria-label="Profile panel"
           >
             {/* ── 1. Header (Sticky/Fixed Top) ────────────────────── */}

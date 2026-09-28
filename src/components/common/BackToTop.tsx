@@ -65,12 +65,10 @@ export const BackToTop: React.FC = () => {
             onClick={handleScrollToTop}
             aria-label="Scroll back to top of flight deck"
             title="Return to top"
-            className={`relative flex items-center justify-center w-11 h-11 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A2A] ${
+            className={`relative flex items-center justify-center w-11 h-11 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A2A] glass-subtle ${
               isLight
-                ? 'bg-white/90 text-zinc-700 hover:text-[#FF6A2A] shadow-[0_4px_16px_rgba(0,0,0,0.12)]'
-                : 'bg-[#0E1117]/85 text-zinc-300 hover:text-[#FF6A2A] shadow-[0_4px_24px_rgba(0,0,0,0.5)]'
-            } backdrop-blur-md border ${
-              isLight ? 'border-black/10' : 'border-white/15'
+                ? 'text-[#17191D] hover:text-[#FF6A2A]'
+                : 'text-[#F5F5F2] hover:text-[#FF6A2A]'
             }`}
           >
             {/* SVG Circular Scroll Progress Gauge */}

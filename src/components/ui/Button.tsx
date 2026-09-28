@@ -4,7 +4,7 @@ import { soundManager } from '../../services/audioService';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   children: React.ReactNode;
-  variant?: 'orange' | 'emerald' | 'indigo' | 'secondary' | 'danger' | 'ghost' | 'dark';
+  variant?: 'orange' | 'emerald' | 'indigo' | 'secondary' | 'danger' | 'ghost' | 'dark' | 'glass';
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
@@ -41,13 +41,14 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const variantStyles = {
-    orange: 'bg-[#FF5E1E] hover:bg-[#E04E15] text-white shadow-brand-orange border border-[#FF5E1E]/50 focus-visible:ring-[#FF5E1E]',
-    dark: 'bg-[#0A0A0C] hover:bg-[#18181D] text-white border border-[#27272A] focus-visible:ring-[#FF5E1E]',
+    orange: 'bg-[#FF6A2A] hover:bg-[#E04E15] text-white shadow-brand-orange border border-[#FF6A2A]/50 focus-visible:ring-[#FF6A2A]',
+    dark: 'bg-[#0A0A0C] hover:bg-[#18181D] text-white border border-[#27272A] focus-visible:ring-[#FF6A2A]',
     emerald: 'bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-discord border border-[#22C55E]/40 focus-visible:ring-[#22C55E]',
-    indigo: 'bg-[#FF5E1E] hover:bg-[#E04E15] text-white shadow-brand-orange border border-[#FF5E1E]/40 focus-visible:ring-[#FF5E1E]',
-    secondary: 'bg-[#18181D] hover:bg-[#222328] text-white border border-[#27272A] focus-visible:ring-[#FF5E1E]',
+    indigo: 'bg-[#FF6A2A] hover:bg-[#E04E15] text-white shadow-brand-orange border border-[#FF6A2A]/40 focus-visible:ring-[#FF6A2A]',
+    secondary: 'glass-subtle hover:bg-white/10 text-[#F5F5F2] border border-white/15 focus-visible:ring-[#FF6A2A]',
+    glass: 'glass-subtle hover:bg-white/12 text-[#F5F5F2] border border-white/15 focus-visible:ring-[#FF6A2A]',
     danger: 'bg-[#EF4444] hover:bg-[#DC2626] text-white shadow-discord border border-[#EF4444]/40 focus-visible:ring-[#EF4444]',
-    ghost: 'hover:bg-[#18181D] text-zinc-300 hover:text-white focus-visible:ring-[#FF5E1E]',
+    ghost: 'hover:bg-white/06 text-zinc-300 hover:text-white focus-visible:ring-[#FF6A2A]',
   };
 
   return (

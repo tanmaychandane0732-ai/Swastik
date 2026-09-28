@@ -62,7 +62,7 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
   return (
     <div className="space-y-6 select-none text-left">
       {/* Flight Debrief Header Card */}
-      <GlassCard className="p-6 sm:p-8 rounded-3xl border-2 border-[#FF5E1E] text-center space-y-5 shadow-2xl relative overflow-hidden">
+      <GlassCard reflection className="p-6 sm:p-8 rounded-3xl border-2 border-[#FF5E1E] text-center space-y-5 shadow-2xl relative overflow-hidden">
         {/* Top Badges */}
         <div className="flex flex-wrap items-center justify-center gap-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/40 text-xs font-black font-numeric">

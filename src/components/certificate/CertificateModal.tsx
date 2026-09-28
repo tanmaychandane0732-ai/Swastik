@@ -79,7 +79,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
           className="relative w-full max-w-4xl z-10 my-auto flex flex-col items-center"
         >
           {/* Top Actions Bar (No-Print) */}
-          <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-3 px-3 no-print bg-[#121215] border border-[#27272A] p-3 rounded-2xl shadow-xl">
+          <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-3 px-3 no-print glass-elevated border border-white/12 p-3 rounded-2xl shadow-xl">
             {/* Enter Your Name Interactive Input Option */}
             <div className="flex-1 flex items-center gap-3">
               <label htmlFor="certificateNameInput" className="text-xs font-extrabold uppercase tracking-wider text-[#FF5E1E] shrink-0 flex items-center gap-1.5">

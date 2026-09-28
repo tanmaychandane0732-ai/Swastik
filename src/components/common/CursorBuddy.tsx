@@ -161,27 +161,27 @@ export const CursorBuddy: React.FC = () => {
             style={{
               background: isLight
                 ? isNearby
-                  ? 'rgba(255, 255, 255, 0.95)'
-                  : 'rgba(255, 255, 255, 0.85)'
+                  ? 'rgba(255, 255, 255, 0.90)'
+                  : 'rgba(255, 255, 255, 0.70)'
                 : isNearby
-                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(0, 0, 0, 0.15) 100%), rgba(16, 18, 24, 0.76)'
-                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(0, 0, 0, 0.12) 100%), rgba(14, 16, 21, 0.65)',
-              backdropFilter: 'blur(18px) saturate(140%)',
-              WebkitBackdropFilter: 'blur(18px) saturate(140%)',
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(0, 0, 0, 0.14) 100%), rgba(20, 24, 32, 0.76)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 40%, rgba(0, 0, 0, 0.10) 100%), rgba(15, 18, 24, 0.64)',
+              backdropFilter: 'blur(16px) saturate(135%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(135%)',
               border: isLight
                 ? isNearby
-                  ? '1px solid #FF5E1E'
-                  : '1px solid rgba(226, 232, 240, 0.9)'
+                  ? '1px solid #FF6A2A'
+                  : '1px solid rgba(20, 24, 30, 0.12)'
                 : isNearby
-                ? '1px solid rgba(255, 255, 255, 0.24)'
-                : '1px solid rgba(255, 255, 255, 0.12)',
+                ? '1px solid rgba(255, 255, 255, 0.22)'
+                : '1px solid rgba(255, 255, 255, 0.10)',
               boxShadow: isLight
                 ? isNearby
-                  ? '0 12px 30px rgba(0, 0, 0, 0.12), 0 0 15px rgba(255, 94, 30, 0.25)'
-                  : '0 8px 24px rgba(0, 0, 0, 0.06)'
+                  ? '0 12px 30px rgba(0, 0, 0, 0.10), 0 0 16px rgba(255, 106, 42, 0.20)'
+                  : '0 8px 24px rgba(20, 24, 30, 0.06)'
                 : isNearby
-                ? '0 16px 50px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 94, 30, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16)'
-                : '0 12px 40px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.09)',
+                ? '0 16px 50px rgba(0, 0, 0, 0.40), 0 0 20px rgba(255, 106, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14)'
+                : '0 12px 40px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
             }}
           />
 

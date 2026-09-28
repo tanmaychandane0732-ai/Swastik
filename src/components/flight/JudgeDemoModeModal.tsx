@@ -44,7 +44,7 @@ export const JudgeDemoModeModal: React.FC<JudgeDemoModeModalProps> = ({
           transition={{ duration: 0.25 }}
           className="w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden"
         >
-          <GlassCard className="p-0 rounded-3xl border-2 border-[#FF5E1E] shadow-2xl flex flex-col overflow-hidden text-left">
+          <GlassCard variant="elevated" className="p-0 rounded-3xl border-2 border-[#FF5E1E] shadow-2xl flex flex-col overflow-hidden text-left">
             {/* Header */}
             <div className="p-5 sm:p-6 border-b border-[#27272A] flex items-center justify-between gap-3 bg-gradient-to-r from-[#FF5E1E]/20 via-[#18181D] to-transparent">
               <div className="flex items-center gap-3">

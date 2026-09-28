@@ -107,14 +107,14 @@ export const TopHUD: React.FC<TopHUDProps> = ({
       </a>
 
       <header
-        className={`sticky top-0 z-40 w-full glass-panel border-b transition-all duration-300 ${
+        className={`sticky top-0 z-40 w-full glass-subtle border-b transition-all duration-300 ${
           isLight
             ? isScrolled
-              ? 'bg-white/95 border-black/10 shadow-md backdrop-blur-xl'
-              : 'bg-white/80 border-black/06 shadow-sm backdrop-blur-md'
+              ? 'bg-white/75 border-black/10 shadow-sm'
+              : 'bg-white/55 border-black/06 shadow-none'
             : isScrolled
-            ? 'bg-[#0A0C0F]/95 border-white/15 shadow-[0_4px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl'
-            : 'bg-[#0A0C0F]/80 border-white/10 shadow-lg backdrop-blur-md'
+            ? 'bg-[#0F1218]/75 border-white/12 shadow-[0_8px_30px_rgba(0,0,0,0.35)]'
+            : 'bg-[#0F1218]/55 border-white/08 shadow-none'
         }`}
       >
         {/* Global Thin Scroll Progress Indicator */}

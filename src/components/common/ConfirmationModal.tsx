@@ -113,11 +113,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 15 }}
           transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className={`relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-7 border ${getAccentBorder()} shadow-2xl ${
+          className={`relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-7 border ${getAccentBorder()} shadow-2xl glass-elevated ${
             isLight
-              ? 'bg-white/95 text-zinc-900 border-zinc-200'
-              : 'bg-[#10131A]/95 text-zinc-100'
-          } backdrop-blur-xl space-y-5`}
+              ? 'text-[#17191D]'
+              : 'text-[#F5F5F2]'
+          } space-y-5`}
         >
           {/* Header */}
           <div className="flex items-start justify-between gap-3">

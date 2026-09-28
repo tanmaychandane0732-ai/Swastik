@@ -42,7 +42,7 @@ export const DailyFlightChallengeModal: React.FC<DailyFlightChallengeModalProps>
           transition={{ duration: 0.25 }}
           className="w-full max-w-xl flex flex-col overflow-hidden text-left"
         >
-          <GlassCard className="p-0 rounded-3xl border border-[#FF5E1E]/50 shadow-2xl overflow-hidden">
+          <GlassCard variant="elevated" className="p-0 rounded-3xl border border-[#FF5E1E]/50 shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="p-5 border-b border-[#27272A] flex items-center justify-between gap-3 bg-gradient-to-r from-[#FF5E1E]/20 via-transparent to-transparent">
               <div className="flex items-center gap-3">

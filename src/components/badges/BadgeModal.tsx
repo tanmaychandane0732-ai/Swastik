@@ -43,7 +43,7 @@ export const BadgeModal: React.FC<BadgeModalProps> = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, scale: 0.93, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative w-full max-w-2xl glass-panel rounded-3xl p-5 sm:p-7 border border-slate-700/60 shadow-2xl z-10 my-auto max-h-[90vh] flex flex-col"
+          className="relative w-full max-w-2xl glass-elevated rounded-3xl p-5 sm:p-7 border border-slate-700/60 shadow-2xl z-10 my-auto max-h-[90vh] flex flex-col"
         >
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-800">
