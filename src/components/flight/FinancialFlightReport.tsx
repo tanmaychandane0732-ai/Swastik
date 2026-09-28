@@ -86,7 +86,7 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
         </div>
 
         {/* Primary Flight Telemetry Instruments */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#18181D]/90 border border-[#27272A] font-numeric text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-black/20 border border-white/10 font-numeric text-center">
           <div>
             <span className="text-[10px] uppercase font-bold text-zinc-400 block">
               Final Altitude (Net Worth)
@@ -96,7 +96,7 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
             </span>
           </div>
 
-          <div className="border-l border-[#27272A]">
+          <div className="border-l border-white/10">
             <span className="text-[10px] uppercase font-bold text-zinc-400 block">
               Fuel Left (Liquid Cash)
             </span>
@@ -105,7 +105,7 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
             </span>
           </div>
 
-          <div className="border-l border-[#27272A]">
+          <div className="border-l border-white/10">
             <span className="text-[10px] uppercase font-bold text-zinc-400 block">
               Total Debt Drag
             </span>
@@ -118,7 +118,7 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
             </span>
           </div>
 
-          <div className="border-l border-[#27272A]">
+          <div className="border-l border-white/10">
             <span className="text-[10px] uppercase font-bold text-zinc-400 block">
               CIBIL Altimeter
             </span>
@@ -131,8 +131,8 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
 
       {/* Proof of Learning: Financial IQ Delta Card */}
       {iqDelta && (
-        <GlassCard className="p-6 rounded-3xl border border-[#22C55E]/40 bg-gradient-to-r from-[#22C55E]/10 via-[#18181D]/80 to-transparent space-y-4 shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#27272A] pb-3">
+        <GlassCard className="p-6 rounded-3xl border border-[#22C55E]/40 bg-gradient-to-r from-[#22C55E]/08 via-transparent to-transparent space-y-4 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/08 pb-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-400" />
               <h3 className="text-base font-black text-white">
@@ -145,13 +145,13 @@ export const FinancialFlightReport: React.FC<FinancialFlightReportProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center font-numeric">
-            <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A]">
+            <div className="p-3.5 rounded-2xl bg-white/05 border border-white/10">
               <span className="text-xs text-zinc-400 font-bold block">Pre-Flight IQ</span>
               <span className="text-2xl font-black text-zinc-300">{iqDelta.preFlightIQ} / 100</span>
               <span className="text-[10px] text-zinc-500 block">Baseline Assessment</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[#18181D] border border-[#27272A]">
+            <div className="p-3.5 rounded-2xl bg-white/05 border border-white/10">
               <span className="text-xs text-zinc-400 font-bold block">Post-Flight IQ</span>
               <span className="text-2xl font-black text-[#22C55E]">{iqDelta.postFlightIQ} / 100</span>
               <span className="text-[10px] text-zinc-500 block">Simulator Tested</span>
