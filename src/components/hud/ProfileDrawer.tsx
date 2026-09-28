@@ -14,10 +14,12 @@ import {
   Edit2,
   Check,
   Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 import { soundManager } from '../../services/audioService';
 import { useSmoothScroll } from '../providers/SmoothScrollProvider';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -39,6 +41,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(player.name || '');
+  const [isConfirmRestartOpen, setIsConfirmRestartOpen] = useState(false);
 
   // Sound feedback on open
   useEffect(() => {
@@ -550,9 +553,38 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                   </div>
                 </section>
               )}
+
+              {/* ── 6. Flight Simulation Management ─────────────────── */}
+              <section className="space-y-2 pt-1">
+                <p className={`label-telemetry ${isLight ? 'text-[#9EA3AD]' : 'text-[#5A5E68]'}`}>
+                  FLIGHT SIMULATION MANAGEMENT
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmRestartOpen(true)}
+                  className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer group ${
+                    isLight
+                      ? 'bg-red-500/05 hover:bg-red-500/10 border-red-500/15 text-red-600'
+                      : 'bg-red-500/08 hover:bg-red-500/15 border-red-500/20 text-red-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-red-500/15 text-red-400 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                      <RotateCcw className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-bold">Reset Flight Progress</p>
+                      <p className={`text-[11px] ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                        Calibrate new flight cadet career
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 opacity-50 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </section>
             </div>
 
-            {/* ── 6. Drawer Footer (Sticky/Fixed Bottom with Safe-Area) ── */}
+            {/* ── 7. Drawer Footer (Sticky/Fixed Bottom with Safe-Area) ── */}
             <div
               className={`flex-shrink-0 p-4 border-t text-center pb-[calc(1rem+env(safe-area-inset-bottom,0px))] ${
                 isLight ? 'border-black/08 bg-black/02' : 'border-white/08 bg-white/02'
@@ -565,6 +597,23 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
           </motion.aside>
         </div>
       )}
+
+      {/* Flight Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isConfirmRestartOpen}
+        title="Reset Flight Progress?"
+        message="This will reset your current flight telemetry, score, net worth, and game stage back to initial flight calibration. Are you sure you want to proceed?"
+        confirmLabel="Reset Flight"
+        cancelLabel="Keep Flying"
+        variant="danger"
+        onConfirm={() => {
+          soundManager.playWarning();
+          dispatch({ type: 'RESTART_GAME' });
+          setIsConfirmRestartOpen(false);
+          onClose();
+        }}
+        onCancel={() => setIsConfirmRestartOpen(false)}
+      />
     </AnimatePresence>
   );
 };

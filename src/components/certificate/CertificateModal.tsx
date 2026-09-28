@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Printer, X, ShieldCheck, Sparkles, Edit3, Check, User } from 'lucide-react';
+import { Printer, X, ShieldCheck, Sparkles, Edit3, Check, User, Copy } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 import { generateFinancialPersona } from '../../utils/personaGenerator';
 import { formatCurrency, formatScore } from '../../utils/formatters';
 import { Button } from '../ui/Button';
 import { TeamLogo } from '../common/TeamLogo';
+import { soundManager } from '../../services/audioService';
 
 interface CertificateModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
 
   const [customName, setCustomName] = useState(player.name || '');
   const [isEditingInline, setIsEditingInline] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     if (player.name) {
@@ -36,7 +38,18 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
   const credentialId = `FQ-2026-GD01-${Math.abs(score * 31 + 404).toString(16).toUpperCase().padStart(6, '0')}`;
 
   const handlePrint = () => {
+    soundManager.playClick();
     window.print();
+  };
+
+  const handleCopyCredential = () => {
+    const verificationText = `FinQuest Certificate of Financial Competence | Cadet: ${displayName} | Credential ID: ${credentialId} | Score: ${formatScore(score)} | Net Worth: ${formatCurrency(netWorth)} | Financial Health: ${financialHealth}% | Verified: ${dateStr}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(verificationText);
+      setIsCopied(true);
+      soundManager.playSuccess();
+      setTimeout(() => setIsCopied(false), 2600);
+    }
   };
 
   const handleNameChange = (newName: string) => {
@@ -90,8 +103,18 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({ isOpen, onCl
               </div>
             </div>
 
-            {/* Print and Close Buttons */}
+            {/* Print, Copy, and Close Buttons */}
             <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant={isCopied ? 'orange' : 'secondary'}
+                size="sm"
+                className="transition-all"
+                icon={isCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-zinc-300" />}
+                onClick={handleCopyCredential}
+              >
+                {isCopied ? 'Copied ID' : 'Copy Credential'}
+              </Button>
+
               <Button
                 variant="orange"
                 size="sm"

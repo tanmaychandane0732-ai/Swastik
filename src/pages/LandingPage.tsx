@@ -40,6 +40,7 @@ import { TeamLogo } from '../components/common/TeamLogo';
 import { RiskRadar } from '../components/flight/RiskRadar';
 import { RiskRadarMetrics } from '../types/flightSimulator';
 import { ScrollReveal } from '../components/environment/ScrollReveal';
+import { ExpandableFAQ } from '../components/common/ExpandableFAQ';
 
 interface LandingPageProps {
   onStartQuest: (name?: string) => void;
@@ -1150,13 +1151,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </ScrollReveal>
 
       {/* ========================================================================= */}
-      {/* 8. FINAL TAKEOFF CALL TO ACTION                                           */}
+      {/* 8. FREQUENTLY ASKED QUESTIONS & PILOT BRIEFING                            */}
+      {/* ========================================================================= */}
+      <ScrollReveal
+        variant="default"
+        chapterBadge={{ number: '08', label: 'PILOT BRIEFING', accentColor: '#FF6A2A' }}
+        transitionTagline="Curated guidance on simulation mechanics, curriculum design, and certification"
+      >
+        <section id="faq" className="max-w-4xl mx-auto w-full pt-2 pb-6">
+          <ExpandableFAQ />
+        </section>
+      </ScrollReveal>
+
+      {/* ========================================================================= */}
+      {/* 9. FINAL TAKEOFF CALL TO ACTION                                           */}
       {/* ========================================================================= */}
       <ScrollReveal
         variant="hero"
-        chapterBadge={{ number: '08', label: 'DEPARTURE CLEARANCE', accentColor: '#FF6A2A' }}
+        chapterBadge={{ number: '09', label: 'DEPARTURE CLEARANCE', accentColor: '#22C55E' }}
       >
-        <section id="cta" className="max-w-4xl mx-auto w-full text-center space-y-5 pb-12">
+        <section id="cta" className="max-w-4xl mx-auto w-full text-center space-y-5 pb-8">
           <div className="glass-card rounded-3xl p-8 sm:p-12 border-2 border-[#FF5E1E] shadow-brand-orange space-y-5">
             <h2 className="font-display text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight">
               Train Before Real Life Makes The Decision For You
@@ -1190,6 +1204,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
         </section>
       </ScrollReveal>
+
+      {/* ── Polished Footer Metadata Strip ── */}
+      <footer className="w-full max-w-5xl mx-auto pt-4 pb-12 text-center space-y-3 border-t border-white/10 select-none">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-black text-sm tracking-tight text-white">
+              FIN<span className="text-[#FF6A2A]">QUEST</span>
+            </span>
+            <span className="text-[11px] text-[#A7ABB4]">· The Financial Flight Simulator</span>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs font-numeric text-[#A7ABB4]">
+            <span>Last Updated: <strong className="text-zinc-200">September 2026</strong></span>
+            <span>•</span>
+            <span>Track: <strong className="text-[#FF6A2A]">GD-01</strong></span>
+            <span>•</span>
+            <span>Team: <strong className="text-zinc-200">Swastik</strong></span>
+          </div>
+        </div>
+
+        <p className="text-[11px] text-[#717684] leading-relaxed max-w-2xl mx-auto">
+          Built for Hack2Ignite Innovation Challenge GD-01: Financial Literacy Educational Game. Zero real money at risk. Powered by real-time consequence modeling.
+        </p>
+      </footer>
     </div>
   );
 };

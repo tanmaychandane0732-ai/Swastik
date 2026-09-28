@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Flame } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
+import { useScrollProgress } from '../../hooks/useScrollProgress';
 import { AnimatedCounter } from '../ui/AnimatedCounter';
 import { HealthMeter } from '../ui/HealthMeter';
 import { TeamLogo } from '../common/TeamLogo';
@@ -43,8 +44,22 @@ export const TopHUD: React.FC<TopHUDProps> = ({
   const { player, netWorth, financialHealth, score, streakMultiplier, settings } = state;
   const isLight = settings.theme === 'light';
 
+  const { progress, scrollY } = useScrollProgress();
+  const isScrolled = scrollY > 20;
+
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile navigation on Escape key
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isMobileMenuOpen]);
 
   const handleNavClick = (item: NavItem) => {
     soundManager.playNavChange();
@@ -71,9 +86,35 @@ export const TopHUD: React.FC<TopHUDProps> = ({
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full glass-panel border-b border-white/10 shadow-lg">
+      {/* Skip to Main Content Link for Keyboard Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#FF6A2A] focus:text-white focus:font-bold focus:text-xs focus:rounded-xl focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main flight content
+      </a>
+
+      <header
+        className={`sticky top-0 z-40 w-full glass-panel border-b transition-all duration-300 ${
+          isLight
+            ? isScrolled
+              ? 'bg-white/95 border-black/10 shadow-md backdrop-blur-xl'
+              : 'bg-white/80 border-black/06 shadow-sm backdrop-blur-md'
+            : isScrolled
+            ? 'bg-[#0A0C0F]/95 border-white/15 shadow-[0_4px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl'
+            : 'bg-[#0A0C0F]/80 border-white/10 shadow-lg backdrop-blur-md'
+        }`}
+      >
+        {/* Global Thin Scroll Progress Indicator */}
+        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-black/05 overflow-hidden z-50 pointer-events-none">
+          <div
+            className="h-full bg-gradient-to-r from-[#FF6A2A] via-[#00D2FF] to-[#22C55E] transition-all duration-75 ease-out"
+            style={{ width: `${Math.min(100, Math.max(0, progress * 100))}%` }}
+          />
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
+          <div className={`flex items-center justify-between transition-all duration-200 ${isScrolled ? 'h-13' : 'h-14'}`}>
             {/* ── 1. Brand / Identity ──────────────────────────────── */}
             <div className="flex items-center gap-3.5 flex-shrink-0">
               <button
@@ -234,15 +275,26 @@ export const TopHUD: React.FC<TopHUDProps> = ({
         {/* ── 4. Mobile Clean Navigation Dropdown (Same 7 Clean Tabs) ── */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className={`lg:hidden border-t overflow-hidden ${
-                isLight ? 'border-black/08 bg-white/95' : 'border-white/08 bg-[#0A0C0F]/95'
-              } backdrop-blur-xl px-4 py-3`}
-            >
+            <>
+              {/* Dimmed backdrop to dismiss mobile menu on outside tap */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 top-14 bg-black/50 backdrop-blur-xs lg:hidden z-30"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close navigation menu backdrop"
+              />
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                className={`lg:hidden border-t overflow-hidden relative z-40 ${
+                  isLight ? 'border-black/08 bg-white/95' : 'border-white/08 bg-[#0A0C0F]/95'
+                } backdrop-blur-xl px-4 py-3`}
+              >
               <div className="grid grid-cols-2 gap-1.5">
                 {PRIMARY_NAV_ITEMS.map((item) => {
                   const active = isItemActive(item);
@@ -278,6 +330,7 @@ export const TopHUD: React.FC<TopHUDProps> = ({
                 </button>
               </div>
             </motion.div>
+          </>
           )}
         </AnimatePresence>
       </header>

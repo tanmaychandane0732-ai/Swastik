@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Trophy, RotateCcw, Share2, CheckCircle2, TrendingUp, Shield, Sparkles, ArrowRight, Printer } from 'lucide-react';
+import { Award, Trophy, RotateCcw, Share2, CheckCircle2, TrendingUp, Shield, Sparkles, ArrowRight, Printer, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useGame } from '../contexts/GameContext';
 import { generateFinancialPersona } from '../utils/personaGenerator';
@@ -10,6 +10,7 @@ import { INITIAL_BADGES } from '../data/badgesData';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
 import { CapabilityMatrixChart } from '../components/charts/CapabilityMatrixChart';
+import { soundManager } from '../services/audioService';
 
 interface ResultsPageProps {
   onOpenCertificate?: () => void;
@@ -18,6 +19,7 @@ interface ResultsPageProps {
 export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) => {
   const { state, dispatch, restartQuest } = useGame();
   const { player, netWorth, financialHealth, score, levelScores, badges } = state;
+  const [copied, setCopied] = useState(false);
 
   const persona = generateFinancialPersona(state);
 
@@ -45,7 +47,9 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
     const text = `🏆 I completed FinQuest with a score of ${score} pts, ₹${netWorth.toLocaleString()} Net Worth, and earned the title "${persona.title}"! Can you outsmart your financial future?`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
-      alert('Scorecard summary copied to clipboard! Share it with your friends or judges.');
+      setCopied(true);
+      soundManager.playSuccess();
+      setTimeout(() => setCopied(false), 2600);
     }
   };
 
@@ -267,13 +271,13 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({ onOpenCertificate }) =
         </Button>
 
         <Button
-          variant="secondary"
+          variant={copied ? 'orange' : 'secondary'}
           size="lg"
-          className="w-full sm:w-auto"
-          icon={<Share2 className="w-5 h-5 text-[#FF5E1E]" />}
+          className="w-full sm:w-auto transition-all"
+          icon={copied ? <Check className="w-5 h-5 text-white" /> : <Share2 className="w-5 h-5 text-[#FF5E1E]" />}
           onClick={handleShare}
         >
-          Share Scorecard
+          {copied ? 'Copied to Clipboard!' : 'Share Scorecard'}
         </Button>
 
         <Button

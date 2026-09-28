@@ -30,6 +30,7 @@ import { ScrollChapterIndicator } from './components/common/ScrollChapterIndicat
 import { FinQuestStartupLoader } from './components/common/FinQuestStartupLoader';
 import { DynamicEnvironment } from './components/environment/DynamicEnvironment';
 import { ScrollImageSequenceCanvas } from './components/common/ScrollImageSequenceCanvas';
+import { BackToTop } from './components/common/BackToTop';
 
 
 const GameShell: React.FC = () => {
@@ -187,7 +188,7 @@ const GameShell: React.FC = () => {
         />
 
         {/* Main Gameplay Canvas */}
-        <main className="flex-1 relative z-10">
+        <main className="flex-1 relative z-10" id="main-content">
           {renderCurrentStage()}
         </main>
 
@@ -229,6 +230,7 @@ const GameShell: React.FC = () => {
         {/* Interactive Cursor-Aware Companion & Ripple Engine */}
         <CursorBuddy />
         <CursorRipple />
+        <BackToTop />
 
         {/* Cinematic Startup Flight Calibration Loader */}
         {isStartupLoading && (
