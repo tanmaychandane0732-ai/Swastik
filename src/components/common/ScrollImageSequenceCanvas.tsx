@@ -245,6 +245,25 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
     const newTarget = progress * (TOTAL_FRAMES - 1);
     targetFrameRef.current = newTarget;
 
+    // Smoothly crossfade out the old green forest background when entering the final flight section
+    const finalSection = document.getElementById('final-flight-section') || document.getElementById('certificate');
+    if (finalSection && canvasRef.current) {
+      const rect = finalSection.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const scrollStart = rect.top + scrollY - windowHeight * 0.8;
+      const scrollEnd = document.documentElement.scrollHeight - windowHeight;
+
+      if (scrollY >= scrollStart) {
+        const rawProgress = (scrollY - scrollStart) / Math.max(1, scrollEnd - scrollStart);
+        const sectionProgress = Math.min(1, Math.max(0, rawProgress));
+        // Crossfade over the first 14% of the final section
+        const crossfade = Math.min(1, Math.max(0, sectionProgress / 0.14));
+        canvasRef.current.style.opacity = String(Math.max(0, 1 - crossfade));
+      } else {
+        canvasRef.current.style.opacity = '1';
+      }
+    }
+
     // Dynamically prioritize preloading a buffer window around current target frame
     const centerIndex = Math.round(newTarget);
     for (let i = Math.max(0, centerIndex - 8); i <= Math.min(TOTAL_FRAMES - 1, centerIndex + 8); i++) {

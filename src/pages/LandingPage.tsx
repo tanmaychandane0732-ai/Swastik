@@ -42,6 +42,7 @@ import { RiskRadarMetrics } from '../types/flightSimulator';
 import { ScrollReveal } from '../components/environment/ScrollReveal';
 import { ExpandableFAQ } from '../components/common/ExpandableFAQ';
 import { localAuth } from '../services/localAuth';
+import { ScrollFlightSequence } from '../components/flight/ScrollFlightSequence';
 
 interface LandingPageProps {
   onStartQuest: (name?: string) => void;
@@ -1048,10 +1049,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </ScrollReveal>
 
       {/* ========================================================================= */}
-      {/* 6. STEP 05 — OFFICIAL A4 PRINTABLE CERTIFICATE PREVIEW                     */}
+      {/* FINAL FLIGHT ODYSSEY & TOUCHDOWN — SCROLL-LINKED AIRCRAFT EXPERIENCE      */}
       {/* ========================================================================= */}
-      <ScrollReveal
-        variant="graduation"
+      <section id="final-flight-section" className="final-flight-scroll w-full relative space-y-20 sm:space-y-28 pt-8">
+        {/* Cinematic Scroll-Linked Aircraft Animation (30 FPS, 240 Frames) */}
+        <ScrollFlightSequence isLight={isLight} />
+
+        {/* ========================================================================= */}
+        {/* 6. STEP 05 — OFFICIAL A4 PRINTABLE CERTIFICATE PREVIEW                     */}
+        {/* ========================================================================= */}
+        <ScrollReveal
+          variant="graduation"
         chapterBadge={{ number: '06', label: 'COMPETENCE PROOF', accentColor: '#F59E0B' }}
         transitionTagline="Permanent recognized certification backed by decision benchmarks"
       >
@@ -1245,6 +1253,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
         </section>
       </ScrollReveal>
+      </section>
 
       {/* ── Polished Footer Metadata Strip ── */}
       <footer className="w-full max-w-5xl mx-auto pt-4 pb-12 text-center space-y-3 border-t border-white/10 select-none">
