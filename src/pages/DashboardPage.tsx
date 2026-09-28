@@ -93,7 +93,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* FEATURED: Financial Flight Simulator Cockpit Banner */}
       <GlassCard className="p-6 sm:p-8 rounded-3xl border-2 border-[#FF5E1E] shadow-brand-orange relative overflow-hidden space-y-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10 border-b border-[#27272A] pb-5">
+        <div className={`flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10 border-b pb-5 ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5E1E]/20 border border-[#FF5E1E]/50 text-[#FF5E1E] text-xs font-black font-numeric">
               <span>✈️ HACK2IGNITE GD-01 • FINANCIAL FLIGHT SIMULATOR</span>
@@ -224,7 +224,7 @@ export const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#27272A] flex items-center justify-between">
+            <div className={`pt-3 border-t flex items-center justify-between ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
               <span className="text-[11px] font-bold text-zinc-400">
                 Badges: Scam Spotter & Scam Shield
               </span>
@@ -264,7 +264,7 @@ export const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#27272A] flex items-center justify-between">
+            <div className={`pt-3 border-t flex items-center justify-between ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
               <span className="text-[11px] font-bold text-zinc-400">
                 Badges: Turbulence Survivor & Calm Pilot
               </span>
