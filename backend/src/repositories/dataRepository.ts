@@ -1,6 +1,5 @@
-import { prisma } from '../config/prisma';
+import prisma from "../config/prisma";
 import { inMemoryStore, InMemoryUser, InMemoryUserProfile, InMemoryGameSession, InMemoryDecision } from './inMemoryStore';
-import { randomUUID } from 'crypto';
 
 // Helper to generate unique IDs
 const generateId = (prefix: string = 'id') => `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -12,20 +11,16 @@ export class DataRepository {
     this.testConnection();
   }
 
-  public async testConnection(): Promise<boolean> {
-    if (!prisma) {
-      this.usePrisma = false;
-      return false;
-    }
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-      this.usePrisma = true;
-      return true;
-    } catch {
-      this.usePrisma = false;
-      return false;
-    }
+ public async testConnection(): Promise<boolean> {
+  try {
+    await prisma.$runCommandRaw({ ping: 1 });
+    this.usePrisma = true;
+    return true;
+  } catch {
+    this.usePrisma = false;
+    return false;
   }
+}
 
   // --- USERS ---
   async findUserByEmail(email: string): Promise<any | null> {
@@ -428,7 +423,7 @@ export class DataRepository {
           where: { userId },
           include: { badge: true },
         });
-        return userBadges.map((ub) => ({ ...ub.badge, unlockedAt: ub.unlockedAt }));
+        return userBadges.map((ub: { badge: any; unlockedAt: Date; }): any => ({ ...ub.badge, unlockedAt: ub.unlockedAt }));
       } catch {
         this.usePrisma = false;
       }

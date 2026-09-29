@@ -3,41 +3,41 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id             String                @id @default(uuid())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
   name           String
-  email          String                @unique
+  email          String   @unique
   passwordHash   String
-  ageGroup       String?               @default("18-25")
-  educationLevel String?               @default("Undergraduate")
-  location       String?               @default("India")
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  ageGroup       String?  @default("18-25")
+  educationLevel String?  @default("Undergraduate")
+  location       String?  @default("India")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  profile        UserProfile?
-  sessions       GameSession[]
-  assessments    FinancialAssessment[]
-  badges         UserBadge[]
-  challenges     ChallengeAttempt[]
-  classroomRoles ClassroomMember[]
-  teachingClasses Classroom[]         @relation("TeacherClassrooms")
+  profile         UserProfile?
+  sessions        GameSession[]
+  assessments     FinancialAssessment[]
+  badges          UserBadge[]
+  challenges      ChallengeAttempt[]
+  classroomRoles  ClassroomMember[]
+  teachingClasses Classroom[]           @relation("TeacherClassrooms")
 
   @@map("users")
 }
 
 model UserProfile {
-  id               String   @id @default(uuid())
-  userId           String   @unique
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @unique @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id])
   financialIQ      Int      @default(50)
-  decisionDNA      Json?    // Archetype and 5 traits (patience, risk, debt, scam, emergency)
+  decisionDNA      Json?
   financialHealth  Int      @default(75)
   riskScore        Int      @default(20)
-  learningProgress Json?    // Modules completed, mastery levels
+  learningProgress Json?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -45,133 +45,133 @@ model UserProfile {
 }
 
 model Scenario {
-  id          String           @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   subtitle    String?
   description String
-  category    String           @default("budget") // budget, debt, investment, scam, shock
-  difficulty  String           @default("cadet")  // cadet, investigator, master
-  country     String           @default("IN")     // Indian context default
-  isActive    Boolean          @default(true)
-  month       Int              @default(1)
-  createdAt   DateTime         @default(now())
+  category    String   @default("budget")
+  difficulty  String   @default("cadet")
+  country     String   @default("IN")
+  isActive    Boolean  @default(true)
+  month       Int      @default(1)
+  createdAt   DateTime @default(now())
 
-  options     ScenarioOption[]
-  decisions   Decision[]
+  options   ScenarioOption[]
+  decisions Decision[]
 
   @@map("scenarios")
 }
 
 model ScenarioOption {
-  id                 String     @id @default(uuid())
-  scenarioId         String
-  scenario           Scenario   @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  scenarioId         String   @db.ObjectId
+  scenario           Scenario @relation(fields: [scenarioId], references: [id])
   text               String
   description        String
-  cashImpact         Int        @default(0)
-  debtImpact         Int        @default(0)
-  savingsImpact      Int        @default(0)
-  creditImpact       Int        @default(0)
-  riskImpact         Int        @default(0)
-  scoreImpact        Int        @default(0)
-  healthImpact       Int        @default(0)
-  monthlyEmiImpact   Int        @default(0)
-  isOptimal          Boolean    @default(false)
+  cashImpact         Int      @default(0)
+  debtImpact         Int      @default(0)
+  savingsImpact      Int      @default(0)
+  creditImpact       Int      @default(0)
+  riskImpact         Int      @default(0)
+  scoreImpact        Int      @default(0)
+  healthImpact       Int      @default(0)
+  monthlyEmiImpact   Int      @default(0)
+  isOptimal          Boolean  @default(false)
   outcomeHeadline    String
   outcomeExplanation String
   financialLesson    String
 
-  decisions          Decision[]
+  decisions Decision[]
 
   @@map("scenario_options")
 }
 
 model GameSession {
-  id              String     @id @default(uuid())
-  userId          String
-  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentMonth    Int        @default(1)
-  totalMonths     Int        @default(6)
-  status          String     @default("IN_PROGRESS") // NOT_STARTED, IN_PROGRESS, COMPLETED, ABANDONED
-  startingCash    Int        @default(10000)
-  currentCash     Int        @default(10000)
-  savings         Int        @default(0)
-  debt            Int        @default(0)
-  monthlyEmi      Int        @default(0)
-  invested        Int        @default(0)
-  creditScore     Int        @default(680)
-  financialHealth Int        @default(75)
-  riskScore       Int        @default(20)
-  overallScore    Int        @default(0)
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  user            User      @relation(fields: [userId], references: [id])
+  currentMonth    Int       @default(1)
+  totalMonths     Int       @default(6)
+  status          String    @default("IN_PROGRESS")
+  startingCash    Int       @default(10000)
+  currentCash     Int       @default(10000)
+  savings         Int       @default(0)
+  debt            Int       @default(0)
+  monthlyEmi      Int       @default(0)
+  invested        Int       @default(0)
+  creditScore     Int       @default(680)
+  financialHealth Int       @default(75)
+  riskScore       Int       @default(20)
+  overallScore    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   completedAt     DateTime?
 
-  decisions       Decision[]
+  decisions Decision[]
 
   @@map("game_sessions")
 }
 
 model Decision {
-  id                   String         @id @default(uuid())
-  sessionId            String
-  session              GameSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  scenarioId           String
-  scenario             Scenario       @relation(fields: [scenarioId], references: [id])
-  optionId             String
-  option               ScenarioOption @relation(fields: [optionId], references: [id])
-  month                Int
-  cashBefore           Int
-  cashAfter            Int
-  debtBefore           Int
-  debtAfter            Int
-  riskBefore           Int
-  riskAfter            Int
+  id                    String         @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId             String         @db.ObjectId
+  session               GameSession    @relation(fields: [sessionId], references: [id])
+  scenarioId            String         @db.ObjectId
+  scenario              Scenario       @relation(fields: [scenarioId], references: [id])
+  optionId              String         @db.ObjectId
+  option                ScenarioOption @relation(fields: [optionId], references: [id])
+  month                 Int
+  cashBefore            Int
+  cashAfter             Int
+  debtBefore            Int
+  debtAfter             Int
+  riskBefore            Int
+  riskAfter             Int
   financialHealthBefore Int
-  financialHealthAfter Int
-  netWorthBefore       Int
-  netWorthAfter        Int
-  isOptimal            Boolean
-  headline             String
-  whyItHappened        String
-  financialLesson      String
-  createdAt            DateTime       @default(now())
+  financialHealthAfter  Int
+  netWorthBefore        Int
+  netWorthAfter         Int
+  isOptimal             Boolean
+  headline              String
+  whyItHappened         String
+  financialLesson       String
+  createdAt             DateTime       @default(now())
 
   @@map("decisions")
 }
 
 model FinancialAssessment {
-  id             String   @id @default(uuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type           String   // PRE_QUEST, POST_QUEST
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id])
+  type           String
   score          Int      @default(0)
-  categoryScores Json     // { budget: 70, debt: 60, scam: 80, investing: 50, insurance: 60 }
-  tier           String   // Pre-Flight Cadet, Co-Pilot in Training, Licensed Aviator, Elite Commander
+  categoryScores Json
+  tier           String
   completedAt    DateTime @default(now())
 
   @@map("financial_assessments")
 }
 
 model Badge {
-  id          String      @id @default(uuid())
-  code        String      @unique
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  code        String @unique
   name        String
   description String
   icon        String
-  category    String      @default("flight") // flight, budget, debt, scam, mastery
+  category    String @default("flight")
 
-  users       UserBadge[]
+  users UserBadge[]
 
   @@map("badges")
 }
 
 model UserBadge {
-  id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badgeId    String
-  badge      Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  badgeId    String   @db.ObjectId
+  badge      Badge    @relation(fields: [badgeId], references: [id])
   unlockedAt DateTime @default(now())
 
   @@unique([userId, badgeId])
@@ -179,26 +179,26 @@ model UserBadge {
 }
 
 model DailyChallenge {
-  id            String             @id @default(uuid())
-  date          String             @unique // YYYY-MM-DD
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  date          String   @unique
   scenario      String
   question      String
   explanation   String
   learningPoint String
-  options       Json               // Array of choices with id, text, isOptimal, rationale
-  createdAt     DateTime           @default(now())
+  options       Json
+  createdAt     DateTime @default(now())
 
-  attempts      ChallengeAttempt[]
+  attempts ChallengeAttempt[]
 
   @@map("daily_challenges")
 }
 
 model ChallengeAttempt {
-  id          String         @id @default(uuid())
-  challengeId String
-  challenge   DailyChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  challengeId String         @db.ObjectId
+  challenge   DailyChallenge @relation(fields: [challengeId], references: [id])
+  userId      String         @db.ObjectId
+  user        User           @relation(fields: [userId], references: [id])
   optionId    String
   isOptimal   Boolean
   attemptedAt DateTime       @default(now())
@@ -208,13 +208,13 @@ model ChallengeAttempt {
 }
 
 model Classroom {
-  id          String            @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   institution String
-  code        String            @unique
-  teacherId   String
-  teacher     User              @relation("TeacherClassrooms", fields: [teacherId], references: [id])
-  createdAt   DateTime          @default(now())
+  code        String   @unique
+  teacherId   String   @db.ObjectId
+  teacher     User     @relation("TeacherClassrooms", fields: [teacherId], references: [id])
+  createdAt   DateTime @default(now())
 
   members     ClassroomMember[]
   assignments Assignment[]
@@ -223,12 +223,12 @@ model Classroom {
 }
 
 model ClassroomMember {
-  id          String    @id @default(uuid())
-  classroomId String
-  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role        String    @default("student") // student, ta, teacher
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  classroomId String    @db.ObjectId
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  role        String    @default("student")
   joinedAt    DateTime  @default(now())
 
   @@unique([classroomId, userId])
@@ -236,9 +236,9 @@ model ClassroomMember {
 }
 
 model Assignment {
-  id           String    @id @default(uuid())
-  classroomId  String
-  classroom    Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  classroomId  String    @db.ObjectId
+  classroom    Classroom @relation(fields: [classroomId], references: [id])
   title        String
   scenarioPack String    @default("indian")
   dueDate      DateTime?
@@ -246,4 +246,3 @@ model Assignment {
 
   @@map("assignments")
 }
-

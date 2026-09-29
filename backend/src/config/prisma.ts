@@ -1,29 +1,20 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
-let prisma: PrismaClient | null = null;
-let isPrismaAvailable = false;
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
-try {
-  prisma = new PrismaClient({
-    log: [],
+const prisma =
+  globalThis.prisma ||
+  new PrismaClient({
+    log: ["query", "error", "warn"],
   });
-  isPrismaAvailable = true;
-} catch {
-  isPrismaAvailable = false;
-  prisma = null;
+
+const nodeEnv = (globalThis as { process?: { env?: { NODE_ENV?: string } } })
+  .process?.env?.NODE_ENV;
+
+if (nodeEnv !== "production") {
+  globalThis.prisma = prisma;
 }
 
-export { prisma, isPrismaAvailable };
-
-export async function checkDatabaseConnection(): Promise<boolean> {
-  if (!prisma || !isPrismaAvailable) {
-    return false;
-  }
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    return true;
-  } catch {
-    return false;
-  }
-}
-
+export default prisma;
