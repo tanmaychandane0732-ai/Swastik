@@ -1,30 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { GameProvider, useGame } from './contexts/GameContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { TopHUD } from './components/hud/TopHUD';
 import { LiveVideoBackground } from './components/common/LiveVideoBackground';
 import { FeedbackModal } from './components/feedback/FeedbackModal';
-import { BadgeModal } from './components/badges/BadgeModal';
-import { CertificateModal } from './components/certificate/CertificateModal';
 import { LandingPage } from './pages/LandingPage';
 import { OnboardingModal } from './pages/OnboardingModal';
-import { DashboardPage } from './pages/DashboardPage';
-import { Level1Budgeting } from './pages/games/Level1Budgeting';
-import { Level2DebtTrap } from './pages/games/Level2DebtTrap';
-import { Level3ScamRadar } from './pages/games/Level3ScamRadar';
-import { ResultsPage } from './pages/ResultsPage';
-import { LeaderboardPage } from './pages/LeaderboardPage';
-import { LifeSimulatorGame } from './pages/games/LifeSimulatorGame';
-import { DiagnosticPage } from './pages/DiagnosticPage';
-import { AcademyPage } from './pages/AcademyPage';
-import { ClassroomCockpit } from './components/flight/ClassroomCockpit';
-import { JudgeDemoModeModal } from './components/flight/JudgeDemoModeModal';
-import { DailyFlightChallengeModal } from './components/flight/DailyFlightChallengeModal';
 import { CursorBuddy } from './components/common/CursorBuddy';
 import { CursorRipple } from './components/common/CursorRipple';
-import { TrainingDeckPage } from './pages/TrainingDeckPage';
-import { ScamDetectiveGame } from './components/scam/ScamDetectiveGame';
-import { FinancialTurbulenceGame } from './components/turbulence/FinancialTurbulenceGame';
 import { SmoothScrollProvider } from './components/providers/SmoothScrollProvider';
 import { ScrollChapterIndicator } from './components/common/ScrollChapterIndicator';
 import { FinQuestStartupLoader } from './components/common/FinQuestStartupLoader';
@@ -33,6 +16,35 @@ import { ScrollImageSequenceCanvas } from './components/common/ScrollImageSequen
 import { BackToTop } from './components/common/BackToTop';
 import { localAuth } from './services/localAuth';
 
+// Lazy-loaded game stages (instant initial landing page, on-demand stage calibration)
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const Level1Budgeting = lazy(() => import('./pages/games/Level1Budgeting').then(m => ({ default: m.Level1Budgeting })));
+const Level2DebtTrap = lazy(() => import('./pages/games/Level2DebtTrap').then(m => ({ default: m.Level2DebtTrap })));
+const Level3ScamRadar = lazy(() => import('./pages/games/Level3ScamRadar').then(m => ({ default: m.Level3ScamRadar })));
+const ResultsPage = lazy(() => import('./pages/ResultsPage').then(m => ({ default: m.ResultsPage })));
+const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage').then(m => ({ default: m.LeaderboardPage })));
+const LifeSimulatorGame = lazy(() => import('./pages/games/LifeSimulatorGame').then(m => ({ default: m.LifeSimulatorGame })));
+const DiagnosticPage = lazy(() => import('./pages/DiagnosticPage').then(m => ({ default: m.DiagnosticPage })));
+const AcademyPage = lazy(() => import('./pages/AcademyPage').then(m => ({ default: m.AcademyPage })));
+const ClassroomCockpit = lazy(() => import('./components/flight/ClassroomCockpit').then(m => ({ default: m.ClassroomCockpit })));
+const TrainingDeckPage = lazy(() => import('./pages/TrainingDeckPage').then(m => ({ default: m.TrainingDeckPage })));
+const ScamDetectiveGame = lazy(() => import('./components/scam/ScamDetectiveGame').then(m => ({ default: m.ScamDetectiveGame })));
+const FinancialTurbulenceGame = lazy(() => import('./components/turbulence/FinancialTurbulenceGame').then(m => ({ default: m.FinancialTurbulenceGame })));
+
+// Lazy-loaded secondary modals
+const BadgeModal = lazy(() => import('./components/badges/BadgeModal').then(m => ({ default: m.BadgeModal })));
+const CertificateModal = lazy(() => import('./components/certificate/CertificateModal').then(m => ({ default: m.CertificateModal })));
+const JudgeDemoModeModal = lazy(() => import('./components/flight/JudgeDemoModeModal').then(m => ({ default: m.JudgeDemoModeModal })));
+const DailyFlightChallengeModal = lazy(() => import('./components/flight/DailyFlightChallengeModal').then(m => ({ default: m.DailyFlightChallengeModal })));
+
+const StageLoadingFallback: React.FC = () => (
+  <div className="flex items-center justify-center min-h-[60vh] select-none">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-9 h-9 rounded-full border-2 border-[#FF6A2A] border-t-transparent animate-spin" />
+      <span className="text-xs font-mono text-zinc-400 tracking-widest uppercase">Calibrating Flight Deck...</span>
+    </div>
+  </div>
+);
 
 const GameShell: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -209,9 +221,11 @@ const GameShell: React.FC = () => {
           }}
         />
 
-        {/* Main Gameplay Canvas */}
+        {/* Main Gameplay Canvas with Suspense Boundary for Lazy Stages */}
         <main className="flex-1 relative z-10" id="main-content">
-          {renderCurrentStage()}
+          <Suspense fallback={<StageLoadingFallback />}>
+            {renderCurrentStage()}
+          </Suspense>
         </main>
 
         {/* Chapter indicator — only on landing page scroll story */}
@@ -222,35 +236,48 @@ const GameShell: React.FC = () => {
 
         {/* Global Modals */}
         <FeedbackModal />
-        <BadgeModal
-          isOpen={isBadgesOpen}
-          onClose={() => setIsBadgesOpen(false)}
-        />
+
+        <Suspense fallback={null}>
+          {isBadgesOpen && (
+            <BadgeModal
+              isOpen={isBadgesOpen}
+              onClose={() => setIsBadgesOpen(false)}
+            />
+          )}
+
+          {isCertificateOpen && (
+            <CertificateModal
+              isOpen={isCertificateOpen}
+              onClose={() => setIsCertificateOpen(false)}
+            />
+          )}
+
+          {/* Judge Demo Walkthrough Modal (2 Min) */}
+          {isJudgeDemoOpen && (
+            <JudgeDemoModeModal
+              isOpen={isJudgeDemoOpen}
+              onClose={() => setIsJudgeDemoOpen(false)}
+              onNavigateToStage={(stage) => dispatch({ type: 'SET_STAGE', payload: stage as any })}
+            />
+          )}
+
+          {/* Daily Flight Dilemma Modal */}
+          {isDailyChallengeOpen && (
+            <DailyFlightChallengeModal
+              isOpen={isDailyChallengeOpen}
+              onClose={() => setIsDailyChallengeOpen(false)}
+              onIncrementStreak={() => dispatch({ type: 'INCREMENT_STREAK' })}
+            />
+          )}
+        </Suspense>
+
         <OnboardingModal
           isOpen={isOnboardingOpen}
           onClose={() => setIsOnboardingOpen(false)}
           initialTab={onboardingInitialTab}
         />
-        <CertificateModal
-          isOpen={isCertificateOpen}
-          onClose={() => setIsCertificateOpen(false)}
-        />
 
-        {/* Judge Demo Walkthrough Modal (2 Min) */}
-        <JudgeDemoModeModal
-          isOpen={isJudgeDemoOpen}
-          onClose={() => setIsJudgeDemoOpen(false)}
-          onNavigateToStage={(stage) => dispatch({ type: 'SET_STAGE', payload: stage as any })}
-        />
-
-        {/* Daily Flight Dilemma Modal */}
-        <DailyFlightChallengeModal
-          isOpen={isDailyChallengeOpen}
-          onClose={() => setIsDailyChallengeOpen(false)}
-          onIncrementStreak={() => dispatch({ type: 'INCREMENT_STREAK' })}
-        />
-
-        {/* Interactive Cursor-Aware Companion & Ripple Engine */}
+        {/* Interactive Companion, Click Radar Ripples, and BackToTop */}
         <CursorBuddy />
         <CursorRipple />
         <BackToTop />
@@ -271,7 +298,6 @@ const GameShell: React.FC = () => {
       </div>
     </SmoothScrollProvider>
   );
-
 };
 
 export default function App() {

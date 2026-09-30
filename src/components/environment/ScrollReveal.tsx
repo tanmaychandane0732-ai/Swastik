@@ -67,14 +67,13 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
       case 'data':
         // Financial IQ: emerges with crisp precision and upward trajectory
         return {
-          hidden: { opacity: 0, y: 38, scale: 0.96, filter: 'blur(6px)' },
+          hidden: { opacity: 0, y: 38, scale: 0.96 },
           visible: {
             opacity: 1,
             y: 0,
             scale: 1,
-            filter: 'blur(0px)',
             transition: {
-              duration: 0.75,
+              duration: 0.65,
               ease: cubicEase,
               delay,
             },
@@ -90,7 +89,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
             y: 0,
             scale: 1,
             transition: {
-              duration: 0.8,
+              duration: 0.7,
               ease: cubicEase,
               delay,
             },
@@ -119,14 +118,13 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
       case 'investigation':
         // Scam Detective: scan emergence with subtle scale
         return {
-          hidden: { opacity: 0, y: 40, scale: 0.95, filter: 'blur(8px)' },
+          hidden: { opacity: 0, y: 40, scale: 0.95 },
           visible: {
             opacity: 1,
             y: 0,
             scale: 1,
-            filter: 'blur(0px)',
             transition: {
-              duration: 0.7,
+              duration: 0.65,
               ease: cubicEase,
               delay,
             },
@@ -136,13 +134,12 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
       case 'radar':
         // Risk Radar: radial expansion from central origin
         return {
-          hidden: { opacity: 0, scale: 0.92, filter: 'blur(6px)' },
+          hidden: { opacity: 0, scale: 0.92 },
           visible: {
             opacity: 1,
             scale: 1,
-            filter: 'blur(0px)',
             transition: {
-              duration: 0.8,
+              duration: 0.7,
               ease: cubicEase,
               delay,
             },

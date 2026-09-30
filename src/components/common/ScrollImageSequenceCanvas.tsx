@@ -6,23 +6,20 @@ interface ScrollImageSequenceCanvasProps {
 }
 
 const TOTAL_FRAMES = 300;
-const INITIAL_PRELOAD_COUNT = 15;
-const BATCH_SIZE = 10;
-const BATCH_INTERVAL_MS = 60;
+const INITIAL_PRELOAD_COUNT = 20;
+const BATCH_SIZE = 6;
+const BATCH_INTERVAL_MS = 200;
 
 /**
  * ScrollImageSequenceCanvas — Cinematic Apple-Style Scroll-Linked Image Sequence
  *
- * Core Capabilities:
- * - Full-screen sticky/fixed HTML5 Canvas pinned behind the hero & landing page.
- * - 100% driven by scroll progress (0% scroll -> frame 1, 100% scroll -> end of website).
- * - Progressive frame preloading with immediate priority for frame 0 and surrounding buffer.
- * - Persistent requestAnimationFrame loop with smooth interpolation / lerp (0.085 factor).
- * - Automatic nearest-frame fallback so the canvas NEVER freezes, flashes, or gets stuck.
- * - Full Retina / DPR support (sharp up to 4K displays).
- * - Object-fit cover algorithm for zero distortion on mobile, tablet, and ultra-wide screens.
- * - Zero Layout Shift (CLS = 0) with pointer-events-none (never blocks clicks/inputs).
- * - Deep gold & dark luxury aesthetic with seamless edge vignette into #0A0C0F.
+ * Performance-optimized:
+ * - Full-screen sticky/fixed HTML5 Canvas pinned behind hero & landing page.
+ * - On-demand requestAnimationFrame: only runs while scrolling / lerping, 0% CPU at rest.
+ * - Frame-deduplication: skips redundant redraws when rounded frame index has not changed.
+ * - Cached radial and linear gradients: created once per canvas dimension/theme change.
+ * - Non-blocking frame preloading: prioritizes active viewport window, gentle background batches.
+ * - Full Retina / DPR support with zero distortion cover scaling.
  * - Accessibility-ready: respects prefers-reduced-motion.
  */
 export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps> = ({
@@ -41,6 +38,13 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
   const targetFrameRef = useRef<number>(0);
   const lastRenderedIndexRef = useRef<number>(-1);
   const rafIdRef = useRef<number>(0);
+  const isLoopRunningRef = useRef<boolean>(false);
+
+  // Cached dimensions & gradients
+  const sizeRef = useRef<{ width: number; height: number; dpr: number }>({ width: 0, height: 0, dpr: 1 });
+  const radialGradRef = useRef<CanvasGradient | null>(null);
+  const linearGradRef = useRef<CanvasGradient | null>(null);
+  const lastThemeRef = useRef<boolean>(isLight);
 
   // Check prefers-reduced-motion
   const prefersReducedMotion =
@@ -61,7 +65,7 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
         onLoaded?.();
         return;
       }
-      if (imagesRef.current[index]) return; // currently loading
+      if (imagesRef.current[index]) return; // already loading
 
       const img = new Image();
       img.src = getFrameSrc(index);
@@ -71,7 +75,7 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
         onLoaded?.();
       };
       img.onerror = () => {
-        // Retry once after brief delay if network glitched
+        // Retry once after brief delay
         setTimeout(() => {
           if (!loadedRef.current[index]) {
             const retryImg = new Image();
@@ -82,7 +86,7 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
               onLoaded?.();
             };
           }
-        }, 1500);
+        }, 2000);
       };
       imagesRef.current[index] = img;
     },
@@ -109,31 +113,97 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
     return null;
   }, []);
 
+  // Update canvas sizing and cached gradients
+  const updateCanvasDimensions = useCallback(
+    (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      const physicalWidth = Math.floor(width * dpr);
+      const physicalHeight = Math.floor(height * dpr);
+
+      const needsResize =
+        sizeRef.current.width !== physicalWidth ||
+        sizeRef.current.height !== physicalHeight ||
+        sizeRef.current.dpr !== dpr ||
+        lastThemeRef.current !== isLight;
+
+      if (needsResize) {
+        sizeRef.current = { width: physicalWidth, height: physicalHeight, dpr };
+        lastThemeRef.current = isLight;
+
+        if (canvas.width !== physicalWidth || canvas.height !== physicalHeight) {
+          canvas.width = physicalWidth;
+          canvas.height = physicalHeight;
+          canvas.style.width = `${width}px`;
+          canvas.style.height = `${height}px`;
+        }
+
+        // Rebuild cached gradients
+        const maxDim = Math.max(physicalWidth, physicalHeight);
+        const centerX = physicalWidth / 2;
+        const centerY = physicalHeight / 2;
+
+        const radialGrad = ctx.createRadialGradient(
+          centerX,
+          centerY,
+          maxDim * 0.2,
+          centerX,
+          centerY,
+          maxDim * 0.72
+        );
+
+        if (isLight) {
+          radialGrad.addColorStop(0, 'rgba(244, 241, 236, 0.15)');
+          radialGrad.addColorStop(0.5, 'rgba(244, 241, 236, 0.45)');
+          radialGrad.addColorStop(0.85, 'rgba(244, 241, 236, 0.88)');
+          radialGrad.addColorStop(1, '#F4F1EC');
+        } else {
+          radialGrad.addColorStop(0, 'rgba(10, 12, 15, 0.22)');
+          radialGrad.addColorStop(0.5, 'rgba(10, 12, 15, 0.55)');
+          radialGrad.addColorStop(0.82, 'rgba(10, 12, 15, 0.88)');
+          radialGrad.addColorStop(1, '#0A0C0F');
+        }
+        radialGradRef.current = radialGrad;
+
+        const linearGrad = ctx.createLinearGradient(0, 0, 0, physicalHeight);
+        if (isLight) {
+          linearGrad.addColorStop(0, 'rgba(255, 235, 204, 0.10)');
+          linearGrad.addColorStop(1, 'rgba(244, 241, 236, 0.65)');
+        } else {
+          linearGrad.addColorStop(0, 'rgba(255, 170, 42, 0.04)');
+          linearGrad.addColorStop(0.5, 'rgba(10, 12, 15, 0.25)');
+          linearGrad.addColorStop(1, 'rgba(10, 12, 15, 0.60)');
+        }
+        linearGradRef.current = linearGrad;
+      }
+    },
+    [isLight]
+  );
+
   // Draw frame on canvas with responsive cover scaling & luxury vignette
   const drawFrame = useCallback(
-    (frameIndex: number) => {
+    (frameIndex: number, forceRedraw = false) => {
+      const targetIndex = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(frameIndex)));
+
+      // Skip redundant repaints if same frame is already visible
+      if (!forceRedraw && targetIndex === lastRenderedIndexRef.current) {
+        return;
+      }
+
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const img = getNearestLoadedFrame(frameIndex);
+      const img = getNearestLoadedFrame(targetIndex);
       if (!img) return;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      updateCanvasDimensions(canvas, ctx);
 
-      // Ensure canvas internal resolution matches device pixel ratio
-      if (canvas.width !== Math.floor(width * dpr) || canvas.height !== Math.floor(height * dpr)) {
-        canvas.width = Math.floor(width * dpr);
-        canvas.height = Math.floor(height * dpr);
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-      }
-
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
+      const canvasWidth = sizeRef.current.width;
+      const canvasHeight = sizeRef.current.height;
       const imgWidth = img.naturalWidth || 800;
       const imgHeight = img.naturalHeight || 450;
 
@@ -147,65 +217,59 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
       // Draw active frame image
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
-      // ── Deep Gold & Dark Luxury Vignette Overlay ─────────────────────────
-      // Seamlessly feathers canvas boundary into FinQuest obsidian background
-      const maxDim = Math.max(canvasWidth, canvasHeight);
-      const centerX = canvasWidth / 2;
-      const centerY = canvasHeight / 2;
-
-      const radialGrad = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        maxDim * 0.2,
-        centerX,
-        centerY,
-        maxDim * 0.72
-      );
-
-      if (isLight) {
-        radialGrad.addColorStop(0, 'rgba(244, 241, 236, 0.15)');
-        radialGrad.addColorStop(0.5, 'rgba(244, 241, 236, 0.45)');
-        radialGrad.addColorStop(0.85, 'rgba(244, 241, 236, 0.88)');
-        radialGrad.addColorStop(1, '#F4F1EC');
-      } else {
-        radialGrad.addColorStop(0, 'rgba(10, 12, 15, 0.22)');
-        radialGrad.addColorStop(0.5, 'rgba(10, 12, 15, 0.55)');
-        radialGrad.addColorStop(0.82, 'rgba(10, 12, 15, 0.88)');
-        radialGrad.addColorStop(1, '#0A0C0F');
+      // Vignette Overlay
+      if (radialGradRef.current) {
+        ctx.fillStyle = radialGradRef.current;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
       }
 
-      ctx.fillStyle = radialGrad;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      // Subtle warm gold / amber atmospheric tint (luxury aesthetic)
-      const linearGrad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-      if (isLight) {
-        linearGrad.addColorStop(0, 'rgba(255, 235, 204, 0.10)');
-        linearGrad.addColorStop(1, 'rgba(244, 241, 236, 0.65)');
-      } else {
-        linearGrad.addColorStop(0, 'rgba(255, 170, 42, 0.04)');
-        linearGrad.addColorStop(0.5, 'rgba(10, 12, 15, 0.25)');
-        linearGrad.addColorStop(1, 'rgba(10, 12, 15, 0.60)');
+      // Linear atmospheric tint
+      if (linearGradRef.current) {
+        ctx.fillStyle = linearGradRef.current;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
       }
 
-      ctx.fillStyle = linearGrad;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      lastRenderedIndexRef.current = frameIndex;
+      lastRenderedIndexRef.current = targetIndex;
     },
-    [getNearestLoadedFrame, isLight]
+    [getNearestLoadedFrame, updateCanvasDimensions]
   );
+
+  // Start lerp loop on-demand (only runs while moving)
+  const startAnimationLoop = useCallback(() => {
+    if (isLoopRunningRef.current) return;
+    isLoopRunningRef.current = true;
+
+    const lerpFactor = prefersReducedMotion ? 1 : 0.085;
+
+    const loop = () => {
+      const target = targetFrameRef.current;
+      const current = currentFrameRef.current;
+      const delta = target - current;
+
+      if (Math.abs(delta) > 0.02) {
+        currentFrameRef.current += delta * lerpFactor;
+        drawFrame(currentFrameRef.current);
+        rafIdRef.current = requestAnimationFrame(loop);
+      } else {
+        currentFrameRef.current = target;
+        drawFrame(target);
+        isLoopRunningRef.current = false;
+      }
+    };
+
+    rafIdRef.current = requestAnimationFrame(loop);
+  }, [drawFrame, prefersReducedMotion]);
 
   // Progressive background preloader
   useEffect(() => {
     if (isPreloadingRef.current) return;
     isPreloadingRef.current = true;
 
-    // 1. Immediately preload frame 0 and first batch for instant initial paint
+    // 1. Immediately preload initial batch for instant paint
     for (let i = 0; i < INITIAL_PRELOAD_COUNT; i++) {
       preloadFrame(i, () => {
         if (i === 0) {
-          drawFrame(0);
+          drawFrame(0, true);
         }
       });
     }
@@ -228,75 +292,49 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
       }
     };
 
-    timerId = setTimeout(loadNextBatch, 150);
+    timerId = setTimeout(loadNextBatch, 300);
 
     return () => {
       clearTimeout(timerId);
     };
   }, [preloadFrame, drawFrame]);
 
-  // Recalculate scroll target continuously
+  // Recalculate scroll target
   const updateScrollProgress = useCallback(() => {
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
 
-    // Map 0% scroll -> frame 1 (index 0), 100% scroll -> frame 300 (index 299)
     const newTarget = progress * (TOTAL_FRAMES - 1);
     targetFrameRef.current = newTarget;
 
-    // Dynamically prioritize preloading a buffer window around current target frame
+    // Prioritize preloading a buffer window around current target frame
     const centerIndex = Math.round(newTarget);
-    for (let i = Math.max(0, centerIndex - 8); i <= Math.min(TOTAL_FRAMES - 1, centerIndex + 8); i++) {
+    for (let i = Math.max(0, centerIndex - 12); i <= Math.min(TOTAL_FRAMES - 1, centerIndex + 12); i++) {
       if (!loadedRef.current[i]) {
         preloadFrame(i);
       }
     }
-  }, [preloadFrame]);
 
-  // Persistent requestAnimationFrame Lerp Loop
+    startAnimationLoop();
+  }, [preloadFrame, startAnimationLoop]);
+
+  // Bind scroll listeners (Lenis and native fallback)
   useEffect(() => {
-    const lerpFactor = prefersReducedMotion ? 1 : 0.085;
-
-    const loop = () => {
-      const target = targetFrameRef.current;
-      const current = currentFrameRef.current;
-      const delta = target - current;
-
-      if (Math.abs(delta) > 0.005) {
-        currentFrameRef.current += delta * lerpFactor;
-        drawFrame(Math.round(currentFrameRef.current));
-      } else if (Math.abs(delta) > 0) {
-        currentFrameRef.current = target;
-        drawFrame(Math.round(target));
-      }
-
-      rafIdRef.current = requestAnimationFrame(loop);
-    };
-
-    rafIdRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(rafIdRef.current);
-    };
-  }, [drawFrame, prefersReducedMotion]);
-
-  // Bind scroll listeners (both native and Lenis)
-  useEffect(() => {
-    // Lenis listener
     if (lenis) {
       const handleLenisScroll = (e: { progress: number; scroll: number }) => {
         const rawProgress = typeof e.progress === 'number' ? e.progress : 0;
         const progress = Math.min(1, Math.max(0, rawProgress));
         targetFrameRef.current = progress * (TOTAL_FRAMES - 1);
 
-        // Preload around current target
         const center = Math.round(targetFrameRef.current);
-        for (let i = Math.max(0, center - 8); i <= Math.min(TOTAL_FRAMES - 1, center + 8); i++) {
+        for (let i = Math.max(0, center - 12); i <= Math.min(TOTAL_FRAMES - 1, center + 12); i++) {
           if (!loadedRef.current[i]) {
             preloadFrame(i);
           }
         }
+
+        startAnimationLoop();
       };
 
       lenis.on('scroll', handleLenisScroll);
@@ -304,30 +342,37 @@ export const ScrollImageSequenceCanvas: React.FC<ScrollImageSequenceCanvasProps>
 
       return () => {
         lenis.off('scroll', handleLenisScroll);
+        cancelAnimationFrame(rafIdRef.current);
+        isLoopRunningRef.current = false;
       };
     }
 
-    // Native window scroll listener fallback
     window.addEventListener('scroll', updateScrollProgress, { passive: true });
     updateScrollProgress();
 
     return () => {
       window.removeEventListener('scroll', updateScrollProgress);
+      cancelAnimationFrame(rafIdRef.current);
+      isLoopRunningRef.current = false;
     };
-  }, [lenis, updateScrollProgress, preloadFrame]);
+  }, [lenis, updateScrollProgress, preloadFrame, startAnimationLoop]);
 
-  // Resize listener
+  // Window resize listener
   useEffect(() => {
     const handleResize = () => {
-      updateScrollProgress();
-      drawFrame(Math.round(currentFrameRef.current));
+      drawFrame(currentFrameRef.current, true);
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [drawFrame, updateScrollProgress]);
+  }, [drawFrame]);
+
+  // Theme change triggers gradient refresh
+  useEffect(() => {
+    drawFrame(currentFrameRef.current, true);
+  }, [isLight, drawFrame]);
 
   return (
     <div
