@@ -10,7 +10,7 @@ interface DynamicEnvironmentProps {
   children?: React.ReactNode;
 }
 
-export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
+export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = React.memo(({
   activeChapter,
   children,
 }) => {
@@ -80,18 +80,19 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
       <motion.div
         animate={{
           background: isLight ? palette.lightBg : palette.ambientBg,
-          y: bgMeshY,
         }}
         transition={{
           background: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
-          y: { duration: 0.1, ease: 'linear' },
         }}
-        className="absolute inset-0 w-full h-[120vh] transition-opacity duration-1000"
+        style={{
+          transform: `translate3d(0, ${bgMeshY}px, 0)`,
+        }}
+        className="absolute inset-0 w-full h-[120vh] transition-opacity duration-1000 will-change-transform transform-gpu"
       />
 
       {/* ── 2. AtmosphericGlow (Multi-Orb Organic Light Architecture - ~1% Opacity) ── */}
       <div
-        className="absolute inset-0 overflow-hidden"
+        className="absolute inset-0 overflow-hidden will-change-transform transform-gpu"
         style={{ transform: `translate3d(0, ${orbsParallaxY}px, 0)` }}
       >
         {/* Orb 1: Primary Mood Anchor (Top Left / Follows Chapter) */}
@@ -108,7 +109,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             y: { duration: 14, repeat: Infinity, ease: 'easeInOut' },
             scale: { duration: 18, repeat: Infinity, ease: 'easeInOut' },
           }}
-          className={`absolute -top-36 -left-36 w-[560px] sm:w-[720px] h-[560px] sm:h-[720px] rounded-full blur-[130px] ${
+          className={`absolute -top-36 -left-36 w-[560px] sm:w-[720px] h-[560px] sm:h-[720px] rounded-full blur-[130px] will-change-transform transform-gpu ${
             isLight ? 'opacity-[0.015] mix-blend-multiply' : 'opacity-[0.015] mix-blend-screen'
           }`}
         />
@@ -127,7 +128,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             y: { duration: 18, repeat: Infinity, ease: 'easeInOut' },
             scale: { duration: 22, repeat: Infinity, ease: 'easeInOut' },
           }}
-          className={`absolute top-[32%] -right-44 w-[520px] sm:w-[660px] h-[520px] sm:h-[660px] rounded-full blur-[140px] ${
+          className={`absolute top-[32%] -right-44 w-[520px] sm:w-[660px] h-[520px] sm:h-[660px] rounded-full blur-[140px] will-change-transform transform-gpu ${
             isLight ? 'opacity-[0.012] mix-blend-multiply' : 'opacity-[0.012] mix-blend-screen'
           }`}
         />
@@ -144,7 +145,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
             x: { duration: 15, repeat: Infinity, ease: 'easeInOut' },
             y: { duration: 17, repeat: Infinity, ease: 'easeInOut' },
           }}
-          className={`absolute bottom-[5%] left-[25%] w-[440px] sm:w-[580px] h-[440px] sm:h-[580px] rounded-full blur-[110px] ${
+          className={`absolute bottom-[5%] left-[25%] w-[440px] sm:w-[580px] h-[440px] sm:h-[580px] rounded-full blur-[110px] will-change-transform transform-gpu ${
             isLight ? 'opacity-[0.010] mix-blend-multiply' : 'opacity-[0.010] mix-blend-screen'
           }`}
         />
@@ -172,7 +173,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
         />
       )}
 
-      {/* ── 3. LightField (SceneAI-Inspired Atmospheric Sunlight Shaft - 1% Sheer) ─ */}
+      {/* ── 3. LightField (Atmospheric Sunlight Shaft - 1% Sheer) ─ */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -190,7 +191,7 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
 
       {/* ── 4. AbstractShapes (Aviation Compass & Artificial Horizon) ── */}
       <div
-        className="absolute inset-0 overflow-hidden opacity-10 sm:opacity-15"
+        className="absolute inset-0 overflow-hidden opacity-10 sm:opacity-15 will-change-transform transform-gpu"
         style={{ transform: `translate3d(0, ${compassParallaxY}px, 0)` }}
       >
         <motion.svg
@@ -284,7 +285,6 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
       </svg>
 
       {/* ── 6. SectionAccent (Focus Glow & Radial Contrast Shield) ──── */}
-      {/* Top & bottom vignettes preserve legibility of TopHUD and footer */}
       <div
         className={`absolute inset-0 pointer-events-none transition-colors duration-700 ${
           isLight
@@ -293,7 +293,6 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
         }`}
       />
 
-      {/* Radial center clarity window — guarantees foreground text readability */}
       <div
         className={`absolute inset-0 pointer-events-none ${
           isLight
@@ -305,4 +304,4 @@ export const DynamicEnvironment: React.FC<DynamicEnvironmentProps> = ({
       {children}
     </div>
   );
-};
+});

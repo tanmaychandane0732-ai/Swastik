@@ -36,6 +36,19 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
   { id: 'classroom', label: 'Classroom', stage: 'classroom' },
 ];
 
+/** Isolated thin scroll progress indicator */
+const HUDProgressBar: React.FC = () => {
+  const { progress } = useScrollProgress();
+  return (
+    <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-black/05 overflow-hidden z-50 pointer-events-none">
+      <div
+        className="h-full bg-gradient-to-r from-[#FF6A2A] via-[#00D2FF] to-[#22C55E] transition-all duration-75 ease-out"
+        style={{ width: `${Math.min(100, Math.max(0, progress * 100))}%` }}
+      />
+    </div>
+  );
+};
+
 export const TopHUD: React.FC<TopHUDProps> = ({
   onOpenLeaderboard,
   onOpenCertificate,
@@ -46,8 +59,26 @@ export const TopHUD: React.FC<TopHUDProps> = ({
   const { player, netWorth, financialHealth, score, streakMultiplier, settings } = state;
   const isLight = settings.theme === 'light';
 
-  const { progress, scrollY } = useScrollProgress();
-  const isScrolled = scrollY > 20;
+  // Only update isScrolled when crossing 20px threshold
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrolled = window.scrollY > 20;
+          setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -118,12 +149,7 @@ export const TopHUD: React.FC<TopHUDProps> = ({
         }`}
       >
         {/* Global Thin Scroll Progress Indicator */}
-        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-black/05 overflow-hidden z-50 pointer-events-none">
-          <div
-            className="h-full bg-gradient-to-r from-[#FF6A2A] via-[#00D2FF] to-[#22C55E] transition-all duration-75 ease-out"
-            style={{ width: `${Math.min(100, Math.max(0, progress * 100))}%` }}
-          />
-        </div>
+        <HUDProgressBar />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`flex items-center justify-between transition-all duration-200 ${isScrolled ? 'h-13' : 'h-14'}`}>

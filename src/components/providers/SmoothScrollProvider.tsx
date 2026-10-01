@@ -39,13 +39,13 @@ export const SmoothScrollProvider: React.FC<SmoothScrollProviderProps> = ({ chil
     if (prefersReducedMotion) return;
 
     const lenis = new Lenis({
-      duration: 1.4,
+      duration: 1.05,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 2.0,
+      wheelMultiplier: 1.1,
+      touchMultiplier: 1.8,
       infinite: false,
       allowNestedScroll: true,
       prevent: (node) => {
