@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { simulationEngine } from '../services/simulationEngine';
 import { dataRepository } from '../repositories/dataRepository';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
+import { getGuestUserId } from "../utils/guestUser"
 
 export const createSessionSchema = z.object({
   scenarioType: z.string().optional(),
@@ -26,7 +27,7 @@ export const advanceMonthSchema = z.object({
 export class SessionController {
   public static async createSession(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.userId || 'guest_user';
+     const userId = req.user?.userId || await getGuestUserId();
       const { scenarioType, startingCash, startingDebt, pilotCallsign } = req.body;
 
       const result = await simulationEngine.startSession({

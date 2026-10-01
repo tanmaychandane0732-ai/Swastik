@@ -6,6 +6,7 @@ import { optionalAuth } from '../middleware/authMiddleware';
 const router = Router();
 
 router.get('/daily', optionalAuth, ChallengeController.getDaily);
+router.get('/', optionalAuth, ChallengeController.getDaily);
 router.post('/:id/attempt', optionalAuth, validateRequest({ body: attemptChallengeSchema }), ChallengeController.attempt);
 
 export default router;

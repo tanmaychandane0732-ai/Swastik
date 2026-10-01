@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { classroomService } from '../services/classroomService';
 import { dataRepository } from '../repositories/dataRepository';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
+import { getGuestUserId } from "../utils/guestUser";
 
 export const createClassroomSchema = z.object({
   name: z.string().min(3, 'Classroom squadron name must be at least 3 characters'),
@@ -33,7 +34,7 @@ export class ClassroomController {
 
   public static async join(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.userId || 'guest_user';
+      const userId = req.user?.userId || await getGuestUserId();
       const { code } = req.body;
 
       const result = await classroomService.joinClassroom(userId, code);

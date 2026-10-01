@@ -16,6 +16,8 @@ export interface InMemoryUser {
 export interface InMemoryUserProfile {
   id: string;
   userId: string;
+  userName?: string;
+  userEmail?: string;
   financialIQ: number;
   decisionDNA: any;
   financialHealth: number;
@@ -28,6 +30,9 @@ export interface InMemoryUserProfile {
 
 export interface InMemoryScenarioOption {
   id: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
   scenarioId: string;
   text: string;
   description: string;
@@ -47,6 +52,9 @@ export interface InMemoryScenarioOption {
 
 export interface InMemoryScenario {
   id: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
   title: string;
   subtitle: string;
   description: string;
@@ -62,6 +70,8 @@ export interface InMemoryScenario {
 export interface InMemoryGameSession {
   id: string;
   userId: string;
+  userName?: string;
+  userEmail?: string;
   currentMonth: number;
   totalMonths: number;
   status: string; // IN_PROGRESS, COMPLETED, ABANDONED
@@ -89,6 +99,9 @@ export interface InMemoryDecision {
   id: string;
   sessionId: string;
   scenarioId: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
   optionId?: string;
   choiceSelected?: string;
   month: number;
@@ -136,12 +149,17 @@ export interface InMemoryBadge {
 export interface InMemoryUserBadge {
   id: string;
   userId: string;
+  userName?: string;
+  userEmail?: string;
   badgeId: string;
   unlockedAt: Date;
 }
 
 export interface InMemoryDailyChallenge {
   id: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
   date: string;
   scenario: string;
   question: string;

@@ -3,9 +3,40 @@ import { inMemoryStore, InMemoryUser, InMemoryUserProfile, InMemoryGameSession, 
 
 // Helper to generate unique IDs
 const generateId = (prefix: string = 'id') => `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+const isMongoObjectId = (value: unknown): value is string =>
+  typeof value === 'string' && /^[0-9a-fA-F]{24}$/.test(value);
+const addSessionAliases = (session: any): any => ({
+  ...session,
+  totalCash: session.currentCash,
+  totalDebt: session.debt,
+  netWorth: session.currentCash - session.debt,
+  score: session.overallScore,
+});
+const addSessionUserFields = (session: any): any => ({
+  ...session,
+  userName: session.userName ?? session.user?.name,
+  userEmail: session.userEmail ?? session.user?.email,
+});
 
 export class DataRepository {
   private usePrisma: boolean = false;
+
+  private async syncEmbeddedUserProfile(user: any): Promise<any> {
+    const profile = user.profile;
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        role: user.role || 'STUDENT',
+        financialIQ: profile?.financialIQ ?? user.financialIQ ?? 50,
+        financialHealth: profile?.financialHealth ?? user.financialHealth ?? 75,
+        riskScore: profile?.riskScore ?? user.riskScore ?? 20,
+        decisionDNA: profile?.decisionDNA ?? user.decisionDNA ?? undefined,
+        learningProgress: profile?.learningProgress ?? user.learningProgress ?? { modulesCompleted: [] },
+      },
+      include: { profile: true },
+    });
+    return updatedUser;
+  }
 
   constructor() {
     this.testConnection();
@@ -26,7 +57,8 @@ export class DataRepository {
   async findUserByEmail(email: string): Promise<any | null> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.user.findUnique({ where: { email: email.toLowerCase() }, include: { profile: true } });
+        const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() }, include: { profile: true } });
+        return user ? await this.syncEmbeddedUserProfile(user) : null;
       } catch {
         this.usePrisma = false;
       }
@@ -42,7 +74,8 @@ export class DataRepository {
   async findUserById(id: string): Promise<any | null> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.user.findUnique({ where: { id }, include: { profile: true } });
+        const user = await prisma.user.findUnique({ where: { id }, include: { profile: true } });
+        return user ? await this.syncEmbeddedUserProfile(user) : null;
       } catch {
         this.usePrisma = false;
       }
@@ -69,11 +102,18 @@ export class DataRepository {
             name: data.name,
             email: data.email.toLowerCase(),
             passwordHash: data.passwordHash,
+            role: data.role || 'STUDENT',
             ageGroup: data.ageGroup || '18-25',
             educationLevel: data.educationLevel || 'Undergraduate',
             location: data.location || 'India',
+            financialIQ: 50,
+            financialHealth: 75,
+            riskScore: 20,
+            learningProgress: { modulesCompleted: [] },
             profile: {
               create: {
+                userName: data.name,
+                userEmail: data.email.toLowerCase(),
                 financialIQ: 50,
                 financialHealth: 75,
                 riskScore: 20,
@@ -93,6 +133,7 @@ export class DataRepository {
       name: data.name,
       email: data.email.toLowerCase(),
       passwordHash: data.passwordHash,
+      role: data.role || 'STUDENT',
       ageGroup: data.ageGroup || '18-25',
       educationLevel: data.educationLevel || 'Undergraduate',
       location: data.location || 'India',
@@ -104,6 +145,8 @@ export class DataRepository {
     const profile: InMemoryUserProfile = {
       id: generateId('prof'),
       userId: id,
+      userName: data.name,
+      userEmail: data.email.toLowerCase(),
       financialIQ: 50,
       decisionDNA: null,
       financialHealth: 75,
@@ -196,9 +239,15 @@ export class DataRepository {
 
     if (this.usePrisma && prisma) {
       try {
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { name: true, email: true },
+        });
         return await prisma.gameSession.create({
           data: {
             userId,
+            userName: user?.name,
+            userEmail: user?.email,
             currentMonth,
             totalMonths: 6,
             status,
@@ -211,6 +260,7 @@ export class DataRepository {
             creditScore,
             financialHealth: 75,
             riskScore: 20,
+            stressLevel,
             overallScore: 0,
           },
         });
@@ -223,6 +273,8 @@ export class DataRepository {
     const newSession: InMemoryGameSession = {
       id,
       userId,
+      userName: Array.from(inMemoryStore.users.values()).find((user) => user.id === userId)?.name,
+      userEmail: Array.from(inMemoryStore.users.values()).find((user) => user.id === userId)?.email,
       currentMonth,
       totalMonths: 6,
       status,
@@ -251,10 +303,22 @@ export class DataRepository {
   async getSessionById(sessionId: string): Promise<any | null> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.gameSession.findUnique({
+        const session = await prisma.gameSession.findUnique({
           where: { id: sessionId },
-          include: { decisions: { include: { scenario: true, option: true } } },
+          include: {
+            user: { select: { name: true, email: true } },
+            decisions: { include: { scenario: true, option: true } },
+          },
         });
+        if (!session) return null;
+        const enriched = addSessionUserFields(session);
+        if ((!session.userName || !session.userEmail) && enriched.userName && enriched.userEmail) {
+          await prisma.gameSession.update({
+            where: { id: session.id },
+            data: { userName: enriched.userName, userEmail: enriched.userEmail },
+          });
+        }
+        return addSessionAliases(enriched);
       } catch {
         this.usePrisma = false;
       }
@@ -268,11 +332,24 @@ export class DataRepository {
   async getUserSessions(userId: string): Promise<any[]> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.gameSession.findMany({
+        const sessions = await prisma.gameSession.findMany({
           where: { userId },
           orderBy: { createdAt: 'desc' },
-          include: { decisions: true },
+          include: {
+            user: { select: { name: true, email: true } },
+            decisions: true,
+          },
         });
+        return Promise.all(sessions.map(async (session) => {
+          const enriched = addSessionUserFields(session);
+          if ((!session.userName || !session.userEmail) && enriched.userName && enriched.userEmail) {
+            await prisma.gameSession.update({
+              where: { id: session.id },
+              data: { userName: enriched.userName, userEmail: enriched.userEmail },
+            });
+          }
+          return addSessionAliases(enriched);
+        }));
       } catch {
         this.usePrisma = false;
       }
@@ -285,10 +362,30 @@ export class DataRepository {
   async updateSession(sessionId: string, data: Partial<InMemoryGameSession>): Promise<any> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.gameSession.update({
+        const currentCash = data.currentCash ?? data.totalCash;
+        const debt = data.debt ?? data.totalDebt;
+        const updatedSession = await prisma.gameSession.update({
           where: { id: sessionId },
-          data: { ...data, updatedAt: new Date() },
+          data: {
+            ...(data.currentMonth !== undefined && { currentMonth: data.currentMonth }),
+            ...(data.status !== undefined && { status: data.status }),
+            ...(data.startingCash !== undefined && { startingCash: data.startingCash }),
+            ...(currentCash !== undefined && { currentCash }),
+            ...(data.savings !== undefined && { savings: data.savings }),
+            ...(debt !== undefined && { debt }),
+            ...(data.monthlyEmi !== undefined && { monthlyEmi: data.monthlyEmi }),
+            ...(data.invested !== undefined && { invested: data.invested }),
+            ...(data.creditScore !== undefined && { creditScore: data.creditScore }),
+            ...(data.stressLevel !== undefined && { stressLevel: data.stressLevel }),
+            ...(data.financialHealth !== undefined && { financialHealth: data.financialHealth }),
+            ...(data.riskScore !== undefined && { riskScore: data.riskScore }),
+            ...(data.overallScore !== undefined && { overallScore: data.overallScore }),
+            ...(data.score !== undefined && { overallScore: data.score }),
+            ...(data.completedAt !== undefined && { completedAt: data.completedAt }),
+            updatedAt: new Date(),
+          },
         });
+        return addSessionAliases(updatedSession);
       } catch {
         this.usePrisma = false;
       }
@@ -301,13 +398,24 @@ export class DataRepository {
   }
 
   async recordDecision(data: any): Promise<any> {
-    if (this.usePrisma && prisma) {
+    const scenarioId = isMongoObjectId(data.scenarioId) ? data.scenarioId : undefined;
+    const optionId = isMongoObjectId(data.optionId) ? data.optionId : undefined;
+    const optionKey = data.optionId || data.choiceSelected;
+
+    if (this.usePrisma && prisma && isMongoObjectId(data.sessionId)) {
       try {
+        const session = await prisma.gameSession.findUnique({
+          where: { id: data.sessionId },
+          include: { user: { select: { id: true, name: true, email: true } } },
+        });
         return await prisma.decision.create({
           data: {
             sessionId: data.sessionId,
-            scenarioId: data.scenarioId,
-            optionId: data.optionId || data.choiceSelected || 'opt_default',
+            userId: session?.user?.id,
+            userName: session?.user?.name,
+            userEmail: session?.user?.email,
+            ...(scenarioId ? { scenarioId } : { scenarioKey: data.scenarioId }),
+            ...(optionId ? { optionId } : { optionKey }),
             month: data.month,
             cashBefore: data.cashBefore ?? 0,
             cashAfter: data.cashAfter ?? (data.cashImpact ?? 0),
@@ -331,9 +439,14 @@ export class DataRepository {
     }
 
     const id = generateId('dec');
+    const session = inMemoryStore.sessions.get(data.sessionId);
+    const user = session ? inMemoryStore.users.get(session.userId) : undefined;
     const newDecision: InMemoryDecision = {
       id,
       ...data,
+      userId: user?.id,
+      userName: user?.name,
+      userEmail: user?.email,
       choiceSelected: data.choiceSelected || data.optionId,
       createdAt: new Date(),
     };
@@ -358,9 +471,15 @@ export class DataRepository {
     const categoryScores = data.categoryScores || data.breakdown || {};
     if (this.usePrisma && prisma) {
       try {
+        const user = await prisma.user.findUnique({
+          where: { id: data.userId },
+          select: { name: true, email: true },
+        });
         return await prisma.financialAssessment.create({
           data: {
             userId: data.userId,
+            userName: user?.name,
+            userEmail: user?.email,
             type: data.type,
             score: data.score,
             categoryScores,
@@ -443,10 +562,14 @@ export class DataRepository {
       try {
         const dbBadge = await prisma.badge.findUnique({ where: { code: badgeCode } });
         if (dbBadge) {
+          const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { name: true, email: true },
+          });
           return await prisma.userBadge.upsert({
             where: { userId_badgeId: { userId, badgeId: dbBadge.id } },
-            create: { userId, badgeId: dbBadge.id },
-            update: {},
+            create: { userId, badgeId: dbBadge.id, userName: user?.name, userEmail: user?.email },
+            update: { userName: user?.name, userEmail: user?.email },
             include: { badge: true },
           });
         }
@@ -457,10 +580,13 @@ export class DataRepository {
 
     const key = `${userId}_${badge.id}`;
     if (!inMemoryStore.userBadges.has(key)) {
+      const user = inMemoryStore.users.get(userId);
       inMemoryStore.userBadges.set(key, {
         id: generateId('ub'),
         userId,
         badgeId: badge.id,
+        userName: user?.name,
+        userEmail: user?.email,
         unlockedAt: new Date(),
       });
     }
@@ -471,27 +597,90 @@ export class DataRepository {
   async getProfile(userId: string): Promise<any | null> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.userProfile.findUnique({ where: { userId } });
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          include: { profile: true },
+        });
+        if (!user) return null;
+        const profile = user.profile || {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          financialIQ: user.financialIQ,
+          financialHealth: user.financialHealth,
+          riskScore: user.riskScore,
+          decisionDNA: user.decisionDNA,
+          learningProgress: user.learningProgress,
+        };
+        if (!user.profile || !user.profile.userName || !user.profile.userEmail) {
+          await prisma.userProfile.upsert({
+            where: { userId: user.id },
+            create: {
+              userId: user.id,
+              userName: user.name,
+              userEmail: user.email,
+              financialIQ: user.financialIQ,
+              financialHealth: user.financialHealth,
+              riskScore: user.riskScore,
+              decisionDNA: user.decisionDNA,
+              learningProgress: user.learningProgress,
+            },
+            update: { userName: user.name, userEmail: user.email },
+          });
+        }
+        return {
+          ...user,
+          profile,
+        };
       } catch {
         this.usePrisma = false;
       }
     }
-    return Array.from(inMemoryStore.profiles.values()).find((p) => p.userId === userId) || null;
+    const profile = Array.from(inMemoryStore.profiles.values()).find((p) => p.userId === userId);
+    const user = inMemoryStore.users.get(userId);
+    return profile && user
+      ? { ...profile, userName: profile.userName || user.name, userEmail: profile.userEmail || user.email }
+      : profile || null;
   }
 
   async updateProfile(userId: string, data: Partial<InMemoryUserProfile>): Promise<any> {
     if (this.usePrisma && prisma) {
       try {
-        return await prisma.userProfile.upsert({
+        const user = await prisma.user.update({
+          where: { id: userId },
+          data: {
+            ...(data.financialIQ !== undefined && { financialIQ: data.financialIQ }),
+            ...(data.financialHealth !== undefined && { financialHealth: data.financialHealth }),
+            ...(data.riskScore !== undefined && { riskScore: data.riskScore }),
+            ...(data.decisionDNA !== undefined && { decisionDNA: data.decisionDNA }),
+            ...(data.learningProgress !== undefined && { learningProgress: data.learningProgress }),
+          },
+          include: { profile: true },
+        });
+        await prisma.userProfile.upsert({
           where: { userId },
           create: {
             userId,
-            financialIQ: data.financialIQ || 50,
-            financialHealth: data.financialHealth || 75,
-            riskScore: data.riskScore || 20,
+            userName: user.name,
+            userEmail: user.email,
+            financialIQ: data.financialIQ ?? user.financialIQ,
+            financialHealth: data.financialHealth ?? user.financialHealth,
+            riskScore: data.riskScore ?? user.riskScore,
+            decisionDNA: data.decisionDNA ?? user.decisionDNA,
+            learningProgress: data.learningProgress ?? user.learningProgress,
           },
-          update: { ...data, updatedAt: new Date() },
+          update: {
+            userName: user.name,
+            userEmail: user.email,
+            ...(data.financialIQ !== undefined && { financialIQ: data.financialIQ }),
+            ...(data.financialHealth !== undefined && { financialHealth: data.financialHealth }),
+            ...(data.riskScore !== undefined && { riskScore: data.riskScore }),
+            ...(data.decisionDNA !== undefined && { decisionDNA: data.decisionDNA }),
+            ...(data.learningProgress !== undefined && { learningProgress: data.learningProgress }),
+            updatedAt: new Date(),
+          },
         });
+        return { ...user, profile: user.profile };
       } catch {
         this.usePrisma = false;
       }
@@ -535,11 +724,34 @@ export class DataRepository {
     score: number;
     isCorrect: boolean;
   }): Promise<any> {
+    if (this.usePrisma && prisma && isMongoObjectId(data.challengeId) && isMongoObjectId(data.userId)) {
+      try {
+        const user = await prisma.user.findUnique({
+          where: { id: data.userId },
+          select: { name: true, email: true },
+        });
+        return await prisma.challengeAttempt.create({
+          data: {
+            challengeId: data.challengeId,
+            userId: data.userId,
+            userName: user?.name,
+            userEmail: user?.email,
+            optionId: data.choiceSelected,
+            isOptimal: data.isCorrect,
+          },
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
     const id = generateId('att');
+    const user = inMemoryStore.users.get(data.userId);
     const attempt = {
       id,
       challengeId: data.challengeId,
       userId: data.userId,
+      userName: user?.name,
+      userEmail: user?.email,
       optionId: data.choiceSelected,
       isOptimal: data.isCorrect,
       score: data.score,
@@ -552,9 +764,12 @@ export class DataRepository {
   // --- CLASSROOM COHORT ---
   async createClassroom(data: { name: string; code: string; description?: string; instructorId: string }): Promise<any> {
     const id = generateId('cls');
+    const teacher = inMemoryStore.users.get(data.instructorId);
     const classroom = {
       id,
       ...data,
+      teacherName: teacher?.name,
+      teacherEmail: teacher?.email,
       createdAt: new Date(),
     };
     inMemoryStore.classrooms.set(id, classroom);
@@ -571,10 +786,13 @@ export class DataRepository {
 
   async joinClassroom(classroomId: string, userId: string): Promise<any> {
     const id = generateId('cm');
+    const user = inMemoryStore.users.get(userId);
     const member = {
       id,
       classroomId,
       userId,
+      userName: user?.name,
+      userEmail: user?.email,
       joinedAt: new Date(),
     };
     inMemoryStore.classroomMembers.set(id, member);

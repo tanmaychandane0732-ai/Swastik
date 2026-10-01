@@ -12,9 +12,15 @@ model User {
   name           String
   email          String   @unique
   passwordHash   String
+  role           String   @default("STUDENT")
   ageGroup       String?  @default("18-25")
   educationLevel String?  @default("Undergraduate")
   location       String?  @default("India")
+  financialIQ    Int      @default(50)
+  financialHealth Int     @default(75)
+  riskScore      Int      @default(20)
+  decisionDNA    Json?
+  learningProgress Json?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -33,6 +39,8 @@ model UserProfile {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   userId           String   @unique @db.ObjectId
   user             User     @relation(fields: [userId], references: [id])
+  userName         String?
+  userEmail        String?
   financialIQ      Int      @default(50)
   decisionDNA      Json?
   financialHealth  Int      @default(75)
@@ -46,6 +54,9 @@ model UserProfile {
 
 model Scenario {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String?  @db.ObjectId
+  userName    String?
+  userEmail   String?
   title       String
   subtitle    String?
   description String
@@ -64,6 +75,9 @@ model Scenario {
 
 model ScenarioOption {
   id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String?  @db.ObjectId
+  userName           String?
+  userEmail          String?
   scenarioId         String   @db.ObjectId
   scenario           Scenario @relation(fields: [scenarioId], references: [id])
   text               String
@@ -90,6 +104,8 @@ model GameSession {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   userId          String    @db.ObjectId
   user            User      @relation(fields: [userId], references: [id])
+  userName        String?
+  userEmail       String?
   currentMonth    Int       @default(1)
   totalMonths     Int       @default(6)
   status          String    @default("IN_PROGRESS")
@@ -100,6 +116,7 @@ model GameSession {
   monthlyEmi      Int       @default(0)
   invested        Int       @default(0)
   creditScore     Int       @default(680)
+  stressLevel     Int       @default(20)
   financialHealth Int       @default(75)
   riskScore       Int       @default(20)
   overallScore    Int       @default(0)
@@ -116,10 +133,15 @@ model Decision {
   id                    String         @id @default(auto()) @map("_id") @db.ObjectId
   sessionId             String         @db.ObjectId
   session               GameSession    @relation(fields: [sessionId], references: [id])
-  scenarioId            String         @db.ObjectId
-  scenario              Scenario       @relation(fields: [scenarioId], references: [id])
-  optionId              String         @db.ObjectId
-  option                ScenarioOption @relation(fields: [optionId], references: [id])
+  userId                String?        @db.ObjectId
+  userName              String?
+  userEmail             String?
+  scenarioId            String?        @db.ObjectId
+  scenario              Scenario?      @relation(fields: [scenarioId], references: [id])
+  optionId              String?        @db.ObjectId
+  option                ScenarioOption? @relation(fields: [optionId], references: [id])
+  scenarioKey           String?
+  optionKey             String?
   month                 Int
   cashBefore            Int
   cashAfter             Int
@@ -144,6 +166,8 @@ model FinancialAssessment {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   userId         String   @db.ObjectId
   user           User     @relation(fields: [userId], references: [id])
+  userName       String?
+  userEmail      String?
   type           String
   score          Int      @default(0)
   categoryScores Json
@@ -170,6 +194,8 @@ model UserBadge {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String   @db.ObjectId
   user       User     @relation(fields: [userId], references: [id])
+  userName   String?
+  userEmail  String?
   badgeId    String   @db.ObjectId
   badge      Badge    @relation(fields: [badgeId], references: [id])
   unlockedAt DateTime @default(now())
@@ -180,6 +206,9 @@ model UserBadge {
 
 model DailyChallenge {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String?  @db.ObjectId
+  userName      String?
+  userEmail     String?
   date          String   @unique
   scenario      String
   question      String
@@ -199,6 +228,8 @@ model ChallengeAttempt {
   challenge   DailyChallenge @relation(fields: [challengeId], references: [id])
   userId      String         @db.ObjectId
   user        User           @relation(fields: [userId], references: [id])
+  userName    String?
+  userEmail   String?
   optionId    String
   isOptimal   Boolean
   attemptedAt DateTime       @default(now())
@@ -214,6 +245,8 @@ model Classroom {
   code        String   @unique
   teacherId   String   @db.ObjectId
   teacher     User     @relation("TeacherClassrooms", fields: [teacherId], references: [id])
+  teacherName  String?
+  teacherEmail String?
   createdAt   DateTime @default(now())
 
   members     ClassroomMember[]
@@ -228,6 +261,8 @@ model ClassroomMember {
   classroom   Classroom @relation(fields: [classroomId], references: [id])
   userId      String    @db.ObjectId
   user        User      @relation(fields: [userId], references: [id])
+  userName    String?
+  userEmail   String?
   role        String    @default("student")
   joinedAt    DateTime  @default(now())
 

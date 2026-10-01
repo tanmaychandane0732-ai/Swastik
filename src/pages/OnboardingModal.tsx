@@ -18,6 +18,7 @@ import {
 import { useGame } from '../contexts/GameContext';
 import { Button } from '../components/ui/Button';
 import { localAuth } from '../services/localAuth';
+import { AuthApi } from '../services/api/authApi';
 import { soundManager } from '../services/audioService';
 
 interface OnboardingModalProps {
@@ -58,15 +59,21 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   if (!isOpen) return null;
 
   // Handle Quick Guest Username submit (Temporary without password)
-  const handleGuestSubmit = (e: React.FormEvent) => {
+  const handleGuestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     const cleanName = name.trim() || 'Cadet Pilot';
 
-    const res = localAuth.startAsGuest(cleanName);
-    dispatch({ type: 'SET_PLAYER_NAME', payload: res.user.name });
+    const apiResponse = await AuthApi.guest(cleanName);
+    if (!apiResponse.success && apiResponse.error?.code !== 'NETWORK_OFFLINE') {
+      soundManager.playWarning();
+      setErrorMessage(apiResponse.message || 'Unable to create the pilot profile.');
+      return;
+    }
+    const user = apiResponse.success ? apiResponse.data.user : localAuth.startAsGuest(cleanName).user;
+    dispatch({ type: 'SET_PLAYER_NAME', payload: user.name });
     soundManager.playSuccess();
-    setSuccessMessage(`Welcome aboard, ${res.user.name}! Flight clearance granted.`);
+    setSuccessMessage(`Welcome aboard, ${user.name}! Flight clearance granted.`);
 
     setTimeout(() => {
       onClose();
@@ -74,38 +81,56 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   };
 
   // Handle Login or Register
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
 
     if (activeTab === 'register') {
-      // 1. Sign In / Register new account locally
-      const res = localAuth.register(name, email, password);
-      if (res.success && res.user) {
-        dispatch({ type: 'SET_PLAYER_NAME', payload: res.user.name });
+      const apiResponse = await AuthApi.register(name, email, password);
+      if (apiResponse.success && apiResponse.data?.user) {
+        const user = apiResponse.data.user;
+        localAuth.setActiveSession({ ...user, createdAt: new Date().toISOString() });
+        dispatch({ type: 'SET_PLAYER_NAME', payload: user.name });
         soundManager.playSuccess();
-        setSuccessMessage(`Account created for Pilot ${res.user.name}! Authenticated locally.`);
+        setSuccessMessage(`Account created for Pilot ${user.name}! Your profile is saved.`);
         setTimeout(() => {
           onClose();
         }, 700);
       } else {
+        const res = localAuth.register(name, email, password);
+        if (res.success && res.user && apiResponse.error?.code === 'NETWORK_OFFLINE') {
+          dispatch({ type: 'SET_PLAYER_NAME', payload: res.user.name });
+          soundManager.playSuccess();
+          setSuccessMessage(`Account created for Pilot ${res.user.name}! Backend is offline; saved locally.`);
+          setTimeout(() => onClose(), 700);
+          return;
+        }
         soundManager.playWarning();
-        setErrorMessage(res.message || 'Registration failed. Please check your credentials.');
+        setErrorMessage(apiResponse.message || res.message || 'Registration failed. Please check your credentials.');
       }
     } else if (activeTab === 'login') {
-      // 2. Log In with existing registered account
-      const res = localAuth.login(email || name, password);
-      if (res.success && res.user) {
-        dispatch({ type: 'SET_PLAYER_NAME', payload: res.user.name });
+      const apiResponse = await AuthApi.login(email || name, password);
+      if (apiResponse.success && apiResponse.data?.user) {
+        const user = apiResponse.data.user;
+        localAuth.setActiveSession({ ...user, createdAt: new Date().toISOString() });
+        dispatch({ type: 'SET_PLAYER_NAME', payload: user.name });
         soundManager.playSuccess();
-        setSuccessMessage(`Welcome back, Captain ${res.user.name}! Telemetry synchronized.`);
+        setSuccessMessage(`Welcome back, Captain ${user.name}! Telemetry synchronized.`);
         setTimeout(() => {
           onClose();
         }, 700);
       } else {
+        const res = localAuth.login(email || name, password);
+        if (res.success && res.user && apiResponse.error?.code === 'NETWORK_OFFLINE') {
+          dispatch({ type: 'SET_PLAYER_NAME', payload: res.user.name });
+          soundManager.playSuccess();
+          setSuccessMessage(`Welcome back, Captain ${res.user.name}! Backend is offline; using local session.`);
+          setTimeout(() => onClose(), 700);
+          return;
+        }
         soundManager.playWarning();
-        setErrorMessage(res.message || 'Log in failed. User should sign in first before logging in.');
+        setErrorMessage(apiResponse.message || res.message || 'Log in failed. User should sign in first before logging in.');
       }
     }
   };

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { financialIqService } from '../services/financialIqService';
 import { dataRepository } from '../repositories/dataRepository';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
+import { getGuestUserId } from "../utils/guestUser";
 
 export const evaluateAssessmentSchema = z.object({
   questions: z.array(
@@ -77,7 +78,7 @@ export class AssessmentController {
 
   public static async submit(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.userId || 'guest_user';
+      const userId = req.user?.userId || await getGuestUserId();
       const { type, result, sessionId } = req.body;
 
       const saved = await financialIqService.saveAssessment(userId, type, result, sessionId);

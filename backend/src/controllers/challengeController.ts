@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { challengeService } from '../services/challengeService';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
+import { getGuestUserId } from "../utils/guestUser";
 
 export const attemptChallengeSchema = z.object({
   optionId: z.string(),
@@ -26,7 +27,7 @@ export class ChallengeController {
     try {
       const id = String(req.params.id);
       const { optionId } = req.body;
-      const userId = req.user?.userId || 'guest_user';
+      const userId = req.user?.userId || await getGuestUserId();
 
       const result = await challengeService.submitAttempt(userId, id, optionId);
 
