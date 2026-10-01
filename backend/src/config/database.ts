@@ -12,6 +12,7 @@ export interface DatabaseDiagnostics {
   maskedUrl: string;
   lastChecked: string;
   error?: string | null;
+  likelyCause?: string | null;
 }
 
 export interface UrlValidationResult {
@@ -21,6 +22,7 @@ export interface UrlValidationResult {
   isAtlas: boolean;
   host: string;
   databaseName: string;
+  hasUnencodedCharacters: boolean;
 }
 
 /**
@@ -31,7 +33,6 @@ export function maskDatabaseUrl(rawUrl?: string): string {
   if (!rawUrl || typeof rawUrl !== 'string') {
     return '[Not Configured]';
   }
-  // Matches mongodb://user:pass@host or mongodb+srv://user:pass@host or generic user:pass@host
   return rawUrl.replace(/(:\/\/[^:]+:)([^@]+)(@)/g, '$1****$3');
 }
 
@@ -50,6 +51,7 @@ export function validateDatabaseUrl(rawUrl?: string): UrlValidationResult {
       isAtlas: false,
       host: 'unknown',
       databaseName: 'unknown',
+      hasUnencodedCharacters: false,
     };
   }
 
@@ -64,27 +66,34 @@ export function validateDatabaseUrl(rawUrl?: string): UrlValidationResult {
       isAtlas: false,
       host: 'invalid',
       databaseName: 'invalid',
+      hasUnencodedCharacters: false,
     };
   }
 
-  // Extract host and database name safely
-  let host = 'localhost:27017';
+  // Check for unencoded special characters in credentials
+  let hasUnencodedCharacters = false;
+  let host = isAtlas ? 'cluster0.mongodb.net' : 'localhost:27017';
   let databaseName = 'finquest';
 
   try {
     const afterProtocol = url.replace(/^mongodb(\+srv)?:\/\//, '');
-    const withoutCreds = afterProtocol.includes('@')
-      ? afterProtocol.split('@')[1]
-      : afterProtocol;
-    const [hostPort, pathAndQuery] = withoutCreds.split('/');
-    if (hostPort) {
-      host = hostPort.split('?')[0];
-    }
-    if (pathAndQuery) {
-      databaseName = pathAndQuery.split('?')[0] || 'finquest';
+    if (afterProtocol.includes('@')) {
+      const creds = afterProtocol.split('@')[0];
+      const [, pass] = creds.split(':');
+      if (pass && /[@:#\/\?%&]/.test(decodeURIComponent(pass) !== pass ? '' : pass)) {
+        hasUnencodedCharacters = true;
+      }
+      const hostPart = afterProtocol.split('@')[1];
+      const [h, rest] = hostPart.split('/');
+      if (h) host = h.split('?')[0];
+      if (rest) databaseName = rest.split('?')[0] || 'finquest';
+    } else {
+      const [h, rest] = afterProtocol.split('/');
+      if (h) host = h.split('?')[0];
+      if (rest) databaseName = rest.split('?')[0] || 'finquest';
     }
   } catch {
-    // Graceful fallback if URL parsing has unexpected format
+    // Graceful fallback
   }
 
   return {
@@ -93,6 +102,7 @@ export function validateDatabaseUrl(rawUrl?: string): UrlValidationResult {
     isAtlas,
     host,
     databaseName,
+    hasUnencodedCharacters,
   };
 }
 
@@ -101,6 +111,7 @@ class DatabaseManager {
   private mode: 'persistent' | 'in-memory' = 'in-memory';
   private lastChecked: Date | null = null;
   private connectionError: string | null = null;
+  private likelyCause: string | null = null;
   private isTesting: boolean = false;
 
   public isDatabaseConnected(): boolean {
@@ -124,6 +135,7 @@ class DatabaseManager {
       maskedUrl: validation.maskedUrl,
       lastChecked: this.lastChecked ? this.lastChecked.toISOString() : new Date().toISOString(),
       error: this.connectionError,
+      likelyCause: this.likelyCause,
     };
   }
 
@@ -146,12 +158,15 @@ class DatabaseManager {
       this.connected = true;
       this.mode = 'persistent';
       this.connectionError = null;
+      this.likelyCause = null;
       this.lastChecked = new Date();
       return true;
     } catch (err: any) {
       this.connected = false;
       this.mode = 'in-memory';
-      this.connectionError = this.diagnoseError(err);
+      const diagnosed = this.diagnoseError(err);
+      this.connectionError = diagnosed.error;
+      this.likelyCause = diagnosed.likelyCause;
       this.lastChecked = new Date();
       return false;
     } finally {
@@ -185,11 +200,16 @@ class DatabaseManager {
       this.connected = false;
       this.mode = 'in-memory';
       this.connectionError = validation.error || 'Invalid DATABASE_URL';
+      this.likelyCause = 'Malformed DATABASE_URL';
       this.lastChecked = new Date();
       return false;
     }
 
-    // 2. Connect client and run ping with 1 retry
+    if (validation.hasUnencodedCharacters) {
+      console.warn('⚠️  Warning: Password contains special characters (@, :, /, ?, #, %, &) that may need URL encoding.');
+    }
+
+    // 2. Connect client and run ping with 1 bounded retry
     let success = false;
     const maxAttempts = 2;
 
@@ -201,20 +221,20 @@ class DatabaseManager {
           break;
         }
       } catch (err: any) {
-        this.connectionError = this.diagnoseError(err);
+        const diagnosed = this.diagnoseError(err);
+        this.connectionError = diagnosed.error;
+        this.likelyCause = diagnosed.likelyCause;
       }
 
       if (!success && attempt < maxAttempts) {
-        // Short pause before second attempt
         await new Promise((res) => setTimeout(res, 300));
       }
     }
 
     // 3. Report state based on outcome and environment
     if (success) {
-      console.log('✅ Database: MongoDB connected');
+      console.log(`✅ Database: ${validation.isAtlas ? 'MongoDB Atlas' : 'Local MongoDB'} connected`);
       console.log('💾 Persistence: ENABLED');
-      console.log(`📍 Mode: ${validation.isAtlas ? 'MongoDB Atlas (Cloud)' : 'Local MongoDB'}`);
       console.log(`📍 Target: ${validation.maskedUrl}`);
       return true;
     }
@@ -232,13 +252,23 @@ class DatabaseManager {
       throw new Error(`Production MongoDB connection failed: ${errorReason}`);
     }
 
-    console.warn(`⚠️  Database: MongoDB unavailable (${errorReason})`);
+    console.warn(`⚠️  Database: ${validation.isAtlas ? 'MongoDB Atlas' : 'Local MongoDB'} unavailable`);
     console.log('📦 In-Memory Data Store is ACTIVE');
     console.log('💡 Persistence is disabled until MongoDB becomes available.');
     console.log(`📍 Target: ${validation.maskedUrl}`);
 
-    if (!validation.isAtlas) {
-      console.log('💡 Tip: Start local MongoDB service ("net start MongoDB") or configure Atlas in backend/.env');
+    if (validation.isAtlas) {
+      console.log('\n🔎 Likely causes:');
+      console.log('   • Atlas IP access list does not allow this machine (most common)');
+      console.log('   • Atlas cluster is paused or in maintenance');
+      console.log('   • Database credentials invalid or unencoded special characters');
+      console.log('   • Local firewall, VPN, or network restrictions blocking port 27017');
+      console.log('💡 Fix: In MongoDB Atlas → Network Access → Add IP Address (Allow current IP or 0.0.0.0/0)');
+    } else {
+      console.log('\n🔎 Likely causes:');
+      console.log('   • Local MongoDB service is not started (run "net start MongoDB")');
+      console.log('   • MongoDB Community Edition is not installed locally');
+      console.log('💡 Tip: Start local MongoDB or configure MongoDB Atlas in backend/.env');
     }
 
     return false;
@@ -255,21 +285,53 @@ class DatabaseManager {
     }
   }
 
-  private diagnoseError(err: any): string {
+  private diagnoseError(err: any): { error: string; likelyCause: string } {
     const message = err?.message || String(err || '');
+
+    // TLS Alert / IP Whitelist rejection
+    if (message.includes('fatal alert: InternalError') || message.includes('alert number 80')) {
+      return {
+        error: 'MongoDB Atlas rejected TLS handshake (fatal alert: InternalError).',
+        likelyCause: 'Atlas Network Access (IP Whitelist) is blocking your IP address. Add your IP in Atlas dashboard.',
+      };
+    }
+
+    // Local connection refused
     if (message.includes('10061') || message.includes('ECONNREFUSED') || message.includes('actively refused')) {
-      return 'Connection refused at localhost:27017. MongoDB server is not running.';
+      return {
+        error: 'Connection refused at localhost:27017.',
+        likelyCause: 'Local MongoDB service is not running on port 27017.',
+      };
     }
-    if (message.includes('Authentication failed') || message.includes('auth error')) {
-      return 'Authentication failed. Check username and password in DATABASE_URL.';
+
+    // Authentication failure
+    if (message.includes('Authentication failed') || message.includes('auth error') || message.includes('bad auth')) {
+      return {
+        error: 'MongoDB user authentication failed.',
+        likelyCause: 'Invalid username or password in DATABASE_URL. Check credentials in backend/.env.',
+      };
     }
+
+    // Timeout
     if (message.includes('timed out') || message.includes('Server selection timeout')) {
-      return 'Server selection timed out. Verify network connectivity or Atlas IP access list.';
+      return {
+        error: 'Server selection timed out.',
+        likelyCause: 'Atlas cluster not reachable. Verify Atlas Network Access IP whitelist or cluster status.',
+      };
     }
-    if (message.includes('getaddrinfo ENOTFOUND')) {
-      return 'Host could not be resolved. Check cluster address.';
+
+    // DNS failure
+    if (message.includes('ENOTFOUND') || message.includes('getaddrinfo')) {
+      return {
+        error: 'DNS/SRV resolution failed for cluster hostname.',
+        likelyCause: 'Cluster hostname could not be resolved. Check internet connection and DNS settings.',
+      };
     }
-    return message.split('\n')[0].substring(0, 150);
+
+    return {
+      error: message.split('\n')[0].substring(0, 150),
+      likelyCause: 'Unknown database error',
+    };
   }
 }
 
