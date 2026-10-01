@@ -9,7 +9,8 @@ import { validateRequest } from '../middleware/validateRequest';
 
 const router = Router();
 
-router.get('/', (req, res, next) => (AnalyticsController as any).getDashboard?.(req, res, next));
+router.get('/dashboard', AnalyticsController.getDashboard);
+router.get('/', AnalyticsController.getDashboard);
 router.post('/decision-dna', validateRequest({ body: decisionDnaSchema }), AnalyticsController.getDecisionDna);
 router.post('/risk-radar', validateRequest({ body: riskRadarSchema }), AnalyticsController.getRiskRadar);
 router.post('/what-if', validateRequest({ body: whatIfSchema }), AnalyticsController.getWhatIf);

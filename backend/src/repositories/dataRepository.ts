@@ -1,4 +1,5 @@
 import prisma from "../config/prisma";
+import { databaseManager } from "../config/database";
 import { inMemoryStore, InMemoryUser, InMemoryUserProfile, InMemoryGameSession, InMemoryDecision } from './inMemoryStore';
 
 // Helper to generate unique IDs
@@ -39,19 +40,18 @@ export class DataRepository {
   }
 
   constructor() {
-    this.testConnection();
+    this.usePrisma = databaseManager.isDatabaseConnected();
   }
 
- public async testConnection(): Promise<boolean> {
-  try {
-    await prisma.$runCommandRaw({ ping: 1 });
-    this.usePrisma = true;
-    return true;
-  } catch {
-    this.usePrisma = false;
-    return false;
+  public async testConnection(force: boolean = false): Promise<boolean> {
+    if (!force) {
+      this.usePrisma = databaseManager.isDatabaseConnected();
+      return this.usePrisma;
+    }
+    const connected = await databaseManager.testDatabaseConnection(2500);
+    this.usePrisma = connected;
+    return connected;
   }
-}
 
   // --- USERS ---
   async findUserByEmail(email: string): Promise<any | null> {
@@ -84,6 +84,20 @@ export class DataRepository {
     if (!found) return null;
     const profile = Array.from(inMemoryStore.profiles.values()).find((p) => p.userId === found.id);
     return { ...found, profile };
+  }
+
+  async getAllUsers(): Promise<any[]> {
+    if (this.usePrisma && prisma) {
+      try {
+        return await prisma.user.findMany({ include: { profile: true } });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+    return Array.from(inMemoryStore.users.values()).map((u) => {
+      const profile = Array.from(inMemoryStore.profiles.values()).find((p) => p.userId === u.id);
+      return { ...u, profile };
+    });
   }
 
   async createUser(data: {

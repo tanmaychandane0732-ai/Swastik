@@ -44,6 +44,18 @@ export const whatIfSchema = z.object({
 });
 
 export class AnalyticsController {
+  public static async getDashboard(_req: Request, res: Response, _next: NextFunction): Promise<void> {
+    res.status(200).json({
+      success: true,
+      data: {
+        telemetryStatus: 'ALL_SYSTEMS_GO',
+        cadetCount: 42,
+        activeSimulations: 8,
+        systemHealthPct: 98,
+      },
+    });
+  }
+
   public static async getDecisionDna(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const profile = decisionDnaService.analyze(req.body);

@@ -13,6 +13,7 @@ import helmet from "helmet";
 import { env } from "./config/env";
 import { errorHandler } from "./middleware/errorHandler";
 import { dataRepository } from "./repositories/dataRepository";
+import { databaseManager } from "./config/database";
 import { optionalAuth } from "./middleware/authMiddleware";
 
 declare const process: {
@@ -28,6 +29,7 @@ import aiRoutes from "./routes/aiRoutes";
 import challengeRoutes from "./routes/challengeRoutes";
 import classroomRoutes from "./routes/classroomRoutes";
 import userRoutes from "./routes/userRoutes";
+import testRoutes from "./routes/testRoutes";
 
 const app = express();
 
@@ -50,7 +52,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health Endpoint
 app.get("/api/health", async (_req: Request, res: Response) => {
-  const isDbConnected = await dataRepository.testConnection();
+  const isDbConnected = databaseManager.isDatabaseConnected();
+  const dbDiagnostics = databaseManager.getDatabaseDiagnostics();
 
   res.status(200).json({
     status: "HEALTHY",
@@ -59,10 +62,13 @@ app.get("/api/health", async (_req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
     database: {
-      mode: isDbConnected
-        ? "MongoDB (Prisma ORM)"
-        : "In-Memory Repository",
-      operational: isDbConnected,
+      type: "mongodb",
+      connected: isDbConnected,
+      mode: isDbConnected ? "persistent" : "in-memory",
+      persistence: isDbConnected ? "ENABLED" : "DISABLED",
+      operational: true,
+      isAtlas: dbDiagnostics.isAtlas,
+      target: dbDiagnostics.maskedUrl,
     },
     aiCoach: {
       provider: env.GEMINI_API_KEY
@@ -70,6 +76,14 @@ app.get("/api/health", async (_req: Request, res: Response) => {
         : "Deterministic Indian Financial Flight Instructor",
       ready: true,
     },
+  });
+});
+
+// Dedicated Database Status Endpoint
+app.get("/api/health/db", async (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    database: databaseManager.getDatabaseDiagnostics(),
   });
 });
 
@@ -82,7 +96,7 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/challenges", challengeRoutes);
 app.use("/api/classroom", classroomRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/test", testRoutes);
 
 // Scenarios
 app.get(

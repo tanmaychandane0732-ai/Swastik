@@ -7,7 +7,7 @@ declare global {
 const prisma =
   globalThis.prisma ||
   new PrismaClient({
-    log: ["query", "error", "warn"],
+    log: process.env.PRISMA_DEBUG === "true" ? ["query", "error", "warn"] : ["warn"],
   });
 
 const nodeEnv = (globalThis as { process?: { env?: { NODE_ENV?: string } } })
