@@ -2,6 +2,7 @@ import { Request, Response, Router, NextFunction } from "express";
 import { requireAuth, optionalAuth } from "../middleware/authMiddleware";
 import { authService } from "../services/authService";
 import { dataRepository } from "../repositories/dataRepository";
+import { env } from "../config/env";
 
 const router = Router();
 
@@ -58,38 +59,40 @@ router.get("/", optionalAuth, async (req: Request, res: Response, next: NextFunc
   }
 });
 
-// Test and Seed routes (Development)
-router.get("/test", async (_req: Request, res: Response): Promise<void> => {
-  try {
-    const scenarios = await dataRepository.listScenarios();
-    res.json({
-      success: true,
-      message: "User service operational",
-      scenarioCount: scenarios.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Service error",
-    });
-  }
-});
+if (env.NODE_ENV !== "production") {
+  // Test and seed routes are intentionally unavailable in production.
+  router.get("/test", async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const scenarios = await dataRepository.listScenarios();
+      res.json({
+        success: true,
+        message: "User service operational",
+        scenarioCount: scenarios.length,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Service error",
+      });
+    }
+  });
 
-router.post("/seed", async (_req: Request, res: Response): Promise<void> => {
-  try {
-    const user = await dataRepository.createUser({
-      name: "Shreyas",
-      email: "shreyas@test.com",
-      passwordHash: "demo123",
-    });
+  router.post("/seed", async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const user = await dataRepository.createUser({
+        name: "Shreyas",
+        email: "shreyas@test.com",
+        passwordHash: "demo123",
+      });
 
-    res.json({ success: true, user });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Database error",
-    });
-  }
-});
+      res.json({ success: true, user });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Database error",
+      });
+    }
+  });
+}
 
 export default router;

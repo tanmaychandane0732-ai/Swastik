@@ -18,9 +18,9 @@ export interface UserResponse {
 }
 
 export class AuthService {
-  private generateToken(userId: string, email: string, role: string): string {
+  private generateToken(userId: string, email: string, role: string, name?: string): string {
     return jwt.sign(
-      { userId, email, role },
+      { userId, email, role, name },
       env.JWT_SECRET,
       { expiresIn: env.JWT_EXPIRES_IN as any }
     );
@@ -44,7 +44,7 @@ export class AuthService {
       role: 'STUDENT',
     });
 
-    const token = this.generateToken(user.id, user.email, user.role);
+    const token = this.generateToken(user.id, user.email, user.role, user.name);
 
     return {
       user: {
@@ -76,7 +76,7 @@ export class AuthService {
       throw error;
     }
 
-    const token = this.generateToken(user.id, user.email, user.role);
+    const token = this.generateToken(user.id, user.email, user.role, user.name);
 
     return {
       user: {
@@ -105,7 +105,7 @@ export class AuthService {
       role: 'STUDENT',
     });
 
-    const token = this.generateToken(guestUser.id, guestUser.email, guestUser.role);
+    const token = this.generateToken(guestUser.id, guestUser.email, guestUser.role, guestUser.name);
 
     return {
       user: {
@@ -141,4 +141,3 @@ export class AuthService {
 }
 
 export const authService = new AuthService();
-

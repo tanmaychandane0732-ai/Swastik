@@ -80,7 +80,7 @@ export function validateDatabaseUrl(rawUrl?: string): UrlValidationResult {
     if (afterProtocol.includes('@')) {
       const creds = afterProtocol.split('@')[0];
       const [, pass] = creds.split(':');
-      if (pass && /[@:#\/\?%&]/.test(decodeURIComponent(pass) !== pass ? '' : pass)) {
+      if (pass && /[@:#/\?%&]/.test(decodeURIComponent(pass) !== pass ? '' : pass)) {
         hasUnencodedCharacters = true;
       }
       const hostPart = afterProtocol.split('@')[1];

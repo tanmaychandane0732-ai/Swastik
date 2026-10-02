@@ -56,7 +56,7 @@ export class DecisionDNAEngine {
       // Splurge / YOLO choices
       if (choiceId.includes('splurge') || choiceId.includes('yolo') || choiceId.includes('impulse')) {
         patience -= 15;
-        lifestyleCreepPenalty: emergencyReadiness -= 10;
+        emergencyReadiness -= 10;
       }
       // Debt trap choices
       if (choiceId.includes('loan') || choiceId.includes('emi') || choiceId.includes('credit_trap')) {

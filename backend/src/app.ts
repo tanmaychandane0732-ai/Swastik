@@ -42,7 +42,14 @@ app.use(
 
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin || origin === env.FRONTEND_URL) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Origin is not allowed by CORS."));
+    },
     credentials: true,
   })
 );
@@ -96,7 +103,9 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/challenges", challengeRoutes);
 app.use("/api/classroom", classroomRoutes);
-app.use("/api/test", testRoutes);
+if (env.NODE_ENV !== "production") {
+  app.use("/api/test", testRoutes);
+}
 
 // Scenarios
 app.get(

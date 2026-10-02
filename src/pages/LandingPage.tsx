@@ -42,6 +42,7 @@ import { RiskRadarMetrics } from '../types/flightSimulator';
 import { ScrollReveal } from '../components/environment/ScrollReveal';
 import { ExpandableFAQ } from '../components/common/ExpandableFAQ';
 import { localAuth } from '../services/localAuth';
+import { AuthApi } from '../services/api/authApi';
 
 interface LandingPageProps {
   onStartQuest: (name?: string) => void;
@@ -98,16 +99,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     setNameInput(val);
     if (val.trim()) {
       dispatch({ type: 'SET_PLAYER_NAME', payload: val.trim() });
-      localAuth.startAsGuest(val.trim());
     }
   };
 
-  const handleStartPlaying = (e?: React.FormEvent) => {
+  const handleStartPlaying = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (nameInput.trim()) {
-      localAuth.startAsGuest(nameInput.trim());
-      dispatch({ type: 'SET_PLAYER_NAME', payload: nameInput.trim() });
-      onStartQuest(nameInput.trim());
+      const response = await AuthApi.guest(nameInput.trim());
+      if (response.success && response.data?.user) {
+        dispatch({ type: 'SET_PLAYER_NAME', payload: response.data.user.name });
+        onStartQuest(response.data.user.name);
+        return;
+      }
+
+      if (response.error?.code === 'NETWORK_OFFLINE') {
+        const localUser = localAuth.startAsGuest(nameInput.trim()).user;
+        dispatch({ type: 'SET_PLAYER_NAME', payload: localUser.name });
+        onStartQuest(localUser.name);
+        return;
+      }
+
+      onOpenAuth?.('guest');
     } else {
       if (onOpenAuth) {
         onOpenAuth('guest');

@@ -41,6 +41,39 @@ describe('FinQuest Full Backend Endpoints Test', () => {
     expect(res.body.data.name).toBe('Test Pilot Alpha');
   });
 
+  it('POST /api/sessions should persist the authenticated user identity', async () => {
+    const res = await request(app)
+      .post('/api/sessions')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        startingCash: 20000,
+        startingDebt: 0,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.session.userId).toBe(testUserId);
+    expect(res.body.data.session.userName).toBe('Test Pilot Alpha');
+    expect(res.body.data.session.userEmail).toBeDefined();
+    expect(res.body.data.session.userEmail).toContain('@finquest.edu');
+
+    const decisionRes = await request(app)
+      .post(`/api/sessions/${res.body.data.session.id}/advance`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        scenarioId: 'in_m1_budget',
+        choiceId: 'in_m1_c1',
+        choiceText: 'Build an emergency fund',
+        cashDelta: 1000,
+        debtDelta: 0,
+        isOptimal: true,
+      });
+
+    expect(decisionRes.status).toBe(200);
+    expect(decisionRes.body.data.decisionRecorded.userId).toBe(testUserId);
+    expect(decisionRes.body.data.decisionRecorded.userName).toBe('Test Pilot Alpha');
+    expect(decisionRes.body.data.decisionRecorded.userEmail).toContain('@finquest.edu');
+  });
+
   it('GET /api/users/profile should return pilot profile', async () => {
     const res = await request(app)
       .get('/api/users/profile')
@@ -139,4 +172,3 @@ describe('FinQuest Full Backend Endpoints Test', () => {
     expect(res.body.success).toBe(true);
   });
 });
-
