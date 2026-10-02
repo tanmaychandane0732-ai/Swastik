@@ -124,8 +124,8 @@ export const CoPilotChatbot: React.FC = () => {
 
   return (
     <>
-      {/* ── FLOATING TRIGGER BUTTON ── */}
-      <div className="fixed bottom-6 right-6 z-40 flex items-center">
+      {/* ── FLOATING TRIGGER BUTTON (Bottom-Left parallel to Cursor Companion) ── */}
+      <div className="fixed bottom-[calc(1.75rem+env(safe-area-inset-bottom,0px))] left-7 z-40 flex items-center">
         <AnimatePresence>
           {!isOpen && (
             <motion.button
@@ -162,7 +162,7 @@ export const CoPilotChatbot: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* ── EXPANDED CHAT PANEL ── */}
+      {/* ── EXPANDED CHAT PANEL (Opens from Bottom-Left) ── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -170,7 +170,7 @@ export const CoPilotChatbot: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`fixed bottom-6 right-6 z-50 w-[94vw] sm:w-[440px] h-[640px] max-h-[88vh] rounded-3xl glass-elevated border shadow-2xl flex flex-col overflow-hidden ${
+            className={`fixed bottom-6 left-6 z-50 w-[94vw] sm:w-[440px] h-[640px] max-h-[88vh] rounded-3xl glass-elevated border shadow-2xl flex flex-col overflow-hidden ${
               isLight ? 'border-black/15 bg-white/85 text-zinc-900' : 'border-white/15 bg-[#0D1015]/90 text-white'
             }`}
             data-lenis-prevent="true"
