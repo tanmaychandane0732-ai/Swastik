@@ -167,7 +167,7 @@ export const TopHUD: React.FC<TopHUDProps> = ({
                   FQ
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-display font-black text-sm tracking-tight text-white group-hover:text-[#FF6A2A] transition-colors">
+                  <span className={`font-display font-black text-sm tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'} group-hover:text-[#FF6A2A] transition-colors`}>
                     FIN<span className="text-[#FF6A2A]">QUEST</span>
                   </span>
                   <span className="hidden sm:inline-block label-telemetry text-[9px] px-1.5 py-0.5 rounded bg-[#FF6A2A]/15 text-[#FF6A2A] border border-[#FF6A2A]/30">
@@ -176,7 +176,7 @@ export const TopHUD: React.FC<TopHUDProps> = ({
                 </div>
               </button>
 
-              <div className="hidden md:block w-px h-4 bg-white/10" />
+              <div className={`hidden md:block w-px h-4 ${isLight ? 'bg-black/10' : 'bg-white/10'}`} />
 
               <div className="hidden md:flex items-center" title="Team Swastik">
                 <TeamLogo size="sm" showText={false} />
@@ -227,24 +227,24 @@ export const TopHUD: React.FC<TopHUDProps> = ({
             {/* ── 3. Right Utility Section & Minimal Profile Button ── */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Telemetry Capsule (Quiet, Compact) */}
-              <div className="hidden 2xl:flex items-center gap-2.5 px-3 py-1 rounded-xl bg-white/04 border border-white/08">
+              <div className={`hidden 2xl:flex items-center gap-2.5 px-3 py-1 rounded-xl ${isLight ? 'bg-black/04 border border-black/08' : 'bg-white/04 border border-white/08'}`}>
                 <div className="flex flex-col text-left">
-                  <span className="label-telemetry text-[8px] text-[#A7ABB4]">NET</span>
+                  <span className={`label-telemetry text-[8px] ${isLight ? 'text-zinc-500' : 'text-[#A7ABB4]'}`}>NET</span>
                   <AnimatedCounter
                     value={netWorth}
                     type="currency"
-                    className="font-numeric font-bold text-xs text-[#F5F3EF]"
+                    className={`font-numeric font-bold text-xs ${isLight ? 'text-zinc-900' : 'text-[#F5F3EF]'}`}
                   />
                 </div>
 
-                <div className="w-px h-4 bg-white/10" />
+                <div className={`w-px h-4 ${isLight ? 'bg-black/10' : 'bg-white/10'}`} />
 
                 <HealthMeter score={financialHealth} compact={true} />
 
-                <div className="w-px h-4 bg-white/10" />
+                <div className={`w-px h-4 ${isLight ? 'bg-black/10' : 'bg-white/10'}`} />
 
                 <div className="flex flex-col text-left">
-                  <span className="label-telemetry text-[8px] text-[#A7ABB4]">PTS</span>
+                  <span className={`label-telemetry text-[8px] ${isLight ? 'text-zinc-500' : 'text-[#A7ABB4]'}`}>PTS</span>
                   <AnimatedCounter
                     value={score}
                     type="score"
@@ -387,8 +387,8 @@ export const TopHUD: React.FC<TopHUDProps> = ({
               </div>
 
               {/* Mobile Quick Auth / Profile Action */}
-              <div className="mt-3 pt-3 border-t border-white/08 flex items-center justify-between">
-                <span className="text-xs text-[#A7ABB4]">Pilot: {player.name || 'Not Signed In'}</span>
+              <div className={`mt-3 pt-3 border-t ${isLight ? 'border-black/08' : 'border-white/08'} flex items-center justify-between`}>
+                <span className={`text-xs ${isLight ? 'text-zinc-600' : 'text-[#A7ABB4]'}`}>Pilot: {player.name || 'Not Signed In'}</span>
                 {!isIdentified ? (
                   <button
                     onClick={() => {

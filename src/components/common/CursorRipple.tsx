@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../../contexts/GameContext';
 
@@ -11,25 +11,110 @@ interface Ripple {
 }
 
 /**
- * CursorRipple — Aeronautical Click/Tap Sonar Radar Ping
+ * CursorRipple — Cockpit Radar Micro-Reticle & Sonar Shockwave System
  *
- * Performance-optimized:
- * - Removed mouse pointer that follows cursor all the time (no mousemove tracking, no spring physics).
- * - Sonar ripples trigger strictly on user click/tap.
- * - Completely passive until an interaction occurs (pointer-events-none, zero memory accumulation).
- * - Mobile touch and reduced-motion adaptation.
+ * Architecture:
+ * - Zero React re-renders on mousemove: Tracking uses a single requestAnimationFrame
+ *   loop and direct DOM ref matrix transformations.
+ * - Cockpit Reticle: Precision aviation crosshair halo + micro-pip that trails fluidly
+ *   and locks/expands over interactive buttons and links.
+ * - Sonar Shockwaves: Triggered on user click/tap, expanding dual-frequency radar waves.
+ * - Touch Isolation: On touch/mobile devices (pointer: coarse), the mouse reticle is
+ *   completely disabled and only touch ripples activate.
  */
 export const CursorRipple: React.FC = () => {
   const { state } = useGame();
   const isLight = state.settings.theme === 'light';
 
   const [ripples, setRipples] = useState<Ripple[]>([]);
+  const haloRef = useRef<HTMLDivElement>(null);
+  const pipRef = useRef<HTMLDivElement>(null);
 
   // Check reduced motion preference
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Setup High-Performance RAF Pointer Reticle (Desktop Only)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Detect touch-only devices
+    const isTouchOnly = !window.matchMedia('(pointer: fine)').matches;
+    if (isTouchOnly) return;
+
+    let targetX = -100;
+    let targetY = -100;
+    let currentX = -100;
+    let currentY = -100;
+    let isVisible = false;
+    let isHovering = false;
+    let animId: number;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!isVisible) {
+        isVisible = true;
+        currentX = targetX;
+        currentY = targetY;
+      }
+
+      // Check if hovering over clickable or interactive element
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        const interactive = Boolean(
+          target.closest('button, a, input, select, textarea, [role="button"], .cursor-pointer, [data-interactive="true"]')
+        );
+        isHovering = interactive;
+      }
+    };
+
+    const handleMouseLeave = () => {
+      isVisible = false;
+    };
+
+    const handleMouseEnter = () => {
+      isVisible = true;
+    };
+
+    const renderLoop = () => {
+      if (haloRef.current && pipRef.current) {
+        if (!isVisible) {
+          haloRef.current.style.opacity = '0';
+          pipRef.current.style.opacity = '0';
+        } else {
+          // Smooth spring-like lerp interpolation
+          const ease = prefersReducedMotion ? 1 : 0.22;
+          currentX += (targetX - currentX) * ease;
+          currentY += (targetY - currentY) * ease;
+
+          // Direct style updates avoiding React render cycles
+          haloRef.current.style.opacity = isHovering ? '0.9' : '0.45';
+          haloRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(${isHovering ? 1.45 : 1})`;
+          haloRef.current.style.borderColor = isHovering ? '#FF6A2A' : isLight ? '#0284C7' : '#00D2FF';
+
+          pipRef.current.style.opacity = '0.85';
+          pipRef.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) scale(${isHovering ? 1.25 : 1})`;
+        }
+      }
+      animId = requestAnimationFrame(renderLoop);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    animId = requestAnimationFrame(renderLoop);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      cancelAnimationFrame(animId);
+    };
+  }, [isLight, prefersReducedMotion]);
+
+  // Handle Sonar Ripple on pointerdown
   useEffect(() => {
     const handlePointerDown = (e: MouseEvent | TouchEvent) => {
       let clientX = 0;
@@ -74,6 +159,57 @@ export const CursorRipple: React.FC = () => {
       className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden select-none"
       aria-hidden="true"
     >
+      {/* ── Trailing Cockpit Radar Micro-Reticle (Zero-Rerender RAF) ── */}
+      <div
+        ref={haloRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '26px',
+          height: '26px',
+          marginLeft: '-13px',
+          marginTop: '-13px',
+          borderRadius: '50%',
+          borderWidth: '1.5px',
+          borderStyle: 'solid',
+          borderColor: isLight ? '#0284C7' : '#00D2FF',
+          boxShadow: isLight
+            ? '0 0 10px rgba(2, 132, 199, 0.35)'
+            : '0 0 12px rgba(0, 210, 255, 0.45)',
+          opacity: 0,
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+          willChange: 'transform, opacity',
+          pointerEvents: 'none',
+        }}
+      >
+        {/* Subtle Aviation Crosshair Tick Marks */}
+        <span className="absolute top-[-3px] left-[11px] w-[2px] h-[3px] bg-current opacity-60" />
+        <span className="absolute bottom-[-3px] left-[11px] w-[2px] h-[3px] bg-current opacity-60" />
+        <span className="absolute left-[-3px] top-[11px] h-[2px] w-[3px] bg-current opacity-60" />
+        <span className="absolute right-[-3px] top-[11px] h-[2px] w-[3px] bg-current opacity-60" />
+      </div>
+
+      {/* Center Precision Pip */}
+      <div
+        ref={pipRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '5px',
+          height: '5px',
+          marginLeft: '-2.5px',
+          marginTop: '-2.5px',
+          borderRadius: '50%',
+          backgroundColor: '#FF6A2A',
+          boxShadow: '0 0 8px rgba(255, 106, 42, 0.8)',
+          opacity: 0,
+          willChange: 'transform, opacity',
+          pointerEvents: 'none',
+        }}
+      />
+
       {/* ── Expanding Sonar Radar Ripples on Click / Tap ── */}
       <AnimatePresence>
         {ripples.map((ripple) => (

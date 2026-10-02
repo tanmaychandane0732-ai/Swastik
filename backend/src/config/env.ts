@@ -25,6 +25,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().default('finquest_super_secret_jwt_key_hackathon_2026_gd01_flight_sim'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   GEMINI_API_KEY: z.string().optional().default(''),
+  GEMINI_MODEL: z.string().default('gemini-3.5-flash'),
   PRISMA_DEBUG: z.string().optional().default('false'),
 });
 

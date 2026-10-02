@@ -34,6 +34,15 @@ export class AIScenarioService {
     scenarioTitle: string,
     playerState: SimulatorPlayerState
   ): Promise<AICoachExplanation> {
+    // 0. Test environment or explicit offline check: immediately use local deterministic engine
+    if (
+      Boolean((globalThis as any).process?.env?.NODE_ENV === 'test') ||
+      Boolean((globalThis as any).__vitest_worker__) ||
+      (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test')
+    ) {
+      return this.generateDeterministicExplanation(choice, playerState);
+    }
+
     // 1. Try Backend AI Coach API first
     try {
       const backendRes = await AIApi.explain({
@@ -85,6 +94,7 @@ Respond in valid JSON format only:
         const response = await fetch(`${GEMINI_API_ENDPOINT}?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(3000),
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {

@@ -12,9 +12,11 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node-dev prisma/seed.ts",
+    "test:gemini": "ts-node src/scripts/testGemini.ts",
     "test": "vitest run"
   },
   "dependencies": {
+    "@google/genai": "^2.26.0",
     "@google/generative-ai": "^0.24.0",
     "@prisma/client": "^6.12.0",
     "bcryptjs": "^2.4.3",

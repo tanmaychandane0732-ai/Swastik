@@ -97,10 +97,14 @@ class ApiClient {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+
       const response = await fetch(url, {
         ...options,
         headers,
-      });
+        signal: options.signal || controller.signal,
+      }).finally(() => clearTimeout(timeoutId));
 
       const json = await response.json().catch(() => ({
         success: false,

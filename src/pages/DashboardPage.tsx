@@ -98,10 +98,10 @@ export const DashboardPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5E1E]/20 border border-[#FF5E1E]/50 text-[#FF5E1E] text-xs font-black font-numeric">
               <span>✈️ HACK2IGNITE GD-01 • FINANCIAL FLIGHT SIMULATOR</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">
+            <h2 className={`text-2xl sm:text-3xl font-black ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               The Financial Flight Simulator
             </h2>
-            <blockquote className="text-xs sm:text-sm text-zinc-300 max-w-2xl leading-relaxed italic border-l-2 border-[#FF5E1E] pl-3 py-0.5">
+            <blockquote className={`text-xs sm:text-sm max-w-2xl leading-relaxed italic border-l-2 border-[#FF5E1E] pl-3 py-0.5 ${isLight ? 'text-zinc-700 bg-black/04 rounded-r-lg' : 'text-zinc-300'}`}>
               "Pilots don’t fly passenger planes without thousands of hours in a flight simulator. Why do we let young adults enter the modern economy without a financial flight simulator?"
             </blockquote>
           </div>
@@ -180,7 +180,7 @@ export const DashboardPage: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-black text-white flex items-center gap-2">
+            <h2 className={`text-lg font-black flex items-center gap-2 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
               <span>🎯 Flight Training Deck</span>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/40 font-numeric">
                 2 New Combat Drills
@@ -216,16 +216,16 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-base font-black text-white">🚨 Scam Detective</h3>
+                <h3 className={`text-base font-black ${isLight ? 'text-[#17191D]' : 'text-white'}`}>🚨 Scam Detective</h3>
                 <p className="text-xs text-[#FF5E1E] font-semibold mt-0.5">Fake UPI • KYC Phishing • OTP Containment</p>
-                <p className="text-xs text-zinc-400 leading-relaxed mt-2">
+                <p className={`text-xs leading-relaxed mt-2 ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
                   Inspect suspicious messages on a realistic simulated phone. Tap text to uncover hidden red flags, trigger containment protocols, and earn Detective Ranks under RBI guidelines.
                 </p>
               </div>
             </div>
 
             <div className={`pt-3 border-t flex items-center justify-between ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
-              <span className="text-[11px] font-bold text-zinc-400">
+              <span className={`text-[11px] font-bold ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
                 Badges: Scam Spotter & Scam Shield
               </span>
               <Button
@@ -256,16 +256,16 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-base font-black text-white">🌪️ Financial Turbulence</h3>
+                <h3 className={`text-base font-black ${isLight ? 'text-[#17191D]' : 'text-white'}`}>🌪️ Financial Turbulence</h3>
                 <p className="text-xs text-amber-400 font-semibold mt-0.5">Real-Life Shocks • Compounding Cascades</p>
-                <p className="text-xs text-zinc-400 leading-relaxed mt-2">
+                <p className={`text-xs leading-relaxed mt-2 ${isLight ? 'text-[#656A73]' : 'text-zinc-400'}`}>
                   Face sudden motherboard failures, hospital bills, and market downturns. Execute tradeoffs between emergency cash buffers, 24% APR EMIs, and peer loans with What-If post-flight debriefs.
                 </p>
               </div>
             </div>
 
             <div className={`pt-3 border-t flex items-center justify-between ${isLight ? 'border-black/08' : 'border-[#27272A]'}`}>
-              <span className="text-[11px] font-bold text-zinc-400">
+              <span className={`text-[11px] font-bold ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
                 Badges: Turbulence Survivor & Calm Pilot
               </span>
               <Button
@@ -285,7 +285,7 @@ export const DashboardPage: React.FC = () => {
       {/* Levels Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-black text-white flex items-center gap-2">
+          <h2 className={`text-lg font-black flex items-center gap-2 ${isLight ? 'text-[#17191D]' : 'text-white'}`}>
             <span>Career Quest Modules</span>
             <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full font-numeric ${isLight ? 'bg-black/06 text-[#656A73] border border-black/10' : 'bg-[#18181D] text-zinc-400 border border-[#27272A]'}`}>
               3 Playable Stages
