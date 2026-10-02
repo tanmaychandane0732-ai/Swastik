@@ -15,6 +15,27 @@ export const aiCoachSchema = z.object({
   isOptimal: z.boolean(),
 });
 
+export const aiChatSchema = z.object({
+  message: z.string().min(1, 'Message is required'),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant', 'model']),
+        content: z.string(),
+      })
+    )
+    .optional(),
+  context: z
+    .object({
+      stage: z.string().optional(),
+      financialHealth: z.number().optional(),
+      netWorth: z.number().optional(),
+      score: z.number().optional(),
+      playerName: z.string().optional(),
+    })
+    .optional(),
+});
+
 export class AIController {
   public static async explain(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -22,6 +43,18 @@ export class AIController {
       res.status(200).json({
         success: true,
         data: explanation,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async chat(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const chatResponse = await aiService.chat(req.body);
+      res.status(200).json({
+        success: true,
+        data: chatResponse,
       });
     } catch (error) {
       next(error);
@@ -46,4 +79,3 @@ export class AIController {
     }
   }
 }
-

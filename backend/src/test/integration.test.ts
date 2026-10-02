@@ -92,6 +92,26 @@ describe('FinQuest Full Backend Endpoints Test', () => {
     expect(res.body.data.coachAdvice).toBeDefined();
   });
 
+  it('POST /api/ai/chat should answer financial questions from cadet', async () => {
+    const res = await request(app)
+      .post('/api/ai/chat')
+      .send({
+        message: 'How do I boost my CIBIL score to 750?',
+        history: [],
+        context: {
+          playerName: 'Cadet Tanmay',
+          financialHealth: 85,
+        },
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.reply).toBeDefined();
+    expect(res.body.data.reply.length).toBeGreaterThan(10);
+    expect(res.body.data.provider).toBeDefined();
+    expect(Array.isArray(res.body.data.suggestedPrompts)).toBe(true);
+  });
+
   it('GET /api/scenarios should return active flight scenarios', async () => {
     const res = await request(app).get('/api/scenarios');
     expect(res.status).toBe(200);

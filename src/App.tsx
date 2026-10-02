@@ -14,6 +14,7 @@ import { FinQuestStartupLoader } from './components/common/FinQuestStartupLoader
 import { DynamicEnvironment } from './components/environment/DynamicEnvironment';
 import { ScrollImageSequenceCanvas } from './components/common/ScrollImageSequenceCanvas';
 import { BackToTop } from './components/common/BackToTop';
+import { CoPilotChatbot } from './components/chat/CoPilotChatbot';
 import { localAuth } from './services/localAuth';
 
 // Lazy-loaded game stages (instant initial landing page, on-demand stage calibration)
@@ -277,10 +278,11 @@ const GameShell: React.FC = () => {
           initialTab={onboardingInitialTab}
         />
 
-        {/* Interactive Companion, Click Radar Ripples, and BackToTop */}
+        {/* Interactive Companion, Click Radar Ripples, BackToTop, and AI Co-Pilot Chatbot */}
         <CursorBuddy />
         <CursorRipple />
         <BackToTop />
+        <CoPilotChatbot />
 
         {/* Cinematic Startup Flight Calibration Loader */}
         {isStartupLoading && (
