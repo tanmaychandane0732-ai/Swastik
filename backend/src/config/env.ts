@@ -28,6 +28,16 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('7d'),
   GEMINI_API_KEY: z.string().optional().default(''),
   PRISMA_DEBUG: z.string().optional().default('false'),
+  APP_TIMEZONE: z.string().default('Asia/Kolkata'),
+  FREE_DAILY_GAME_LIMIT: z.string().default('3').transform((val) => parseInt(val, 10)),
+  PREMIUM_DAILY_GAME_LIMIT: z.string().default('25').transform((val) => parseInt(val, 10)),
+  FREE_DAILY_AI_LIMIT: z.string().default('5').transform((val) => parseInt(val, 10)),
+  PREMIUM_DAILY_AI_LIMIT: z.string().default('50').transform((val) => parseInt(val, 10)),
+  PAYMENT_ENV: z.enum(['test', 'live']).default('test'),
+  RAZORPAY_KEY_ID: z.string().optional().default(''),
+  RAZORPAY_KEY_SECRET: z.string().optional().default(''),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional().default(''),
+  RAZORPAY_PREMIUM_PLAN_ID: z.string().optional().default(''),
 });
 
 const parsedEnv = envSchema.parse(process.env);

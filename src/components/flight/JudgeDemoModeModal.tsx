@@ -13,11 +13,15 @@ import {
   ShieldAlert,
   BarChart3,
   School,
+  Crown,
+  CreditCard,
+  RefreshCcw,
 } from 'lucide-react';
 import { GlassCard } from '../ui/GlassCard';
 import { Button } from '../ui/Button';
 import { TeamLogo } from '../common/TeamLogo';
 import { soundManager } from '../../services/audioService';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 
 interface JudgeDemoModeModalProps {
   isOpen: boolean;
@@ -30,7 +34,8 @@ export const JudgeDemoModeModal: React.FC<JudgeDemoModeModalProps> = ({
   onClose,
   onNavigateToStage,
 }) => {
-  const [activeTab, setActiveTab] = useState<'philosophy' | 'features' | 'tech'>('philosophy');
+  const [activeTab, setActiveTab] = useState<'philosophy' | 'features' | 'tech' | 'subscription'>('philosophy');
+  const { isPremium, dailyUsage, demoTogglePlan, openPricingModal } = useSubscription();
 
   if (!isOpen) return null;
 
@@ -115,6 +120,19 @@ export const JudgeDemoModeModal: React.FC<JudgeDemoModeModalProps> = ({
                 }`}
               >
                 3. AI Engine & Institutional Impact
+              </button>
+              <button
+                onClick={() => {
+                  soundManager.playNavChange();
+                  setActiveTab('subscription');
+                }}
+                className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
+                  activeTab === 'subscription'
+                    ? 'border-[#FF6A2A] text-white'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                4. Freemium & Subscriptions
               </button>
             </div>
 
@@ -280,6 +298,118 @@ export const JudgeDemoModeModal: React.FC<JudgeDemoModeModalProps> = ({
                     <p className="text-xs text-zinc-300 leading-relaxed">
                       FinQuest is designed not just as a standalone consumer game, but as an institutional training tool for colleges, universities, and corporate onboarding cohorts. Teachers track real-time failure traps to target their lectures.
                     </p>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'subscription' && (
+                <div className="space-y-4">
+                  {/* Business Model Overview */}
+                  <div className="p-4 rounded-2xl bg-[#FF5E1E]/10 border border-[#FF5E1E]/30 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-black text-[#FF5E1E]">
+                      <Crown className="w-4 h-4 text-amber-400" />
+                      <span>Freemium Aviation Model · Production-Grade Architecture</span>
+                    </div>
+                    <p className="text-xs text-zinc-300 leading-relaxed">
+                      FinQuest utilizes a dual-tier business model calibrated for commercial sustainability without blocking core educational equity. All limits and entitlements are verified server-side with zero client-side bypass vulnerabilities.
+                    </p>
+                  </div>
+
+                  {/* Architecture Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                    <div className="p-4 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">Free Cadet Tier</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-numeric">FREE</span>
+                      </div>
+                      <p className="text-[11px] text-zinc-400 leading-relaxed">
+                        • 3 Daily Flight Simulations (Timezone-calibrated reset at 12:00 AM IST)<br />
+                        • 5 AI Co-Pilot guidance queries / day<br />
+                        • Budgeting, Debt Trap, and Scam Radar missions<br />
+                        • Basic graduation certificate
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#18181D] border border-amber-500/40 space-y-1.5 shadow-[0_0_20px_rgba(245,158,11,0.06)]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-amber-400">Flight Commander Tier</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-numeric">₹499/MO</span>
+                      </div>
+                      <p className="text-[11px] text-zinc-300 leading-relaxed">
+                        • 25 Daily Flight Simulations (Expanded Runway)<br />
+                        • 50 AI Co-Pilot Deep Consultations / day<br />
+                        • Advanced Turbulence & Crisis Scenarios<br />
+                        • Deep Decision DNA Analytics & Holographic Cert
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Technical & Security Details */}
+                  <div className="p-4 rounded-2xl bg-[#18181D] border border-[#27272A] space-y-2">
+                    <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider block font-numeric">
+                      PAYMENT & CONCURRENCY SECURITY
+                    </span>
+                    <ul className="text-xs text-zinc-300 space-y-1.5 list-disc list-inside">
+                      <li>
+                        <strong className="text-white">Atomic Concurrency Guard:</strong> Daily flight increments enforce conditional database bounds checks (<code className="text-[#FF6A2A]">gamesUsed &lt; gamesLimit</code>) to eliminate multi-tab race conditions.
+                      </li>
+                      <li>
+                        <strong className="text-white">HMAC-SHA256 Verification:</strong> Both frontend Razorpay checkout signatures and asynchronous webhook callbacks undergo timing-safe cryptographic verification.
+                      </li>
+                      <li>
+                        <strong className="text-white">Idempotent Webhook Ledger:</strong> Duplicate webhook deliveries are deduplicated via the database <code className="text-[#FF6A2A]">WebhookEvent</code> ledger.
+                      </li>
+                      <li>
+                        <strong className="text-white">Graceful Expiry:</strong> Cancelled subscriptions retain Commander status until the end of the paid billing period.
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Live Interactive Evaluation Controls */}
+                  <div className="p-4 rounded-2xl bg-[#121418] border border-white/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xs font-bold text-white block">Judge Evaluation Sandbox Controls</span>
+                        <span className="text-[10px] text-zinc-400">
+                          Active Plan: <strong className={isPremium ? 'text-amber-400 font-numeric' : 'text-zinc-300 font-numeric'}>{isPremium ? 'FLIGHT COMMANDER' : 'FREE CADET'}</strong>
+                          {dailyUsage && ` · Flights: ${dailyUsage.gamesUsed}/${dailyUsage.gamesLimit} · AI: ${dailyUsage.aiUsed}/${dailyUsage.aiLimit}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Button
+                        variant={isPremium ? 'secondary' : 'dark'}
+                        size="sm"
+                        onClick={async () => {
+                          soundManager.playClick();
+                          await demoTogglePlan('FREE');
+                        }}
+                      >
+                        Set Plan: Free Cadet
+                      </Button>
+                      <Button
+                        variant={isPremium ? 'orange' : 'secondary'}
+                        size="sm"
+                        onClick={async () => {
+                          soundManager.playClick();
+                          await demoTogglePlan('PREMIUM');
+                        }}
+                      >
+                        Set Plan: Flight Commander
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          soundManager.playClick();
+                          openPricingModal();
+                        }}
+                        icon={<CreditCard className="w-3.5 h-3.5 text-amber-400" />}
+                      >
+                        Open Razorpay Checkout
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}

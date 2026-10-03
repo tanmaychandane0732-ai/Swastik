@@ -30,6 +30,9 @@ import challengeRoutes from "./routes/challengeRoutes";
 import classroomRoutes from "./routes/classroomRoutes";
 import userRoutes from "./routes/userRoutes";
 import testRoutes from "./routes/testRoutes";
+import subscriptionRoutes from "./routes/subscriptionRoutes";
+import { SubscriptionController, gameStartSchema } from "./controllers/subscriptionController";
+import { validateRequest } from "./middleware/validateRequest";
 
 const app = express();
 
@@ -103,6 +106,11 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/challenges", challengeRoutes);
 app.use("/api/classroom", classroomRoutes);
+app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.post("/api/payments/razorpay/webhook", SubscriptionController.handleWebhook);
+app.post("/api/game/start", optionalAuth, validateRequest({ body: gameStartSchema }), SubscriptionController.authorizeGameStart);
+
 if (env.NODE_ENV !== "production") {
   app.use("/api/test", testRoutes);
 }

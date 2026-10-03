@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { aiService } from '../services/aiService';
+import { entitlementService } from '../services/entitlementService';
 import { env } from '../config/env';
 
 export const aiCoachSchema = z.object({
@@ -18,6 +19,24 @@ export const aiCoachSchema = z.object({
 export class AIController {
   public static async explain(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const userId = (req as any).user?.userId;
+      
+      // If user is authenticated or guest user exists, verify AI usage quota
+      if (userId) {
+        const quotaCheck = await entitlementService.authorizeAndConsumeAiQuery(userId);
+        if (!quotaCheck.allowed) {
+          res.status(403).json({
+            success: false,
+            error: {
+              code: quotaCheck.code,
+              message: quotaCheck.message,
+              usage: quotaCheck.usage,
+            },
+          });
+          return;
+        }
+      }
+
       const explanation = await aiService.explainDecision(req.body);
       res.status(200).json({
         success: true,

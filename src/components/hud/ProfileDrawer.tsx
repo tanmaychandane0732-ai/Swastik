@@ -16,8 +16,15 @@ import {
   Sparkles,
   RotateCcw,
   LogOut,
+  Crown,
+  Plane,
+  Clock,
+  Receipt,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 import { soundManager } from '../../services/audioService';
 import { useSmoothScroll } from '../providers/SmoothScrollProvider';
 import { ConfirmationModal } from '../common/ConfirmationModal';
@@ -46,6 +53,16 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(player.name || '');
   const [isConfirmRestartOpen, setIsConfirmRestartOpen] = useState(false);
+  const [showBillingHistory, setShowBillingHistory] = useState(false);
+
+  // Authoritative subscription telemetry
+  const {
+    isPremium,
+    dailyUsage,
+    openPricingModal,
+    demoTogglePlan,
+    billingHistory,
+  } = useSubscription();
 
   // Sound feedback on open
   useEffect(() => {
@@ -329,6 +346,219 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                     </div>
                   </div>
                 </div>
+              </section>
+
+              {/* ── 2.5 MEMBERSHIP & FLIGHT ALLOWANCE ─────────── */}
+              <section className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className={`label-telemetry ${isLight ? 'text-[#9EA3AD]' : 'text-[#5A5E68]'}`}>
+                    MEMBERSHIP & USAGE
+                  </p>
+                  <span
+                    className={`label-telemetry text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                      isPremium
+                        ? 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
+                        : isLight
+                        ? 'bg-black/06 text-zinc-600'
+                        : 'bg-white/08 text-zinc-400'
+                    }`}
+                  >
+                    {isPremium ? 'COMMANDER' : 'FREE CADET'}
+                  </span>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border transition-all ${
+                    isPremium
+                      ? isLight
+                        ? 'bg-gradient-to-br from-amber-500/08 to-[#FF6A2A]/06 border-amber-500/30 shadow-sm'
+                        : 'bg-gradient-to-br from-amber-500/10 to-[#FF6A2A]/08 border-amber-500/30 shadow-[0_0_24px_rgba(245,158,11,0.08)]'
+                      : isLight
+                      ? 'bg-black/02 border-black/06'
+                      : 'bg-white/03 border-white/06'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          isPremium
+                            ? 'bg-gradient-to-br from-amber-400 to-[#FF6A2A] text-white shadow-[0_0_16px_rgba(245,158,11,0.35)]'
+                            : 'bg-[#FF6A2A]/10 text-[#FF6A2A]'
+                        }`}
+                      >
+                        {isPremium ? <Crown className="w-5 h-5 fill-current" /> : <Plane className="w-5 h-5" />}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-sm font-bold">
+                            {isPremium ? 'Flight Commander' : 'Cadet Allowance'}
+                          </h4>
+                          {isPremium && (
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          )}
+                        </div>
+                        <p className={`text-xs ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                          {isPremium ? 'Unlimited access & 25 daily flights' : 'Standard 3 daily missions'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        openPricingModal();
+                      }}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                        isPremium
+                          ? isLight
+                            ? 'bg-white border-zinc-300 text-zinc-800 hover:bg-zinc-100'
+                            : 'bg-white/10 border-white/15 text-white hover:bg-white/15'
+                          : 'bg-[#FF6A2A] border-[#FF6A2A] text-white hover:bg-[#E04E15] shadow-sm'
+                      }`}
+                    >
+                      {isPremium ? 'Manage' : 'Upgrade'}
+                    </button>
+                  </div>
+
+                  {/* Daily Flights Usage Meter */}
+                  {dailyUsage && (
+                    <div className="mt-3.5 pt-3 border-t border-white/06 space-y-2">
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className={isLight ? 'text-zinc-600' : 'text-zinc-400'}>
+                            Daily Flights Used
+                          </span>
+                          <span className="font-numeric font-bold text-xs">
+                            <span className={dailyUsage.isGamesLimitReached ? 'text-rose-400' : 'text-[#FF6A2A]'}>
+                              {dailyUsage.gamesUsed}
+                            </span>
+                            <span className={isLight ? 'text-zinc-400' : 'text-zinc-500'}>
+                              {' '}/ {dailyUsage.gamesLimit}
+                            </span>
+                          </span>
+                        </div>
+                        <div className={`h-1.5 rounded-full overflow-hidden ${isLight ? 'bg-black/08' : 'bg-white/08'}`}>
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              dailyUsage.isGamesLimitReached
+                                ? 'bg-rose-500'
+                                : isPremium
+                                ? 'bg-gradient-to-r from-amber-400 to-[#FF6A2A]'
+                                : 'bg-[#FF6A2A]'
+                            }`}
+                            style={{
+                              width: `${Math.min(100, Math.round((dailyUsage.gamesUsed / Math.max(1, dailyUsage.gamesLimit)) * 100))}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* AI Queries Meter */}
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className={isLight ? 'text-zinc-600' : 'text-zinc-400'}>
+                            AI Co-Pilot Queries
+                          </span>
+                          <span className="font-numeric font-bold text-xs">
+                            <span className={dailyUsage.isAiLimitReached ? 'text-rose-400' : 'text-emerald-400'}>
+                              {dailyUsage.aiUsed}
+                            </span>
+                            <span className={isLight ? 'text-zinc-400' : 'text-zinc-500'}>
+                              {' '}/ {dailyUsage.aiLimit}
+                            </span>
+                          </span>
+                        </div>
+                        <div className={`h-1.5 rounded-full overflow-hidden ${isLight ? 'bg-black/08' : 'bg-white/08'}`}>
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              dailyUsage.isAiLimitReached ? 'bg-rose-500' : 'bg-emerald-400'
+                            }`}
+                            style={{
+                              width: `${Math.min(100, Math.round((dailyUsage.aiUsed / Math.max(1, dailyUsage.aiLimit)) * 100))}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Reset Countdown notice */}
+                      <div className="flex items-center gap-1.5 text-[10px] text-[#A7ABB4] pt-1">
+                        <Clock className="w-3 h-3 text-[#FF6A2A]" />
+                        <span>Daily quota resets at 12:00 AM IST</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quick Judge Demo Switcher inside Drawer */}
+                  <div className="mt-3 pt-2.5 border-t border-white/06 flex items-center justify-between text-[11px]">
+                    <span className="label-telemetry text-[9px] text-[#A7ABB4]">HACKATHON EVALUATION</span>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        soundManager.playClick();
+                        await demoTogglePlan(isPremium ? 'FREE' : 'PREMIUM');
+                      }}
+                      className="text-[10px] font-bold text-amber-400 hover:text-amber-300 underline cursor-pointer"
+                    >
+                      {isPremium ? 'Switch to Cadet (Demo)' : 'Switch to Commander (Demo)'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Billing History Accordion */}
+                {billingHistory && billingHistory.length > 0 && (
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowBillingHistory(!showBillingHistory)}
+                      className={`w-full flex items-center justify-between p-3 rounded-2xl border text-xs font-semibold cursor-pointer transition-colors ${
+                        isLight
+                          ? 'bg-black/02 hover:bg-black/04 border-black/06'
+                          : 'bg-white/03 hover:bg-white/06 border-white/06'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Receipt className="w-4 h-4 text-[#A7ABB4]" />
+                        <span>Billing & Payment History ({billingHistory.length})</span>
+                      </div>
+                      {showBillingHistory ? (
+                        <ChevronUp className="w-3.5 h-3.5 text-[#A7ABB4]" />
+                      ) : (
+                        <ChevronDown className="w-3.5 h-3.5 text-[#A7ABB4]" />
+                      )}
+                    </button>
+
+                    {showBillingHistory && (
+                      <div className={`mt-2 p-3 rounded-2xl border text-xs space-y-2 font-numeric ${
+                        isLight ? 'bg-black/02 border-black/06' : 'bg-black/25 border-white/06'
+                      }`}>
+                        {billingHistory.map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between py-1.5 border-b border-white/05 last:border-none"
+                          >
+                            <div>
+                              <p className="font-bold text-[11px] text-white">
+                                ₹{(item.amount / 100).toFixed(0)} · {item.receiptNumber || 'Commander Upgrade'}
+                              </p>
+                              <p className="text-[10px] text-[#A7ABB4]">
+                                {new Date(item.createdAt).toLocaleDateString('en-IN', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })} · ID: {item.providerPaymentId ? item.providerPaymentId.slice(0, 14) : item.id.slice(0, 8)}...
+                              </p>
+                            </div>
+                            <span className="text-[9px] uppercase px-2 py-0.5 rounded font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                              {item.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </section>
 
               {/* ── 3. Controls & Preferences ──────────────────────── */}

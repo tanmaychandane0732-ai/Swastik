@@ -836,6 +836,313 @@ export class DataRepository {
       },
     };
   }
+
+  // --- SUBSCRIPTIONS & MEMBERSHIP ---
+  async getUserSubscription(userId: string): Promise<any | null> {
+    if (this.usePrisma && prisma && isMongoObjectId(userId)) {
+      try {
+        return await (prisma as any).subscription.findUnique({
+          where: { userId },
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+    return inMemoryStore.subscriptions.get(userId) || null;
+  }
+
+  async upsertSubscription(data: {
+    userId: string;
+    userName?: string;
+    userEmail?: string;
+    planCode: string;
+    provider?: string;
+    providerSubscriptionId?: string;
+    status: string;
+    currentPeriodStart?: Date;
+    currentPeriodEnd?: Date;
+    cancelAtPeriodEnd?: boolean;
+    startedAt?: Date;
+    cancelledAt?: Date;
+  }): Promise<any> {
+    if (this.usePrisma && prisma && isMongoObjectId(data.userId)) {
+      try {
+        return await (prisma as any).subscription.upsert({
+          where: { userId: data.userId },
+          create: {
+            ...data,
+            provider: data.provider || 'RAZORPAY',
+            cancelAtPeriodEnd: data.cancelAtPeriodEnd ?? false,
+          },
+          update: {
+            ...data,
+            provider: data.provider || 'RAZORPAY',
+            cancelAtPeriodEnd: data.cancelAtPeriodEnd ?? false,
+          },
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+
+    const existing = inMemoryStore.subscriptions.get(data.userId);
+    const subRecord = {
+      id: existing?.id || generateId('sub'),
+      userId: data.userId,
+      userName: data.userName || existing?.userName,
+      userEmail: data.userEmail || existing?.userEmail,
+      planCode: data.planCode,
+      provider: data.provider || existing?.provider || 'RAZORPAY',
+      providerSubscriptionId: data.providerSubscriptionId ?? existing?.providerSubscriptionId,
+      status: data.status,
+      currentPeriodStart: data.currentPeriodStart ?? existing?.currentPeriodStart ?? new Date(),
+      currentPeriodEnd: data.currentPeriodEnd ?? existing?.currentPeriodEnd,
+      cancelAtPeriodEnd: data.cancelAtPeriodEnd ?? existing?.cancelAtPeriodEnd ?? false,
+      startedAt: data.startedAt ?? existing?.startedAt ?? new Date(),
+      cancelledAt: data.cancelledAt ?? existing?.cancelledAt,
+      createdAt: existing?.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    inMemoryStore.subscriptions.set(data.userId, subRecord);
+    return subRecord;
+  }
+
+  // --- PAYMENTS ---
+  async recordPayment(data: {
+    userId: string;
+    userName?: string;
+    userEmail?: string;
+    subscriptionId?: string;
+    provider?: string;
+    providerPaymentId: string;
+    providerOrderId?: string;
+    providerSubscriptionId?: string;
+    amount: number;
+    currency?: string;
+    status: string;
+    method?: string;
+    receiptNumber?: string;
+  }): Promise<any> {
+    if (this.usePrisma && prisma && isMongoObjectId(data.userId)) {
+      try {
+        return await (prisma as any).payment.create({
+          data: {
+            ...data,
+            provider: data.provider || 'RAZORPAY',
+            currency: data.currency || 'INR',
+          },
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+
+    const id = generateId('pay');
+    const payment = {
+      id,
+      userId: data.userId,
+      userName: data.userName,
+      userEmail: data.userEmail,
+      subscriptionId: data.subscriptionId,
+      provider: data.provider || 'RAZORPAY',
+      providerPaymentId: data.providerPaymentId,
+      providerOrderId: data.providerOrderId,
+      providerSubscriptionId: data.providerSubscriptionId,
+      amount: data.amount,
+      currency: data.currency || 'INR',
+      status: data.status,
+      method: data.method,
+      receiptNumber: data.receiptNumber,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    inMemoryStore.payments.set(id, payment);
+    return payment;
+  }
+
+  async getUserPayments(userId: string): Promise<any[]> {
+    if (this.usePrisma && prisma && isMongoObjectId(userId)) {
+      try {
+        return await (prisma as any).payment.findMany({
+          where: { userId },
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+    return Array.from(inMemoryStore.payments.values())
+      .filter((p) => p.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  // --- ATOMIC DAILY USAGE CONTROL ---
+  async getDailyUsage(userId: string, dateKey: string): Promise<any | null> {
+    if (this.usePrisma && prisma && isMongoObjectId(userId)) {
+      try {
+        return await (prisma as any).dailyUsage.findUnique({
+          where: {
+            userId_dateKey: { userId, dateKey },
+          },
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+    const key = `${userId}_${dateKey}`;
+    return inMemoryStore.dailyUsages.get(key) || null;
+  }
+
+  /**
+   * Atomically checks limit and increments usage in a race-condition-safe manner
+   * Returns { allowed: true, newUsage } or { allowed: false, currentUsage }
+   */
+  async atomicIncrementDailyUsage(
+    userId: string,
+    dateKey: string,
+    field: 'gameSessionsUsed' | 'aiUsesUsed',
+    maxAllowed: number
+  ): Promise<{ allowed: boolean; currentUsage: number; limit: number; remaining: number }> {
+    if (this.usePrisma && prisma && isMongoObjectId(userId)) {
+      try {
+        // Ensure record exists first
+        await (prisma as any).dailyUsage.upsert({
+          where: { userId_dateKey: { userId, dateKey } },
+          create: { userId, dateKey, gameSessionsUsed: 0, aiUsesUsed: 0 },
+          update: {},
+        });
+
+        // Atomic conditional increment: only update if currently less than maxAllowed
+        const updateResult = await (prisma as any).dailyUsage.updateMany({
+          where: {
+            userId,
+            dateKey,
+            [field]: { lt: maxAllowed },
+          },
+          data: {
+            [field]: { increment: 1 },
+          },
+        });
+
+        const current = await (prisma as any).dailyUsage.findUnique({
+          where: { userId_dateKey: { userId, dateKey } },
+        });
+
+        const currentCount = current ? current[field] : 0;
+
+        if (updateResult.count > 0) {
+          return {
+            allowed: true,
+            currentUsage: currentCount,
+            limit: maxAllowed,
+            remaining: Math.max(0, maxAllowed - currentCount),
+          };
+        } else {
+          return {
+            allowed: false,
+            currentUsage: currentCount,
+            limit: maxAllowed,
+            remaining: 0,
+          };
+        }
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+
+    // In-memory atomic implementation (synchronous in JS event loop)
+    const key = `${userId}_${dateKey}`;
+    let record = inMemoryStore.dailyUsages.get(key);
+    if (!record) {
+      record = {
+        id: generateId('du'),
+        userId,
+        dateKey,
+        gameSessionsUsed: 0,
+        aiUsesUsed: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      inMemoryStore.dailyUsages.set(key, record);
+    }
+
+    const currentCount = record[field];
+    if (currentCount >= maxAllowed) {
+      return {
+        allowed: false,
+        currentUsage: currentCount,
+        limit: maxAllowed,
+        remaining: 0,
+      };
+    }
+
+    record[field] += 1;
+    record.updatedAt = new Date();
+    return {
+      allowed: true,
+      currentUsage: record[field],
+      limit: maxAllowed,
+      remaining: Math.max(0, maxAllowed - record[field]),
+    };
+  }
+
+  // --- WEBHOOK IDEMPOTENCY ---
+  async isWebhookEventProcessed(eventId: string): Promise<boolean> {
+    if (this.usePrisma && prisma) {
+      try {
+        const found = await (prisma as any).webhookEvent.findUnique({
+          where: { eventId },
+        });
+        return Boolean(found && found.processed);
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+    const found = inMemoryStore.webhookEvents.get(eventId);
+    return Boolean(found && found.processed);
+  }
+
+  async recordWebhookEvent(data: {
+    provider?: string;
+    eventId: string;
+    eventType: string;
+    processed: boolean;
+    payload?: any;
+  }): Promise<any> {
+    if (this.usePrisma && prisma) {
+      try {
+        return await (prisma as any).webhookEvent.upsert({
+          where: { eventId: data.eventId },
+          create: {
+            ...data,
+            provider: data.provider || 'RAZORPAY',
+            processedAt: data.processed ? new Date() : null,
+          },
+          update: {
+            processed: data.processed,
+            processedAt: data.processed ? new Date() : null,
+          },
+        });
+      } catch {
+        this.usePrisma = false;
+      }
+    }
+
+    const existing = inMemoryStore.webhookEvents.get(data.eventId);
+    const event = {
+      id: existing?.id || generateId('whe'),
+      provider: data.provider || 'RAZORPAY',
+      eventId: data.eventId,
+      eventType: data.eventType,
+      processed: data.processed,
+      payload: data.payload,
+      receivedAt: existing?.receivedAt || new Date(),
+      processedAt: data.processed ? new Date() : undefined,
+    };
+    inMemoryStore.webhookEvents.set(data.eventId, event);
+    return event;
+  }
 }
 
 export const dataRepository = new DataRepository();

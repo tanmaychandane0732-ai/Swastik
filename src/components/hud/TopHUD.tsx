@@ -7,6 +7,7 @@ import { AnimatedCounter } from '../ui/AnimatedCounter';
 import { HealthMeter } from '../ui/HealthMeter';
 import { TeamLogo } from '../common/TeamLogo';
 import { ProfileDrawer } from './ProfileDrawer';
+import { DailyUsageIndicator } from '../subscription/DailyUsageIndicator';
 import { soundManager } from '../../services/audioService';
 
 interface TopHUDProps {
@@ -259,6 +260,9 @@ export const TopHUD: React.FC<TopHUDProps> = ({
                   </div>
                 )}
               </div>
+
+              {/* Daily Flight / Membership Telemetry Badge */}
+              <DailyUsageIndicator compact={true} />
 
               {/* Pilot Status or Sign In Button */}
               {!isIdentified ? (

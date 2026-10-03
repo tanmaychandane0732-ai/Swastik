@@ -15,6 +15,10 @@ import { DynamicEnvironment } from './components/environment/DynamicEnvironment'
 import { ScrollImageSequenceCanvas } from './components/common/ScrollImageSequenceCanvas';
 import { BackToTop } from './components/common/BackToTop';
 import { localAuth } from './services/localAuth';
+import { SubscriptionProvider } from './contexts/SubscriptionContext';
+import { PremiumGateModal } from './components/subscription/PremiumGateModal';
+import { PricingModal } from './components/subscription/PricingModal';
+import { GameStageGuard } from './components/subscription/GameStageGuard';
 
 // Lazy-loaded game stages (instant initial landing page, on-demand stage calibration)
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
@@ -113,13 +117,25 @@ const GameShell: React.FC = () => {
         return <DashboardPage />;
 
       case 'level1':
-        return <Level1Budgeting />;
+        return (
+          <GameStageGuard gameType="budgeting-level-1" gameTitle="Level 1: Budgeting Altitude">
+            <Level1Budgeting />
+          </GameStageGuard>
+        );
 
       case 'level2':
-        return <Level2DebtTrap />;
+        return (
+          <GameStageGuard gameType="debt-trap-level-2" gameTitle="Level 2: Debt Trap Navigation">
+            <Level2DebtTrap />
+          </GameStageGuard>
+        );
 
       case 'level3':
-        return <Level3ScamRadar />;
+        return (
+          <GameStageGuard gameType="scam-radar-level-3" gameTitle="Level 3: Scam Radar Patrol">
+            <Level3ScamRadar />
+          </GameStageGuard>
+        );
 
       case 'results':
         return (
@@ -133,9 +149,11 @@ const GameShell: React.FC = () => {
 
       case 'simulator':
         return (
-          <LifeSimulatorGame
-            onOpenCertificate={() => setIsCertificateOpen(true)}
-          />
+          <GameStageGuard gameType="flight-simulator" gameTitle="Financial Flight Simulator">
+            <LifeSimulatorGame
+              onOpenCertificate={() => setIsCertificateOpen(true)}
+            />
+          </GameStageGuard>
         );
 
       case 'diagnostic':
@@ -156,16 +174,20 @@ const GameShell: React.FC = () => {
 
       case 'scam-detective':
         return (
-          <ScamDetectiveGame
-            onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
-          />
+          <GameStageGuard gameType="scam-detective" gameTitle="Scam Detective Hangar">
+            <ScamDetectiveGame
+              onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
+            />
+          </GameStageGuard>
         );
 
       case 'turbulence':
         return (
-          <FinancialTurbulenceGame
-            onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
-          />
+          <GameStageGuard gameType="turbulence" gameTitle="Financial Turbulence Cockpit">
+            <FinancialTurbulenceGame
+              onBackToHub={() => dispatch({ type: 'SET_STAGE', payload: 'training-deck' })}
+            />
+          </GameStageGuard>
         );
 
       default:
@@ -277,6 +299,10 @@ const GameShell: React.FC = () => {
           initialTab={onboardingInitialTab}
         />
 
+        {/* Global Subscription Paywall & Pricing Modals */}
+        <PremiumGateModal />
+        <PricingModal />
+
         {/* Interactive Companion, Click Radar Ripples, and BackToTop */}
         <CursorBuddy />
         <CursorRipple />
@@ -304,7 +330,9 @@ export default function App() {
   return (
     <ErrorBoundary>
       <GameProvider>
-        <GameShell />
+        <SubscriptionProvider>
+          <GameShell />
+        </SubscriptionProvider>
       </GameProvider>
     </ErrorBoundary>
   );

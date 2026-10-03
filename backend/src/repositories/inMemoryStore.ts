@@ -169,6 +169,66 @@ export interface InMemoryDailyChallenge {
   createdAt: Date;
 }
 
+export interface InMemorySubscription {
+  id: string;
+  userId: string;
+  userName?: string;
+  userEmail?: string;
+  planCode: string;
+  provider: string;
+  providerSubscriptionId?: string;
+  status: string;
+  currentPeriodStart?: Date;
+  currentPeriodEnd?: Date;
+  cancelAtPeriodEnd: boolean;
+  startedAt?: Date;
+  cancelledAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InMemoryPayment {
+  id: string;
+  userId: string;
+  userName?: string;
+  userEmail?: string;
+  subscriptionId?: string;
+  provider: string;
+  providerPaymentId: string;
+  providerOrderId?: string;
+  providerSubscriptionId?: string;
+  amount: number;
+  currency: string;
+  status: string;
+  method?: string;
+  receiptNumber?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InMemoryDailyUsage {
+  id: string;
+  userId: string;
+  userName?: string;
+  userEmail?: string;
+  dateKey: string;
+  gameSessionsUsed: number;
+  aiUsesUsed: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InMemoryWebhookEvent {
+  id: string;
+  provider: string;
+  eventId: string;
+  eventType: string;
+  processed: boolean;
+  payload?: any;
+  receivedAt: Date;
+  processedAt?: Date;
+}
+
 export class InMemoryStore {
   public users: Map<string, InMemoryUser> = new Map();
   public profiles: Map<string, InMemoryUserProfile> = new Map();
@@ -182,6 +242,11 @@ export class InMemoryStore {
   public challengeAttempts: Map<string, { id: string; challengeId: string; userId: string; optionId: string; isOptimal: boolean; score?: number; attemptedAt: Date }> = new Map();
   public classrooms: Map<string, { id: string; name: string; code: string; description?: string; instructorId: string; createdAt: Date }> = new Map();
   public classroomMembers: Map<string, { id: string; classroomId: string; userId: string; joinedAt: Date }> = new Map();
+  public subscriptions: Map<string, InMemorySubscription> = new Map();
+  public payments: Map<string, InMemoryPayment> = new Map();
+  public dailyUsages: Map<string, InMemoryDailyUsage> = new Map();
+  public webhookEvents: Map<string, InMemoryWebhookEvent> = new Map();
+
 
   constructor() {
     this.seedDefaults();
